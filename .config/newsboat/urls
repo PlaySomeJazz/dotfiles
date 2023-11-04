@@ -1,10 +1,24 @@
+---MUSIC---
+https://pitchfork.com/rss/reviews/best/albums "~Pitchfork: Best New Albums"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCt7fwAhXDy3oNFTAzF2o8Pw "~The Needle Drop"
+
+---PHILOSOPHY---
+https://www.reddit.com/r/GermanIdealism/.rss "~German Idealism subreddit"
+https://www.andyneagu.ro/feed/ "~Andy Neagu (TM teacher)"
+https://voegelinview.com/feed/ "~VoegelinView journal"
+https://minervawisdom.com/feed/ "~Krause's blog"
+
+---YOUTUBE---
+https://www.youtube.com/feeds/videos.xml?channel_id=UCJIIMmCfJxBv5-jGTK3iIMw "~Chad Haag"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCRgOiDUQIJgQDgC3MItgvyA "~Sean McGrath"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCeA_wmYM1oOQKAXL28VOIGA "~Paul Joseph Krause"
+https://www.youtube.com/feeds/videos.xml?channel_id=UC2eYFnH61tmytImy1mTYvhA "~Luke Smith"
+
+---ASMR---
+https://www.youtube.com/feeds/videos.xml?channel_id=UCRUb1Iq2qbcmvt7AWdW8wjA "~Judy"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCjypzyxU_p0_0ElbWSi8QQw "~yeonchu"
+
+---SYSTEM---
 https://lukesmith.xyz/rss.xml
-https://videos.lukesmith.xyz/feeds/videos.xml?videoChannelId=2 "~Luke Smith (Videos)"
-https://www.youtube.com/feeds/videos.xml?channel_id=UC2eYFnH61tmytImy1mTYvhA "~Luke Smith (YouTube)"
-https://lindypress.net/rss
-https://notrelated.xyz/rss
-https://landchad.net/rss.xml
-https://based.cooking/index.xml
-https://artixlinux.org/feed.php "tech"
 https://www.archlinux.org/feeds/news/ "tech"
 https://github.com/LukeSmithxyz/voidrice/commits/master.atom "~LARBS dotfiles"
