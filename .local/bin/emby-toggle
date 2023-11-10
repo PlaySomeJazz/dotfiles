@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# If Emby is running, will ask to kill, else will ask to start.
+
+if pidof dotnet >/dev/null ;
+then
+	[ "$(printf "No\\nYes" | dmenu -i -p "Turn off Emby?")" = "Yes" ] && sudo systemctl stop emby-server.service && notify-send "Emby disabled."
+else
+	ifinstalled emby-server || exit
+	[ "$(printf "No\\nYes" | dmenu -i -p "Turn on Emby?")" = "Yes" ] && sudo systemctl start emby-server.service && notify-send "Emby enabled."
+fi
