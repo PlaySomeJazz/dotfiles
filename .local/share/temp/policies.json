@@ -1,0 +1,7 @@
+{
+  "policies": {
+    "Extensions": {
+      "Install": ["https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi", "https://addons.mozilla.org/firefox/downloads/latest/istilldontcareaboutcookies/latest.xpi", "https://addons.mozilla.org/firefox/downloads/latest/enhanced-h264ify/latest.xpi", "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi"]
+    }
+  }
+}
