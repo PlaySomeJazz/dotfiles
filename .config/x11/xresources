@@ -1,8 +1,12 @@
-!! Transparency (0-1):
-*.alpha: 0.8
+!! Image viewer background
+Nsxiv.window.background: #000000
+Nsxiv.window.foreground: #FFFFFF
 
-!! Set a default font and font size as below:
-*.font: monospace:size=10
+/* !! Transparency (0-1): */
+/* *.alpha: 0.8 */
+
+/* !! Set a default font and font size as below: */
+/* *.font: monospace:size=10 */
 
 /* name		dark	light */
 /* black	0	8 */
