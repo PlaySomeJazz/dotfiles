@@ -1,4 +1,6 @@
 user_pref("app.shield.optoutstudies.enabled", false);
+user_pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons", false);
+user_pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features", false);
 user_pref("browser.aboutConfig.showWarning", false);
 user_pref("browser.backspace_action", 0);
 user_pref("browser.cache.disk.enable", false);
@@ -9,6 +11,7 @@ user_pref("browser.safebrowsing.phishing.enabled", false);
 user_pref("browser.search.suggest.enabled", false);
 user_pref("browser.sessionstore.resume_from_crash", false);
 user_pref("browser.startup.couldRestoreSession.count", 2);
+user_pref("datareporting.healthreport.uploadEnabled", false);
 user_pref("browser.startup.homepage", "chrome://browser/content/blanktab.html");
 user_pref("browser.toolbars.bookmarks.visibility", "always");
 user_pref("browser.translations.panelShown", true);
