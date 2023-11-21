@@ -321,17 +321,17 @@ Vagrantfile             
 *.asf   
 *.rm    
 *.rmvb  
-*.flc   
+*.flc   
 *.avi   
-*.fli   
+*.fli   
 *.flv   
-*.gl    
-*.dl    
-*.xcf   
-*.xwd   
-*.yuv   
-*.cgm   
-*.emf   
+*.gl    
+*.dl    
+*.xcf   
+*.xwd   
+*.yuv   
+*.cgm   
+*.emf   
 *.ogv   
 *.ogx   
 
