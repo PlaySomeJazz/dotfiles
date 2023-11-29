@@ -26,8 +26,8 @@ color listnormal cyan default
 color listfocus black yellow standout bold
 color listnormal_unread blue default
 color listfocus_unread yellow default bold
-color info red black bold
-color article white default bold
+color info magenta black bold
+color article white default
 
 browser linkhandler
 macro , open-in-browser
@@ -43,7 +43,7 @@ macro P set browser "peertubetorrent %u 1080" ; open-in-browser ; set browser li
 
 highlight feedlist "---.*---" yellow default bold
 highlight feedlist ".*0/0.." default default invis
-highlight article "(^Feed:.*|^Title:.*|^Author:.*)" cyan default bold
+highlight article "(^Feed:.*|^Title:.*|^Author:.*)" cyan default
 highlight article "(^Link:.*|^Date:.*)" default default
 highlight article "https?://[^ ]+" green default
 highlight article "^(Title):.*$" blue default
