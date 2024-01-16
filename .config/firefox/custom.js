@@ -37,3 +37,48 @@ user_pref("signon.firefoxRelay.feature", "disabled");
 user_pref("signon.management.page.breach-alerts.enabled", false);
 user_pref("toolkit.telemetry.pioneer-new-studies-available", false);
 user_pref("webgl.disabled", true);
+
+
+/****************************************************************************
+ * SECTION: FASTFOX                                                         *
+****************************************************************************/
+/** GENERAL ***/
+user_pref("content.notify.interval", 100000);
+
+/** GFX ***/
+user_pref("gfx.canvas.accelerated.cache-items", 4096);
+user_pref("gfx.canvas.accelerated.cache-size", 512);
+user_pref("gfx.content.skia-font-cache-size", 20);
+
+/** DISK CACHE ***/
+user_pref("browser.cache.jsbc_compression_level", 3);
+
+/** MEDIA CACHE ***/
+user_pref("media.memory_cache_max_size", 65536);
+user_pref("media.cache_readahead_limit", 7200);
+user_pref("media.cache_resume_threshold", 3600);
+
+/** IMAGE CACHE ***/
+user_pref("image.mem.decode_bytes_at_a_time", 32768);
+
+/** NETWORK ***/
+user_pref("network.buffer.cache.size", 262144);
+user_pref("network.buffer.cache.count", 128);
+user_pref("network.http.max-connections", 1800);
+user_pref("network.http.max-persistent-connections-per-server", 10);
+user_pref("network.http.max-urgent-start-excessive-connections-per-host", 5);
+user_pref("network.http.pacing.requests.enabled", false);
+user_pref("network.dnsCacheExpiration", 3600);
+user_pref("network.dns.max_high_priority_threads", 8);
+user_pref("network.ssl_tokens_cache_capacity", 10240);
+
+/** SPECULATIVE LOADING ***/
+user_pref("network.dns.disablePrefetch", true);
+user_pref("network.prefetch-next", false);
+user_pref("network.predictor.enabled", false);
+
+/** EXPERIMENTAL ***/
+user_pref("layout.css.grid-template-masonry-value.enabled", true);
+user_pref("dom.enable_web_task_scheduling", true);
+user_pref("layout.css.has-selector.enabled", true);
+user_pref("dom.security.sanitizer.enabled", true);
