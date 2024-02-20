@@ -29,7 +29,8 @@ alias \
 	yt='yt-dlp --embed-metadata -i $(xclip -o)' \
 	y='yt-dlp --ignore-config --embed-metadata -x -f bestaudio $(xclip -o)' \
 	ytt='yt-dlp --skip-download --write-thumbnail $(xclip -o)' \
-	ffmpeg="ffmpeg -hide_banner"
+	ffmpeg="ffmpeg -hide_banner" \
+	a="ani-cli"
 
 # Colorize commands when possible.
 alias \
