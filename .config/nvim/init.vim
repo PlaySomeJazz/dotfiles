@@ -59,7 +59,7 @@ colorscheme vim
 
 " vim-airline
 	if !exists('g:airline_symbols')
-  	    let g:airline_symbols = {}
+		let g:airline_symbols = {}
 	endif
 	let g:airline_symbols.colnr = ' C:'
 	let g:airline_symbols.linenr = ' L:'
@@ -100,9 +100,6 @@ colorscheme vim
 	autocmd BufRead,BufNewFile /tmp/calcurse*,~/.calcurse/notes/* set filetype=markdown
 	autocmd BufRead,BufNewFile *.ms,*.me,*.mom,*.man set filetype=groff
 	autocmd BufRead,BufNewFile *.tex set filetype=tex
-
-" Why is folding not default
-let g:vimwiki_folding='list'
 
 " Save file as sudo on files that require root permission
 	cabbrev w!! execute 'silent! write !sudo tee % >/dev/null' <bar> edit!
