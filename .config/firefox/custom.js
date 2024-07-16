@@ -1,4 +1,6 @@
 user_pref("app.shield.optoutstudies.enabled", false);
+user_pref("app.normandy.enabled", false);
+user_pref("app.normandy.api_url", "");
 user_pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons", false);
 user_pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features", false);
 user_pref("browser.aboutConfig.showWarning", false);
@@ -11,7 +13,6 @@ user_pref("browser.safebrowsing.phishing.enabled", false);
 user_pref("browser.search.suggest.enabled", false);
 user_pref("browser.sessionstore.resume_from_crash", false);
 user_pref("browser.startup.couldRestoreSession.count", 2);
-user_pref("datareporting.healthreport.uploadEnabled", false);
 user_pref("browser.startup.homepage", "chrome://browser/content/blanktab.html");
 user_pref("browser.toolbars.bookmarks.visibility", "always");
 user_pref("browser.translations.panelShown", true);
@@ -37,7 +38,25 @@ user_pref("signon.firefoxRelay.feature", "disabled");
 user_pref("signon.management.page.breach-alerts.enabled", false);
 user_pref("toolkit.telemetry.pioneer-new-studies-available", false);
 user_pref("webgl.disabled", true);
+user_pref("accessibility.force_disabled", 1);
 
+/** TELEMETRY ***/
+user_pref("datareporting.policy.dataSubmissionEnabled", false);
+user_pref("datareporting.healthreport.uploadEnabled", false);
+user_pref("toolkit.telemetry.unified", false);
+user_pref("toolkit.telemetry.enabled", false);
+user_pref("toolkit.telemetry.server", "data:,");
+user_pref("toolkit.telemetry.archive.enabled", false);
+user_pref("toolkit.telemetry.newProfilePing.enabled", false);
+user_pref("toolkit.telemetry.shutdownPingSender.enabled", false);
+user_pref("toolkit.telemetry.updatePing.enabled", false);
+user_pref("toolkit.telemetry.bhrPing.enabled", false);
+user_pref("toolkit.telemetry.firstShutdownPing.enabled", false);
+user_pref("toolkit.telemetry.coverage.opt-out", true);
+user_pref("toolkit.coverage.opt-out", true);
+user_pref("toolkit.coverage.endpoint.base", "");
+user_pref("browser.newtabpage.activity-stream.feeds.telemetry", false);
+user_pref("browser.newtabpage.activity-stream.telemetry", false);
 
 /****************************************************************************
  * SECTION: FASTFOX                                                         *
