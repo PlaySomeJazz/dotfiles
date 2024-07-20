@@ -1,0 +1,3 @@
+#!/bin/sh
+
+yt-dlp --skip-download --write-thumbnail $(xclip -o)

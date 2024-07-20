@@ -1,0 +1,3 @@
+#!/bin/sh
+
+yt-dlp --ignore-config --embed-metadata -x -f bestaudio $(xclip -o)

@@ -26,9 +26,6 @@ alias \
 	bc="bc -ql" \
 	rsync="rsync -vrPlu" \
 	mkd="mkdir -pv" \
-	yt='yt-dlp --embed-metadata -i $(xclip -o)' \
-	y='yt-dlp --ignore-config --embed-metadata -x -f bestaudio $(xclip -o)' \
-	ytt='yt-dlp --skip-download --write-thumbnail $(xclip -o)' \
 	ffmpeg="ffmpeg -hide_banner" \
 	k="dra-cla" \
 	a="ani-cli"
