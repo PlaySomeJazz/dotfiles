@@ -1,0 +1,16 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+	url="$(xclip -o)"
+else
+	url="$1"
+fi
+
+base="$(basename "$url")"
+notify-send "⏳ Queuing $base..."
+cmd="$2"
+[ -z "$cmd" ] && cmd="gallery-dl"
+idnum="$(tsp $cmd "$url")"
+realname="$(echo "$base" | sed "s/?\(source\|dest\).*//;s/%20/ /g")"
+tsp -D "$idnum" mv "$base" "$realname"
+tsp -D "$idnum" notify-send "👍 $realname done."
