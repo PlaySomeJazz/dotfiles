@@ -22,14 +22,14 @@ def main():
 
     # HACK(ww): On macOS, graphical applications inherit their path from `launchd`
     # rather than the default path list in `/etc/paths`. `launchd` doesn't include
-    # `/usr/local/bin` in its default list, which means that any installations
+    # Homebrew in its default list, which means that any installations
     # of MPV and/or youtube-dl under that prefix aren't visible when spawning
     # from, say, Firefox. The real fix is to modify `launchd.conf`, but that's
     # invasive and maybe not what users want in the general case.
     # Hence this nasty hack.
     if platform.system() == "Darwin":
         path = os.environ.get("PATH")
-        os.environ["PATH"] = f"/usr/local/bin:/opt/homebrew/bin:{path}"
+        os.environ["PATH"] = f"/opt/homebrew/bin:/usr/local/bin:{path}"
 
     subprocess.Popen(args, **kwargs)
 
@@ -49,7 +49,11 @@ def get_message():
 
 
 def send_message(message):
-    content = json.dumps(message).encode("utf-8")
+    # https://stackoverflow.com/a/56563264
+    # https://docs.python.org/3/library/json.html#basic-usage
+    # To get the most compact JSON representation, you should specify
+    # (',', ':') to eliminate whitespace.
+    content = json.dumps(message, separators=(",", ":")).encode("utf-8")
     length = struct.pack("@I", len(content))
     sys.stdout.buffer.write(length)
     sys.stdout.buffer.write(content)
