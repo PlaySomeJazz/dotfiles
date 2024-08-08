@@ -1,10 +1,5 @@
 #!/bin/sh
 
-url="$(xclip -o)"
-[ -z "$url" ] && exit
-name="$(basename "$url")"
-notify-send -i "$HOME/.local/share/icons/dunst/dlpending.svg" "Queuing download" "$name"
-
 case "$1" in
     video)
         dlcmd="yt-dlp --embed-metadata -ic"
@@ -20,5 +15,12 @@ case "$1" in
         ;;
 esac
 
+url="$2"
+if [ -z "$url" ]; then
+  url="$(xclip -o)"
+fi
+
+name="$(basename "$url")"
+notify-send -i "$PIX/dlpending.svg" "Queuing download" "$name"
 idnum="$(tsp $dlcmd "$url")"
-tsp -D "$idnum" notify-send -i "$HOME/.local/share/icons/dunst/dlcomplete.svg" "Download complete" "$name"
+tsp -D "$idnum" notify-send -i "$PIX/dlcomplete.svg" "Download complete" "$name"

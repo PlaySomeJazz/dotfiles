@@ -13,7 +13,6 @@ case $1 in
 		wpctl set-volume -l 2.0 @DEFAULT_AUDIO_SINK@ 3%-
 		;;
 	jumpup)
-		# Set the volume on (if it was muted)
 		wpctl set-mute @DEFAULT_AUDIO_SINK@ 0
 		wpctl set-volume -l 2.0 @DEFAULT_AUDIO_SINK@ 15%+
 		;;
@@ -33,7 +32,7 @@ send_notification() {
 	if [ "$1" = "mute" ]; then ICON="mute.svg"; elif [ "$VOLUME" -lt 33 ]; then ICON="low.svg"; elif [ "$VOLUME" -lt 66 ]; then ICON="medium.svg"; else ICON="high.svg"; fi
 	if [ "$1" = "mute" ]; then TEXT="Muted"; else TEXT="${VOLUME}%"; fi
 
-	dunstify -a "Volume" -u low -r 9993 -h int:value:"$VOLUME" -i "$HOME/.local/share/icons/dunst/volume-$ICON" "Volume" "$TEXT" -t 2000
+	dunstify -a "Volume" -u low -r 9993 -h int:value:"$VOLUME" -i "$PIX/volume-$ICON" "Volume" "$TEXT" -t 2000
 }
 
 case $1 in
