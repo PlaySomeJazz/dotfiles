@@ -2,13 +2,13 @@
 
 case "$1" in
     video)
-        dlcmd="yt-dlp --embed-metadata -ic"
+        dlcmd="yt-dlp --embed-metadata -ic -o ~/Downloads/%(title)s.%(ext)s"
         ;;
     audio)
-        dlcmd="yt-dlp --ignore-config --embed-metadata -x -f bestaudio"
+        dlcmd="yt-dlp --ignore-config --embed-metadata -x -f bestaudio -o ~/Music/%(title)s.%(ext)s"
         ;;
     thumb)
-        dlcmd="yt-dlp --skip-download --write-thumbnail"
+        dlcmd="yt-dlp --skip-download --write-thumbnail -o ~/Pictures/%(title)s.%(ext)s"
         ;;
     pix)
         dlcmd="gallery-dl"
