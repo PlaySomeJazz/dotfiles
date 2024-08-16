@@ -4,7 +4,10 @@ message_delay_time = "1"
 autocenter_mode = "yes"
 follow_now_playing_lyrics = "yes"
 ignore_leading_the = "yes"
-startup_screen = "media_library"
+startup_screen = "playlist"
+startup_slave_screen = "browser"
+startup_slave_screen_focus = yes
+locked_screen_width_part = 45
 
 ## Display Modes ##
 playlist_editor_display_mode = "columns"
