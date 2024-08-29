@@ -1,4 +1,6 @@
 -S vcodec:h264,res:720,fps:30
---downloader aria2c --downloader-args aria2c:'-c -j 3 -x 3 -s 3 -k 1M'
---downloader 'dash,m3u8:native'
+--throttled-rate=100000
+-N 10
+#--downloader aria2c --downloader-args aria2c:'-c -j 3 -x 3 -s 3 -k 1M'
+#--downloader 'dash,m3u8:native'
 --cookies-from-browser firefox
