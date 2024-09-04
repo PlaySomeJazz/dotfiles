@@ -11,7 +11,7 @@ case "$1" in
         dlcmd="yt-dlp --skip-download --write-thumbnail -o ~/Pictures/%(title)s.%(ext)s"
         ;;
     pix)
-        dlcmd="gallery-dl"
+        dlcmd="gallery-dl --cookies-from-browser firefox -d ~/Pictures"
         ;;
 esac
 
