@@ -13,7 +13,7 @@ def main():
     url = message.get("url")
     options = message.get("options") or []
 
-    args = ["ytc", *options, "--", url]
+    args = ["ytc", url]
 
     kwargs = {}
     # https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging#Closing_the_native_app
