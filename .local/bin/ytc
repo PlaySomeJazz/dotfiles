@@ -29,3 +29,6 @@ yt-dlp "$dl_opts" "$dir_opts" "$url" >/dev/null 2>&1
 
 # Play video
 "setsid" "$player" "$filename" >/dev/null 2>&1
+
+# Delete video
+rm "$filename"
