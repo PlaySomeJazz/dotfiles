@@ -3,8 +3,7 @@
 # Options
 file="/tmp/yt_dlp_video"
 opts="--no-playlist -o $file"
-video="$file*"
-player="xdg-open"
+player="mpv --terminal=no"
 
 set -e
 
@@ -19,7 +18,7 @@ fi
 yt-dlp "$opts" "$url" >/dev/null 2>&1
 
 # Play video
-"setsid" "$player" "$video" >/dev/null 2>&1
+"setsid" "$player" "$file*"
 
 # Delete video
-rm "$video"
+rm "$file*"
