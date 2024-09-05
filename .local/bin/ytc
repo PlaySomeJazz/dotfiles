@@ -1,24 +1,13 @@
 #!/bin/sh
 
-# Options
-file="/tmp/yt_dlp_video"
-opts="--no-playlist -o $file"
-player="mpv --terminal=no"
+file="/tmp/ytvideo"
 
-set -e
-
-# Get URL from clipboard if run without argument:
 if [ -z "$1" ]; then
   url="$(xclip -o)"
 else
   url="$1"
 fi
 
-# Download video
-yt-dlp "$opts" "$url" >/dev/null 2>&1
-
-# Play video
-"setsid" "$player" "$file*"
-
-# Delete video
-rm "$file*"
+yt-dlp --no-playlist -o "$file" "$url" >/dev/null 2>&1
+setsid mpv --terminal=no "$file"*
+rm "$file"*
