@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# Directory for downloaded videos:
+if [ -z "$dl_dir" ]; then
+  dl_dir="/tmp/Videos"
+fi
+
+# Video player:
+player="xdg-open"
+
+# Downloader and options:
+dl_opts="--no-playlist"
+dir_opts="-P $dl_dir"
+
+set -e
+
+# Get URL from clipboard if run without argument:
+if [ -z "$1" ]; then
+  url="$(xclip -o)"
+else
+  url="$1"
+fi
+
+# Get video filename
+filename=$(yt-dlp --get-filename "$dl_opts" "$dir_opts" "$url")
+
+# Download video
+yt-dlp "$dl_opts" "$dir_opts" "$url" >/dev/null 2>&1
+
+# Play video
+"setsid" "$player" "$filename" >/dev/null 2>&1
