@@ -1,9 +1,9 @@
 #!/bin/sh
 
 # Options
-dir="/tmp"
-opts="--no-playlist -o $dir/video"
-filename="$dir/video*"
+file="/tmp/yt_dlp_video"
+opts="--no-playlist -o $file"
+video="$file*"
 player="xdg-open"
 
 set -e
@@ -19,7 +19,7 @@ fi
 yt-dlp "$opts" "$url" >/dev/null 2>&1
 
 # Play video
-"setsid" "$player" "$filename" >/dev/null 2>&1
+"setsid" "$player" "$video" >/dev/null 2>&1
 
 # Delete video
-rm "$filename"
+rm "$video"
