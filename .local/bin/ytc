@@ -9,5 +9,5 @@ else
 fi
 
 yt-dlp --no-playlist -o "$file" "$url" >/dev/null 2>&1
-setsid mpv --terminal=no --resume-playback=no "$file"*
+mpv --terminal=no --resume-playback=no "$file"*
 rm "$file"*
