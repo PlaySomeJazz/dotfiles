@@ -8,6 +8,6 @@ else
   url="$1"
 fi
 
-yt-dlp --no-playlist -q -o "$file" "$url" >/dev/null 2>&1
+yt-dlp --no-playlist -q -o "$file" "$url"
 mpv --terminal=no --resume-playback=no "$file"*
 rm "$file"*
