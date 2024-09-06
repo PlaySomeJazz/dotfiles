@@ -1,0 +1,12 @@
+#!/bin/bash
+
+while true; do
+  ram_usage=$(free | awk '/Mem/{printf("   RAM %.2f%"), $3/$2*100}')
+  cpu_temp=$(echo "TEMP $(sed 's/000$/°C/' /sys/class/thermal/thermal_zone0/temp)")
+  time_date=$(date "+%d %b (%a), %R   ")
+
+  output="$ram_usage | $cpu_temp | $time_date"
+  xsetroot -name "$output"
+
+  sleep 10
+done
