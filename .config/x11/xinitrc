@@ -13,19 +13,6 @@ if [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/x11/xprofile" ]; then
 else
 	. "$HOME/.xprofile"
 fi
-
-# Statusbar
-while true; do
-  mem_usage=$(free | awk '/Mem/{printf("   RAM %.2f%"), $3/$2*100}')
-  cpu_temp=$(echo "TEMP $(sed 's/000$/°C/' /sys/class/thermal/thermal_zone0/temp)")
-  time_date=$(date "+%d %b (%a), %R   ")
-
-  statusbar="$mem_usage | $cpu_temp | $time_date"
-  xsetroot -name "$statusbar"
-
-  sleep 10
-done &
-
 # Activate dbus variables
 dbus-update-activation-environment --all
 dbus-launch ssh-agent dwm
