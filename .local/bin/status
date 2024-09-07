@@ -1,9 +1,9 @@
 #!/bin/sh
 
 while true; do
-  mem=$(free | awk '/Mem/{printf("   RAM %.2f%"), $3/$2*100}')
+  mem=$(free | awk '/Mem/{printf("%.2f%"), $3/$2*100}')
   cpu=$(sed 's/000$/°C/' /sys/class/thermal/thermal_zone0/temp)
-  time_date=$(date "+%d %b (%a), %R   ")
-  xsetroot -name "$mem | TEMP $cpu | $time_date"
+  time_date=$(date "+%d %b (%a), %R")
+  xsetroot -name "   RAM $mem | TEMP $cpu | $time_date   "
   sleep 10
 done
