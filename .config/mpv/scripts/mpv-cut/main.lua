@@ -5,7 +5,6 @@
 utils = require "mp.utils"
 
 local function print(s)
-	mp.msg.info(s)
 	mp.osd_message(s)
 end
 
