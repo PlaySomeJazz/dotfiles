@@ -31,7 +31,7 @@ bind-key x pb-delete
 bind-key a pb-toggle-download-all
 
 browser linkhandler
-macro , set browser mpv; one; set browser linkhandler
+macro , set browser "mpv --terminal=no"; one; set browser linkhandler
 macro t set browser "yt video" ; open-in-browser ; set browser linkhandler
 macro a set browser "yt audio" ; open-in-browser ; set browser linkhandler
 macro w set browser "lynx" ; open-in-browser ; set browser linkhandler
