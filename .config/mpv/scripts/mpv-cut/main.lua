@@ -2,12 +2,10 @@
 -- To view debug logs when launching through Finder,
 -- use the ` key in mpv instead of viewing ~/Library/Logs/mpv.log.
 
-mp.msg.info("MPV-CUT LOADED")
-
 utils = require "mp.utils"
 
 local function print(s)
-	-- mp.msg.info(s)
+	mp.msg.info(s)
 	mp.osd_message(s)
 end
 
@@ -25,7 +23,6 @@ local function table_to_str(o)
 end
 
 local result = mp.command_native({ name = "subprocess", args = {"ffmpeg"}, playback_only = false, capture_stdout = true, capture_stderr = true })
-mp.msg.info("Your PATH: " .. os.getenv('PATH'))
 if result.status ~= 1 then
 	mp.osd_message("FFmpeg failed to run, please press ` for debug info", 5)
 	mp.msg.error("FFmpeg failed to run:\n" .. table_to_str(result))
@@ -128,13 +125,6 @@ KEY_CHANNEL_INC = "="
 KEY_CHANNEL_DEC = "-"
 
 home_config = mp.command_native({"expand-path", "~/.config/mpv-cut/config.lua"})
-if pcall(require, "config") then
-    mp.msg.info("Loaded config file from script dir")
-elseif pcall(dofile, home_config) then
-    mp.msg.info("Loaded config file from " .. home_config)
-else
-    mp.msg.info("No config loaded")
-end
 
 for i, v in ipairs(CHANNEL_NAMES) do
     CHANNEL_NAMES[i] = string.gsub(v, ":", "-")
@@ -201,8 +191,6 @@ local function cut(start_time, end_time)
 	local d = get_data()
 	local t = get_times(start_time, end_time)
 	for k, v in pairs(t) do d[k] = v end
-	mp.msg.info(ACTION)
-	mp.msg.info(table_to_str(d))
 	ACTIONS[ACTION](d)
 end
 
@@ -231,7 +219,6 @@ end
 
 local function get_bookmark_file_path()
 	local d = get_data()
-	mp.msg.info(table_to_str(d))
 	local outfile = string.format("%s_%s.book", d.channel, d.infile)
 	return utils.join_path(d.indir, outfile)
 end
