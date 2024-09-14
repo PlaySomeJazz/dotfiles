@@ -1,4 +1,6 @@
 # You can add comments to these files with #
+wl  ~/Videos/Watchlist
+m   ${XDG_MUSIC_DIR:-$HOME/Music}
 cac ${XDG_CACHE_HOME:-$HOME/.cache}
 cf  ${XDG_CONFIG_HOME:-$HOME/.config}
 D   ${XDG_DOWNLOAD_DIR:-$HOME/Downloads}
@@ -6,7 +8,6 @@ d   ${XDG_DOCUMENTS_DIR:-$HOME/Documents}
 dt  ${XDG_DATA_HOME:-$HOME/.local/share}
 rr  $HOME/.local/src
 h   $HOME
-m   ${XDG_MUSIC_DIR:-$HOME/Music}
 mn  /mnt
 tv  /mnt/media_files/tv
 flm /mnt/media_files/movies
