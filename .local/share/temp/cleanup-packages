@@ -1,4 +1,5 @@
 #!/bin/sh
 
+/usr/bin/paccache -rvuk0 && /usr/bin/paccache -rvk2
 pacman -Qdtq | pacman -Rns -
 pacman -Qqd | pacman -Rsu --print -
