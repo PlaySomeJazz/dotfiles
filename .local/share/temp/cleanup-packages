@@ -1,0 +1,4 @@
+#!/bin/sh
+
+pacman -Qdtq | pacman -Rns -
+pacman -Qqd | pacman -Rsu --print -

@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Remove
+Operation = Upgrade
+Type = Package
+Target = *
+
+[Action]
+Description = Cleaning up orphans and unused packages...
+When = PostTransaction
+Exec = /usr/local/lib/cleanup-packages
