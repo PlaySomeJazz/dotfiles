@@ -2,7 +2,7 @@
 
 case "$1" in
     video)
-        dlcmd="yt-dlp --embed-metadata -ic -o ~/Downloads/%(title)s.%(ext)s"
+        dlcmd="yt-dlp --embed-metadata -ic -o ~/Videos/Watchlist/%(title)s.%(ext)s"
         ;;
     audio)
         dlcmd="yt-dlp --ignore-config --embed-metadata -x -f bestaudio -o ~/Music/%(title)s.%(ext)s"
