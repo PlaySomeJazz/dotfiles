@@ -6,7 +6,7 @@ case "$url" in
 	*mkv|*webm|*mp4)
 		setsid -f mpv --terminal=no "$url" ;;
 	*youtube.com/watch*|*youtube.com/playlist*|*youtube.com/shorts*|*youtu.be*)
-		setsid -f mpv --terminal=no "$url" ;;
+		setsid -f ytc "$url" ;;
 	*png|*jpg|*jpe|*jpeg|*gif|*webp)
 		curl -sL "$url" > "/tmp/$(echo "$url" | sed "s/.*\///;s/%20/ /g")" && nsxiv -a "/tmp/$(echo "$url" | sed "s/.*\///;s/%20/ /g")"  >/dev/null 2>&1 & ;;
 	*pdf|*cbz|*cbr)
