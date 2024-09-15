@@ -15,11 +15,7 @@ case "$1" in
         ;;
 esac
 
-url="$2"
-if [ -z "$url" ]; then
-  url="$(xclip -o)"
-fi
-
+url=${2:-$(xclip -o)}
 name="$(basename "$url")"
 notify-send -i "$PIX/dlpending.svg" "Queuing download" "$name"
 idnum="$(tsp $dlcmd "$url")"
