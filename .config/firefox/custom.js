@@ -38,6 +38,8 @@ user_pref("signon.management.page.breach-alerts.enabled", false);
 user_pref("toolkit.telemetry.pioneer-new-studies-available", false);
 user_pref("webgl.disabled", true);
 user_pref("accessibility.force_disabled", 1);
+user_pref("identity.fxaccounts.enabled", false);
+user_pref("ui.context_menus.after_mouseup", true);
 
 /** TELEMETRY ***/
 user_pref("datareporting.policy.dataSubmissionEnabled", false);
