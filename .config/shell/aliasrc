@@ -48,6 +48,7 @@ alias \
 	e="$EDITOR" \
 	v="$EDITOR" \
 	p="pacman" \
+	cl="pacman -Qqd | pacman -Rsu -" \
 	xi="sudo xbps-install" \
 	xr="sudo xbps-remove -R" \
 	xq="xbps-query" \

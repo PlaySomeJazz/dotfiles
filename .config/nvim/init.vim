@@ -90,8 +90,8 @@ colorscheme vim
 " Open corresponding .pdf/.html or preview
 	map <leader>p :!opout "%:p"<CR>
 
-" Runs a script that cleans out tex build files whenever I close out of a .tex file.
-	autocmd VimLeave *.tex !texclear %
+" Enable folding in Vimwiki
+	let g:vimwiki_folding='list'
 
 " Ensure files are read as what I want:
 	let g:vimwiki_ext2syntax = {'.Rmd': 'markdown', '.rmd': 'markdown','.md': 'markdown', '.markdown': 'markdown', '.mdown': 'markdown'}
@@ -100,9 +100,6 @@ colorscheme vim
 	autocmd BufRead,BufNewFile /tmp/calcurse*,~/.calcurse/notes/* set filetype=markdown
 	autocmd BufRead,BufNewFile *.ms,*.me,*.mom,*.man set filetype=groff
 	autocmd BufRead,BufNewFile *.tex set filetype=tex
-
-" Why is folding not default
-let g:vimwiki_folding='list'
 
 " Save file as sudo on files that require root permission
 	cabbrev w!! execute 'silent! write !sudo tee % >/dev/null' <bar> edit!

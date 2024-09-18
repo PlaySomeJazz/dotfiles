@@ -1,6 +1,6 @@
 [global]
     follow = mouse
-    width = 350
+    width = 250
     offset = 48x48
     progress_bar_max_width = 400
     progress_bar_corner_radius = 5
