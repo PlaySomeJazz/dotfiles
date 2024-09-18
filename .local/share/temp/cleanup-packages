@@ -1,5 +1,5 @@
 #!/bin/sh
 
-yes | yay -Scc
+yes | pacman -Scc
 pacman -Qdtq | pacman -Rns -
 pacman -Qqd | pacman -Rsu --print -
