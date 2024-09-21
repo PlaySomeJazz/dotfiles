@@ -1,5 +1,4 @@
 #!/bin/sh
-
 yt-dlp --no-playlist -q -o "/tmp/y" "$1"
 mpv --terminal=no --resume-playback=no "/tmp/y"*
 rm "/tmp/y"*
