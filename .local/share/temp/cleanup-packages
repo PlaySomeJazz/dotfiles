@@ -1,0 +1,10 @@
+#!/bin/sh
+
+echo "Stage 1: Removing cache..."
+paccache -rvk0
+
+echo "Stage 2: Removing unused packages..."
+pacman -Qdtq | pacman -Rns -
+
+echo "Stage 3: Detecting more unneeded packages..."
+pacman -Qqd | pacman -Rsu --print -
