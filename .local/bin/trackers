@@ -2,5 +2,5 @@
 trackerlist="/tmp/trackers.list"
 trap 'rm -f $trackerlist' EXIT
 curl -o $trackerlist "https://raw.githubusercontent.com/XIU2/TrackersListCollection/refs/heads/master/best.txt"
-sed -i '/^$/d' $trackerlist
+sed -i '/^$/d' $TRACKERLIST
 cat $trackerlist | while read tracker; do transmission-remote -t all -td "$tracker"; done
