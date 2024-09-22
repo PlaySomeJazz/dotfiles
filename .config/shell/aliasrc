@@ -44,6 +44,7 @@ alias \
 	g="git" \
 	trem="transmission-remote" \
 	YT="youtube-viewer" \
+	xx="watchlater" \
 	sdn="shutdown -h now" \
 	e="$EDITOR" \
 	v="$EDITOR" \
