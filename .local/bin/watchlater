@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source_dir="/mnt/media_files/tv"
+source_dir="/mnt/media_files/torrents"
 watchlist="$HOME/Videos/Watchlist"
 music="$HOME/Music"
 export music
@@ -9,7 +9,10 @@ export music
 find "$source_dir" -type f \( -iname "*.mp4" -o -iname "*.mkv" \) -exec mv {} "$watchlist" \;
 
 # Move directories containing audio into Music
-find "$source_dir" -mindepth 1 -depth -type d -exec sh -c 'if find "$0" -type f -iname "*.mp3" -o -iname "*.m4b" -o -iname "*.flac" -o -iname "*.m4a" -o -iname "*.opus"; then mv "$0" "$music"; fi' {} \;
+find "$source_dir" -mindepth 1 -depth -type d -exec sh -c 'if find "$0" -type f -iname "*.{mp3,m4b,flac,m4a,opus,wav}" ; then mv "$0" "$music"; fi' {} \;
+
+# Delete directories with no files of these types
+find "$source_dir" -mindepth 1 -depth -type d -exec sh -c 'if find "$0" -type f -iname "*.{pdf,djvu,epub,mobi,zip,rar}" ; then rm "$0"; fi' {} \;
 
 # Delete empty directories
 find "$source_dir" -mindepth 1 -type d -empty -delete
