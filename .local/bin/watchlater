@@ -15,4 +15,4 @@ find "$source_dir" -mindepth 1 -depth -type d -exec sh -c 'if find "$0" -type f 
 find "$source_dir" -mindepth 1 -depth -type d -exec sh -c 'if find "$0" -type f -iname "*.{pdf,djvu,epub,mobi,zip,rar}" ; then rm "$0"; fi' {} \;
 
 # Delete empty directories
-find "$source_dir" -mindepth 1 -type d -empty -delete
+#find "$source_dir" -mindepth 1 -type d -empty -delete
