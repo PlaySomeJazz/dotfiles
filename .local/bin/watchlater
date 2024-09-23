@@ -1,7 +1,7 @@
 #!/bin/sh
 
 source_dir="/mnt/media_files/tv"
-watchlist="$HOME/Videos/Watchlater"
+watchlist="$HOME/Videos/Watchlist"
 music="$HOME/Music"
 
 # Move videos to Watchlater
