@@ -1,5 +1,7 @@
 #!/bin/sh
+
 source_dir="/mnt/media_files/tv"
-dest_dir="~/Videos/Watchlist"
-find "$source_dir" -type f -iname "*.mp4" -or -iname "*.mkv" -exec mv {} "$dest_dir" \;
+dest_dir="$HOME/Videos/Watchlist"
+
+find "$source_dir" -type f \( -iname "*.mp4" -o -iname "*.mkv" \) -exec mv {} "$dest_dir" \;
 find "$source_dir" -type d -empty -delete
