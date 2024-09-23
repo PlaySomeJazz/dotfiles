@@ -1,7 +1,14 @@
 #!/bin/sh
 
 source_dir="/mnt/media_files/tv"
-dest_dir="$HOME/Videos/Watchlist"
+watchlist="$HOME/Videos/Watchlater"
+music="$HOME/Music"
 
-find "$source_dir" -type f \( -iname "*.mp4" -o -iname "*.mkv" \) -exec mv {} "$dest_dir" \;
+# Move videos to Watchlater
+find "$source_dir" -type f \( -iname "*.mp4" -o -iname "*.mkv" \) -exec mv {} "$watchlist" \;
+
+# Move directories containing audio into Music
+find "$source_dir" -mindepth 1 -type d \( -execdir test -f {}/*.mp3 \; -o -execdir test -f {}/*.flac \; -o -execdir test -f {}/*.m4b \; \) -exec mv {} "$music" \;
+
+# Delete empty directories
 find "$source_dir" -type d -empty -delete
