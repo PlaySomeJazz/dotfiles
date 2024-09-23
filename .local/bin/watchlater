@@ -6,7 +6,7 @@ music="$HOME/Music"
 export music
 
 # Move videos to Watchlater
-find "$source_dir" -type f -iname "*.{mp4,mkv}" ; -exec mv {} "$watchlist" \;
+find "$source_dir" -type f \( -iname "*.mp4" -o -iname "*.mkv" \) -exec mv {} "$watchlist" \;
 
 # Move directories containing audio into Music
 find "$source_dir" -mindepth 1 -depth -type d -exec sh -c 'if find "$0" -type f -iname "*.{mp3,m4b,flac,m4a,opus,wav}" ; then mv "$0" "$music"; fi' {} \;
