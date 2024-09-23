@@ -1,2 +1,0 @@
-#!/bin/sh
-trackersadd -a >/dev/null 2>&1
