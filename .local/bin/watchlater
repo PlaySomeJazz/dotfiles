@@ -6,6 +6,7 @@ music="$HOME/Music"
 
 # Move videos to watchlist
 find "$source_dir" -type f \( -iname "*.mp4" -o -iname "*.mkv" \) -exec mv {} "$watchlist" \;
+mv "$source_dir"/*.mp4 "$source_dir"/*.mkv "$watchlist"
 
 # Move directories containing audio into Music
 find "$source_dir" -mindepth 1 -depth -type d | while read -r dir; do if [ -n "$(find "$dir" -type f \( -iname "*.mp3" -o -iname "*.m4b" -o -iname "*.flac" -o -iname "*.m4a" -o -iname "*.opus" \))" ]; then mv "$dir" "$music"; fi; done
