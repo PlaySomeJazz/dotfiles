@@ -44,17 +44,12 @@ alias \
 	ka="killall" \
 	g="git" \
 	trem="transmission-remote" \
-	YT="youtube-viewer" \
 	xx="watchlater" \
-	sdn="shutdown -h now" \
 	e="$EDITOR" \
 	v="$EDITOR" \
 	p="pacman" \
 	cl="pacman -Qqd | pacman -Rsu -" \
-	xi="sudo xbps-install" \
-	xr="sudo xbps-remove -R" \
-	xq="xbps-query" \
-	z="zathura"
+	z="pacman -Syu"
 
 alias \
 	lf="lfub" \
