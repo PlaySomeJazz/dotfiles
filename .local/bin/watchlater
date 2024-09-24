@@ -8,7 +8,7 @@ music="$HOME/Music"
 find "$source_dir" -type f \( -iname "*.mp4" -o -iname "*.mkv" \) -exec mv {} "$watchlist" \;
 
 # Move directories containing audio into Music
-find "$source_dir" -mindepth 1 -depth -type d | while read -r dir; do if [ -n "$(find "$dir" -type f \( -iname "*.mp3" -o -iname "*m4b" -o -iname "*.flac" -o -iname "*.m4a" -o -iname "*.opus" \))" ]; then mv "$dir" "$music"; fi; done
+find "$source_dir" -mindepth 1 -depth -type d | while read -r dir; do if [ -n "$(find "$dir" -type f \( -iname "*.mp3" -o -iname "*.m4b" -o -iname "*.flac" -o -iname "*.m4a" -o -iname "*.opus" \))" ]; then mv "$dir" "$music"; fi; done
 
 # Delete directories with no files of these types
-find "$source_dir" -mindepth 1 -depth -type d | while read -r dir; do if [ -z "$(find "$dir" -type f \( -iname "*.pdf" -o -iname "*djvu" -o -iname "*.epub" -o -iname "*.mobi" -o -iname "*.zip" -o -iname "*.rar" \))" ]; then rm -rf "$dir"; fi; done
+find "$source_dir" -mindepth 1 -depth -type d | while read -r dir; do if [ -z "$(find "$dir" -type f \( -iname "*.pdf" -o -iname "*.djvu" -o -iname "*.epub" -o -iname "*.mobi" -o -iname "*.zip" -o -iname "*.rar" \))" ]; then rm -rf "$dir"; fi; done
