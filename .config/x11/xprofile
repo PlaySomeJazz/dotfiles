@@ -8,7 +8,7 @@ picom -b
 redshift -P -O 3500
 xrdb ${XDG_CONFIG_HOME:-$HOME/.config}/x11/xresources & xrdbpid=$!	# Uncomment to use Xresources colors/settings on startup
 
-autostart="setbg status mpd unclutter pipewire remaps"
+autostart="setbg status mpd dunst unclutter pipewire remaps"
 
 for program in $autostart; do
 	pidof -sx "$program" || "$program" &
