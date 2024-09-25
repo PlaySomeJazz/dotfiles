@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 remap_keys() {
     xset r rate 300 50
