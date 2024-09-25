@@ -8,6 +8,6 @@ remap_keys() {
 }
 
 while :; do
-    remap_keys
-    udevadm monitor -u -t seat -s input -s usb | grep -qP -m1 '[^un]bind.+\/[^:]+\(usb\)'
+    remap_keys
+    grep -qP -m1 '[^un]bind.+\/[^:]+\(usb\)' <(udevadm monitor -u -t seat -s input -s usb)
 done
