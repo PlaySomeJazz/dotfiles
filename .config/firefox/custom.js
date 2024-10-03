@@ -14,6 +14,7 @@ user_pref("browser.search.suggest.enabled", false);
 user_pref("browser.sessionstore.resume_from_crash", false);
 user_pref("browser.startup.couldRestoreSession.count", 2);
 user_pref("browser.startup.homepage", "chrome://browser/content/blanktab.html");
+user_pref("browser.tabs.hoverPreview.enabled", false);
 user_pref("browser.translations.panelShown", true);
 user_pref("browser.urlbar.suggest.engines", false);
 user_pref("browser.urlbar.suggest.openpage", false);
