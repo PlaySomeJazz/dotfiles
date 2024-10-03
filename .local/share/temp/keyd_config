@@ -6,4 +6,4 @@
 
 # Maps capslock and menu to escape when pressed and meta when held.
 capslock = overload(meta, esc)
-compose = overload(meta, esc)
+compose = meta
