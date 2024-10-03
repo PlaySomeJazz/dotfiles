@@ -1,0 +1,4 @@
+#!/bin/sh
+
+current="$(setxkbmap -query | awk 'END {print $NF}')"
+if [ "$current" = "us" ]; then setxkbmap ro std; elif [ "$current" = "ro std" ]; then setxkbmap us; fi

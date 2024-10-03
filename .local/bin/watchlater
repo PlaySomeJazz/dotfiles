@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source_dir="/mnt/media_files/torrents"
+source_dir="/media_files/torrents"
 watchlist="$HOME/Videos/Watchlist"
 music="$HOME/Music"
 
