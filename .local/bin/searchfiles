@@ -1,0 +1,17 @@
+#!/bin/dash
+p() { printf "%s\n" "${@}"; }
+d() { dmenu -l "15" -i -p "${1}"; }
+f() {
+        r="$(locate -b -e --regex "(${1})$")"
+        o="$(p "${r}" | sed 's|.*/||; s/\.[^.]*$//' | d "${c}")"
+        [ "${o}" ] && ${2} "$(p "${r}" | grep -Fm "1" "/${o}.")"
+}
+c="$(p "Videos" "Music" "Documents" "Images" "Office" | d "Select")"
+case "${c}" in
+        "Videos") f "avi|flv|gif|m(2ts|p4)|m(4|o|k)v|w(ebm|mv)" "mpv --terminal=no" ;;
+        "Music") f "flac|m(p3|4a)|o(gg|pus)|wav" "mpv --player-operation-mode=pseudo-gui" ;;
+        "Documents") f "cb.|djvu|epup|mobi|p(df|s)" "zathura" ;;
+        "Images") f "j(pe?g|xl)|png|webp" "nsxiv -bfq" ;;
+        "Office") f "(doc|ppt|xls)x?|od(p|s)" "libreoffice" ;;
+        *) exit ;;
+esac
