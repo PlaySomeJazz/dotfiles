@@ -1,5 +1,7 @@
 #!/bin/sh
 
+[ ! -d ~/Pictures ] && mkdir ~Pictures
+
 output="$(date '+%y%m%d-%H%M-%S').png"
 dir=~/Pictures
 xclip_cmd="xclip -sel clip -t image/png"
