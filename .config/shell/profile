@@ -73,6 +73,3 @@ export MOZ_DISABLE_RDD_SANDBOX=1
 
 # Start graphical server on user's current tty if not already running.
 [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ] && exec startx "$XINITRC"
-
-# Switch escape and caps if tty and no passwd required:
-sudo -n loadkeys "$XDG_DATA_HOME/larbs/ttymaps.kmap" 2>/dev/null
