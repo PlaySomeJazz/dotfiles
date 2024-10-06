@@ -4,6 +4,9 @@ source_dir="/media_files/torrents"
 watchlist="$HOME/Videos/Watchlist"
 music="$HOME/Music"
 
+[ -z "$watchlist" ] && mkdir -p "$watchlist"
+[ -z "$music" ] && mkdir -p "$music"
+
 # Move videos to watchlist
 find "$source_dir" -type f \( -iname "*.mp4" -o -iname "*.mkv" \) -exec mv {} "$watchlist" \;
 
