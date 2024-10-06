@@ -20,7 +20,6 @@ user_pref("browser.urlbar.suggest.engines", false);
 user_pref("browser.urlbar.suggest.openpage", false);
 user_pref("browser.urlbar.suggest.topsites", false);
 user_pref("browser.warnOnQuitShortcut", false);
-user_pref("dom.event.contextmenu.enabled", false);
 user_pref("extensions.pocket.enabled", false);
 user_pref("general.smoothScroll", false);
 user_pref("gfx.webrender.all", true);
