@@ -1,18 +1,7 @@
 #!/bin/sh
-
-# Check if Emby service is active
-if systemctl is-active emby-server.service >/dev/null; then
-  # Emby is running
-  choice=$(printf "No\nYes" | dmenu -i -p "Turn off Emby?")
-  if [ "$choice" = "Yes" ]; then
-    sudo systemctl stop emby-server.service
-    notify-send -i "$PIX/emby.svg" "Emby disabled"
-  fi
+if systemctl is-active emby-server.service >/dev/null ;
+then
+	[ "$(printf "No\\nYes" | dmenu -i -p "Turn off Emby?")" = "Yes" ] && sudo systemctl stop emby-server.service && notify-send -i "$PIX/emby.svg" "Emby disabled"
 else
-  # Emby is not running
-  choice=$(printf "No\nYes" | dmenu -i -p "Turn on Emby?")
-  if [ "$choice" = "Yes" ]; then
-    sudo systemctl start emby-server.service
-    notify-send -i "$PIX/emby.svg" "Emby enabled"
-  fi
+	[ "$(printf "No\\nYes" | dmenu -i -p "Turn on Emby?")" = "Yes" ] && sudo systemctl start emby-server.service && notify-send -i "$PIX/emby.svg" "Emby enabled"
 fi
