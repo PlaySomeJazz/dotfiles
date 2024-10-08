@@ -4,7 +4,7 @@ echo "Stage 1: Removing cache..."
 paccache -rvk0
 
 echo "Stage 2: Removing unused packages..."
-pacman -Qdtq | pacman -Rns -
+orphans=$(pacman -Qdtq); if [ -z "$orphans" ]; then echo "There are no orphaned packages"; else pacman -Rns "$orphans"; fi
 
 echo "Stage 3: Detecting more unneeded packages..."
 pacman -Qqd | pacman -Rsu --print -
