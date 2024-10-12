@@ -29,6 +29,7 @@ bind-key D pb-download
 bind-key U show-urls
 bind-key x pb-delete
 bind-key a pb-toggle-download-all
+bind-key BACKSPACE quit
 
 browser linkhandler
 macro , set browser "mpv --player-operation-mode=pseudo-gui"; one; set browser linkhandler
