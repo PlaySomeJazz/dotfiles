@@ -1,4 +1,5 @@
 #!/bin/dash
+updatedb
 p() { printf "%s\n" "${@}"; }
 d() { dmenu -l "15" -i -p "${1}"; }
 f() {
