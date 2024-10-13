@@ -12,7 +12,7 @@ map R rotate
 map K zoom in
 map J zoom out
 map i recolor
-map Z toggle_fullscreen
+map x toggle_fullscreen
 map p print
 map g goto top
 map [fullscreen] u scroll half-up
@@ -23,6 +23,6 @@ map [fullscreen] R rotate
 map [fullscreen] K zoom in
 map [fullscreen] J zoom out
 map [fullscreen] i recolor
-map [fullscreen] Z toggle_fullscreen
+map [fullscreen] x toggle_fullscreen
 map [fullscreen] p print
 map [fullscreen] g goto top
