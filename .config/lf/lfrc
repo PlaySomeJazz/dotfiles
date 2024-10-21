@@ -132,7 +132,7 @@ map O $mimeopen --ask "$f"
 
 map A :rename; cmd-end # at the very end
 map I :rename; cmd-home # at the very beginning
-map i :rename # before extension
+map i invert-below
 map a :rename; cmd-right # after extension
 map B bulkrename
 map b $setbg $f
