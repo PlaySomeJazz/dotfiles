@@ -73,7 +73,7 @@ function delete()
                   file_name = string.format("%s_%d", file_name, i)
                end
             end
-            
+
             local movedPath = utils.join_path(options.DeletedFilesPath, file_name)
             local fileInfo = utils.file_info(movedPath)
             if not fileInfo then
@@ -118,7 +118,7 @@ function list_marks()
    end
 end
 
-mp.add_key_binding("ctrl+DEL", "delete_file", mark_delete)
+mp.add_key_binding("DEL", "delete_file", mark_delete)
 mp.add_key_binding("alt+DEL", "list_marks", list_marks)
 mp.add_key_binding("ctrl+shift+DEL", "clear_list", function() mp.osd_message("Undelete all"); del_list = {}; end)
 mp.register_event("shutdown", delete)
