@@ -9,7 +9,7 @@
 [ -f "$MBSYNCRC" ] && alias mbsync="mbsync -c $MBSYNCRC"
 
 # sudo not required for some system commands
-for command in mount umount sv pacman updatedb su shutdown poweroff reboot ; do
+for command in mount umount sv pacman updatedb su shutdown systemctl poweroff reboot ; do
 	alias $command="sudo $command"
 done; unset command
 
@@ -28,6 +28,8 @@ alias \
 	bc="bc -ql" \
 	rsync="rsync -vrPlu" \
 	mkd="mkdir -pv" \
+	yt='yt-dlp --embed-metadata -i $(xclip -o)' \
+	t="tsp"
 	ffmpeg="ffmpeg -hide_banner" \
 	k="dra-cla" \
 	a="ani-cli"
