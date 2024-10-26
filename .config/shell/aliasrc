@@ -28,7 +28,7 @@ alias \
 	bc="bc -ql" \
 	rsync="rsync -vrPlu" \
 	mkd="mkdir -pv" \
-	yt='yt-dlp --embed-metadata -i $(xclip -o)' \
+	y='yt-dlp --embed-metadata -i $(xclip -o)' \
 	t="tsp" \
 	ffmpeg="ffmpeg -hide_banner" \
 	k="dra-cla" \
