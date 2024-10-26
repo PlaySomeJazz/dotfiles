@@ -29,7 +29,7 @@ alias \
 	rsync="rsync -vrPlu" \
 	mkd="mkdir -pv" \
 	yt='yt-dlp --embed-metadata -i $(xclip -o)' \
-	t="tsp"
+	t="tsp" \
 	ffmpeg="ffmpeg -hide_banner" \
 	k="dra-cla" \
 	a="ani-cli"
