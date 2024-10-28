@@ -1,3 +1,0 @@
-#!/bin/sh
-! pidof transmission-daemon >/dev/null && transmission-daemon && notify-send "Starting torrent daemon..."
-$TERMINAL -e stig
