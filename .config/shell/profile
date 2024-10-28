@@ -5,8 +5,7 @@
 emulate sh -c 'source /etc/profile'
 
 # Add all directories in `~/.local/bin` to $PATH
-export PATH="$PATH:$(find ~/.local/bin -type d | paste -sd ':' -)"
-
+PATH="$HOME/.local/bin:$PATH"
 unsetopt PROMPT_SP 2>/dev/null
 
 # Default programs:
