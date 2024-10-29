@@ -7,4 +7,4 @@
 pidof transmission-daemon >/dev/null || (transmission-daemon && notify-send -i "$PIX/transmission.svg" "Starting Transmission..." && sleep 3 && transmission-remote --blocklist-update)
 
 transmission-remote -a "$@" && notify-send -i "$PIX/transmission.svg" "Transmission" "Torrent added"
-trackersadd -a
+trackersadd -i "$(transmission-remote -l | awk '{print $1}' | sort -nr | head -n 1)"

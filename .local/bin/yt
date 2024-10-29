@@ -8,5 +8,5 @@ case "$1" in
 esac
 url=${2:-$(xclip -o)}
 notify-send -i "$PIX/dlpending.svg" "Queuing download" "$(basename "$url")"
-idnum="$(tsp "$cmd" "$url")"
+idnum="$(tsp $cmd "$url")"
 tsp -D "$idnum" notify-send -i "$PIX/dlcomplete.svg" "Download complete" "$(basename "$url")"
