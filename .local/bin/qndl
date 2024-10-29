@@ -1,9 +1,0 @@
-#!/bin/sh
-
-url=${1:-$(xclip -o)}
-name="$(basename "$url")"
-notify-send -i "$PIX/dlpending.svg" "Queuing download" "$name"
-cmd="$2"
-[ -z "$cmd" ] && cmd="aria2c --dir=${HOME}/Videos/Watchlist"
-idnum="$(tsp $cmd "$url")"
-tsp -D "$idnum" notify-send -i "$PIX/dlcomplete.svg" "Download complete" "$name"

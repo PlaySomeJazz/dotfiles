@@ -1,22 +1,12 @@
 #!/bin/sh
-
 case "$1" in
-    video)
-        dlcmd="yt-dlp --no-part -i -o ~/Videos/Watchlist/%(title)s_%(epoch)s.%(ext)s"
-        ;;
-    audio)
-        dlcmd="yt-dlp --ignore-config --embed-metadata -x -f bestaudio -o ~/Music/%(title)s.%(ext)s"
-        ;;
-    thumb)
-        dlcmd="yt-dlp --skip-download --write-thumbnail -o ~/Pictures/%(title)s.%(ext)s"
-        ;;
-    pix)
-        dlcmd="gallery-dl --cookies-from-browser firefox -d ~/Pictures"
-        ;;
+    video) cmd="yt-dlp -i -o ~/Videos/Watchlist/%(title)s_%(epoch)s.%(ext)s" ;;
+    audio) cmd="yt-dlp --embed-metadata -x -f bestaudio -o ~/Music/%(title)s.%(ext)s" ;;
+    thumb) cmd="yt-dlp --skip-download --write-thumbnail -o ~/Pictures/%(title)s.%(ext)s" ;;
+    image) cmd="gallery-dl --cookies-from-browser firefox -d ~/Pictures" ;;
+    dwnld) cmd="aria2c --dir=${HOME}/Videos/Watchlist"
 esac
-
 url=${2:-$(xclip -o)}
-name="$(basename "$url")"
-notify-send -i "$PIX/dlpending.svg" "Queuing download" "$name"
-idnum="$(tsp $dlcmd "$url")"
-tsp -D "$idnum" notify-send -i "$PIX/dlcomplete.svg" "Download complete" "$name"
+notify-send -i "$PIX/dlpending.svg" "Queuing download" "$(basename "$url")"
+idnum="$(tsp "$cmd" "$url")"
+tsp -D "$idnum" notify-send -i "$PIX/dlcomplete.svg" "Download complete" "$(basename "$url")"
