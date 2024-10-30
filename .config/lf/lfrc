@@ -91,6 +91,13 @@ cmd copyto ${{
 	notify-send "📋 File(s) copied." "File(s) copied to $dest."
 }}
 
+cmd zip ${{
+    set -f
+    zipname="${1:-new_archive}"
+    zip -r "$zipname.zip" $(basename -a $fx)
+    lf -remote "send $id unselect"
+}}
+
 cmd setbg "$1"
 
 cmd bulkrename ${{
@@ -121,6 +128,7 @@ map h cd ~
 map g top
 map D delete
 map E extract
+map Z zip
 map C copyto
 map M moveto
 map <c-n> push :mkdir<space>""<left>
