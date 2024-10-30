@@ -4,7 +4,7 @@ case "$1" in
     audio) cmd="yt-dlp --embed-metadata -x -f bestaudio -o ~/Music/%(title)s.%(ext)s" ;;
     thumb) cmd="yt-dlp --skip-download --write-thumbnail -o ~/Pictures/%(title)s.%(ext)s" ;;
     image) cmd="gallery-dl --cookies-from-browser firefox -d ~/Pictures" ;;
-    dwnld) cmd="aria2c --dir=${HOME}/Videos/Watchlist"
+    dwnld) cmd="aria2c --dir=${HOME}/Videos/Watchlist" ;;
 esac
 url=${2:-$(xclip -o)}
 notify-send -i "$PIX/dlpending.svg" "Queuing download" "$(basename "$url")"
