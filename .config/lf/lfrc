@@ -19,11 +19,13 @@ cmd open ${{
         text/*|application/json|inode/x-empty|application/x-subrip) $EDITOR $fx;;
 	image/x-xcf) setsid -f gimp $f >/dev/null 2>&1 ;;
 	image/svg+xml) display -- $f ;;
-	image/*) ls "$PWD" | awk -v BASE="$(basename "$f")" 'BEGIN { m=0 } { if ($0 == BASE) m=1; if (!m && $0 ~ /\.(png|jpg|jpeg|gif|webp|avif|tif|ico)(_large)*$/i) print $0; if (m) print $0 }' |
-        	setsid -f nsxiv -afio 2>/dev/null | while read -r file; do
-            		[ -z "$file" ] || { lf -remote "send select \"$file\""; lf -remote "send toggle"; }
-        	done &
-        	;;
+	image/*) ls "$PWD" | awk -v BASE="$(basename "$f")" 'BEGIN { lines = ""; m = 0; } { if ($0 == BASE) { m = 1; } } { if (!m) { if (lines) { lines = lines"\n"; } lines = lines""$0; } else { print $0; } } END { print lines; }' | grep -i "\.\(png\|jpg\|jpeg\|gif\|webp\|avif\|tif\|ico\)\(_large\)*$" |
+		setsid -f nsxiv -afio 2>/dev/null | while read -r file; do
+			[ -z "$file" ] && continue
+			lf -remote "send select \"$file\""
+			lf -remote "send toggle"
+		done &
+		;;
 	audio/*|video/x-ms-asf) mpv --player-operation-mode=pseudo-gui $f ;;
 	video/*) setsid -f mpv $f -quiet >/dev/null 2>&1 ;;
 	application/pdf|application/vnd.djvu|application/epub*) setsid -f zathura --mode fullscreen $fx >/dev/null 2>&1 ;;
