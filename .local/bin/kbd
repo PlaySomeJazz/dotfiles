@@ -1,4 +1,0 @@
-#!/bin/sh
-
-current="$(setxkbmap -query | grep ro)"
-if [ -z "$current" ]; then setxkbmap ro std; elif [ -n "$current" ]; then setxkbmap us; fi
