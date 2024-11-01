@@ -1,4 +1,5 @@
 -S vcodec:h264,res:1080,fps:30
 --downloader 'dash,m3u8:aria2c'
 --cookies-from-browser firefox
-#-N 10
+--restrict-filenames
+--ignore-errors
