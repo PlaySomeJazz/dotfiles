@@ -19,7 +19,7 @@ cmd open ${{
         text/*|application/json|inode/x-empty|application/x-subrip) $EDITOR $fx;;
 	image/x-xcf) setsid -f gimp $f >/dev/null 2>&1 ;;
 	image/svg+xml) display -- $f ;;
-	image/*) zsh -c 'setopt nullglob; f=(*.{jpg,jxl,png,webp}); i="${f[(I)$1:t]}"; setsid -f nsxiv -afq "${f[@]:$((i-1))}" "${f[@]:0:$((i-1))}"' zsh $f ;;
+	image/*) zsh -c 'setopt nullglob; f=(*.{jpg,jpeg,png,webp,gif,avif,bmp,ico,svg,jxl,JPG,PNG}); i="${f[(I)$1:t]}"; setsid -f nsxiv -afq "${f[@]:$((i-1))}" "${f[@]:0:$((i-1))}"' zsh $f ;;
 	audio/*|video/x-ms-asf) mpv --player-operation-mode=pseudo-gui $f ;;
 	video/*) setsid -f mpv $f -quiet >/dev/null 2>&1 ;;
 	application/pdf|application/vnd.djvu|application/epub*) setsid -f zathura --mode fullscreen $fx >/dev/null 2>&1 ;;
