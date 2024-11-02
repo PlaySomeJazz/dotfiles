@@ -13,8 +13,6 @@ for command in mount umount sv pacman updatedb su shutdown systemctl poweroff re
 	alias $command="sudo $command"
 done; unset command
 
-cp1() { safe cp "$@"; }
-mv1() { safe mv "$@"; }
 se() {
 	s=("${HOME}/.local/bin/"**/*(.)); c="$(print -lnr ${s:t:r} | fzf)"
 	[ -n "${c}" ] && "${EDITOR}" ${${(M)s:#*/${c}*}[1]}
@@ -23,7 +21,9 @@ se() {
 # Verbosity and settings that you pretty much just always are going to want.
 alias \
 	cp="cp -iv" \
+	cp1="safe cp" \
 	mv="mv -iv" \
+	mv1="safe mv" \
 	rm="rm -vI" \
 	bc="bc -ql" \
 	rsync="rsync -vrPlu" \
