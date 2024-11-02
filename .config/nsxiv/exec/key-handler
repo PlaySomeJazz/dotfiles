@@ -9,7 +9,7 @@ do
 		cp "$file" "$destdir" && notify-send -i "$(readlink -f "$file")" "$file copied to $destdir." &
 		;;
         "c")
-		cp "$file" "$HOME/Pictures" && notify-send -i "$(readlink -f "$file")" "Copied to Pictures." &
+		safe cp "$file" "$HOME/Pictures" && notify-send -i "$(readlink -f "$file")" "Copied to Pictures." &
 		;;
         "m")
 		[ -z "$destdir" ] && destdir="$(sed "s/#.*$//;/^\s*$/d" ${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs | awk '{print $2}' | dmenu -l 20 -i -p "Move file(s) to where?" | sed "s|~|$HOME|g")"
@@ -30,7 +30,7 @@ do
 			notify-send "$(readlink -f "$file") copied to clipboard" & ;;
 	"d")
 		[ "$(printf "No\\nYes" | dmenu -i -p "Really delete $file?")" = "Yes" ] && rm "$file" && notify-send "$file deleted." ;;
-	"g")	ifinstalled gimp && setsid -f gimp "$file" ;;
+	"g")	setsid -f gimp "$file" ;;
 	"i")	notify-send "File information" "$(mediainfo "$file" | sed "s/[ ]\+:/:/g;s/: /: <b>/;s/$/<\/b>/" | grep "<b>")" ;;
         esac
 done

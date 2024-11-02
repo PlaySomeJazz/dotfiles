@@ -13,9 +13,10 @@ for command in mount umount sv pacman updatedb su shutdown systemctl poweroff re
 	alias $command="sudo $command"
 done; unset command
 
+cp1() { safe cp "$@"; }
+mv1() { safe mv "$@"; }
 se() {
-	s=("${HOME}/.local/bin/"**/*(.))
-	c="$(print -lnr ${s:t:r} | fzf)"
+	s=("${HOME}/.local/bin/"**/*(.)); c="$(print -lnr ${s:t:r} | fzf)"
 	[ -n "${c}" ] && "${EDITOR}" ${${(M)s:#*/${c}*}[1]}
 }
 
