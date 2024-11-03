@@ -1,21 +1,16 @@
 #!/bin/sh
-cmd=$1
-shift
-while [ "$#" -gt 1 ]; do
-    files_to_move="$files_to_move $1"
-    shift
-done
+cmd=$1; shift; while [ "$#" -gt 1 ]; do list="$list $1"; shift; done
 dest_dir=$1
 
-for file_to_move in $files_to_move; do
-    name_of_file=$(basename "$file_to_move")
+for file_to_move in $list; do
+    name_of_file="${file_to_move##*/}"
     name_before_extension="${name_of_file%.*}"
     extension="${name_of_file##*.}"
-    newfile="$name_of_file"
+    new_file="$name_of_file"
     counter=1
-    while [ -f "$dest_dir/$newfile" ]; do
-        newfile="${name_before_extension}($counter).$extension"
+    while [ -f "$dest_dir/$new_file" ]; do
+        new_file="${name_before_extension}($counter).$extension"
         counter=$((counter + 1))
     done
-    "$cmd" "$file_to_move" "$dest_dir/$newfile"
+    "$cmd" "$file_to_move" "$dest_dir/$new_file"
 done
