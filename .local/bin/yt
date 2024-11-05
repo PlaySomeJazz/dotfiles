@@ -7,6 +7,6 @@ case "$1" in
     dwnld) [ -z "$3" ] && cmd="aria2c --dir=${HOME}/Videos/Watchlist" || cmd="$3" ;;
 esac
 url=${2:-$(xclip -o)}
-[ "$1" = dwnld ] && name="${url##*/}"; name="${name%%\?*}" || name="${url##*/}"
+[ "$1" = dwnld ] && name="${url##*/}" && name="${name%%\?*}" || name="${url##*/}"
 notify-send -i "$PIX/dlpending.svg" "Queuing download" "$name"
 tsp -D "$(tsp $cmd "$url")" notify-send -i "$PIX/dlcomplete.svg" "Download complete" "$name"
