@@ -15,8 +15,8 @@ set autoquit true
 cmd open ${{
     case $(file --mime-type "$(readlink -f $f)" -b) in
         text/*|application/json|inode/x-empty|application/x-subrip) $EDITOR $fx;;
-	image/*) zsh -c 'setopt nullglob; f=(*.{jpg,jpeg,png,webp,gif,avif,bmp,ico,svg,jxl,JPG,PNG}); i="${f[(I)$1:t]}"; setsid -f nsxiv -afq "${f[@]:$((i-1))}" "${f[@]:0:$((i-1))}"' loona $f ;;
 	image/gif|video/x-msvideo) setsid -f mpv --terminal=no $fx ;;
+	image/*) zsh -c 'setopt nullglob; f=(*.{jpg,jpeg,png,webp,gif,avif,bmp,ico,svg,jxl,JPG,PNG}); i="${f[(I)$1:t]}"; setsid -f nsxiv -afq "${f[@]:$((i-1))}" "${f[@]:0:$((i-1))}"' loona $f ;;
 	application/pdf|application/vnd.djvu|application/epub*) setsid -f zathura --mode fullscreen $fx >/dev/null 2>&1 ;;
 	*) for f in $fx; do setsid -f $OPENER $f >/dev/null 2>&1; done;;
     esac
