@@ -1,9 +1,9 @@
 #!/bin/sh
 case $1 in
-    up) wpctl set-mute @DEFAULT_AUDIO_SINK@ 0; wpctl set-volume -l 2.0 @DEFAULT_AUDIO_SINK@ 3%+ ;;
-    down) wpctl set-mute @DEFAULT_AUDIO_SINK@ 0; wpctl set-volume -l 2.0 @DEFAULT_AUDIO_SINK@ 3%- ;;
-    jumpup) wpctl set-mute @DEFAULT_AUDIO_SINK@ 0; wpctl set-volume -l 2.0 @DEFAULT_AUDIO_SINK@ 15%+ ;;
-    jumpdown) wpctl set-mute @DEFAULT_AUDIO_SINK@ 0; wpctl set-volume -l 2.0 @DEFAULT_AUDIO_SINK@ 15%- ;;
+    up) wpctl set-volume -l 2.0 @DEFAULT_AUDIO_SINK@ 3%+ ;;
+    down) wpctl set-volume -l 2.0 @DEFAULT_AUDIO_SINK@ 3%- ;;
+    jumpup) wpctl set-volume -l 2.0 @DEFAULT_AUDIO_SINK@ 15%+ ;;
+    jumpdown) wpctl set-volume -l 2.0 @DEFAULT_AUDIO_SINK@ 15%- ;;
     mute) wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle ;;
 esac
 if wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -q "MUTED"; then ICON="mute.svg"; TEXT="Muted"
