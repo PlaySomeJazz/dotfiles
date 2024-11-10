@@ -1,7 +1,8 @@
 #!/bin/sh
 s=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
 case "${s}" in
-	*MUTED*) i="mute.svg"; t="Muted" ;;
-	*) set -- ${s}; v=$(echo "$2 * 100" | bc | cut -d'.' -f1); i="on.svg"; t="${v}%" ;;
+    *MUTED*) i="mute.svg"; t="Muted"; v=0 ;;
+    *)
+        val=${s#*: }; int=${val%.*}; fra=${val#*.}; [ "$fra" = "$val" ] && fra=0; v=$(( int * 100 + fra )); i="on.svg"; t="${v}%";;
 esac
 dunstify -a "Volume" -u low -r 9993 -h int:value:"${v}" -i "$PIX/volume-${i}" "Volume" "${t}" -t 2000
