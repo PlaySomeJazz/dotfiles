@@ -1,3 +1,0 @@
-#!/bin/sh
-brightness=$(brightnessctl -e4 -m | while IFS=, read -r col1 col2 col3 col4 rest; do echo "${col4%?}"; done)
-dunstify -a "Backlight" -u low -r 9994 -h int:value:"$brightness" -i "$PIX/brightness.svg" "Brightness" "$brightness%" -t 1000
