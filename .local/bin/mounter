@@ -58,7 +58,7 @@ attemptmount(){
 case "$chosen" in
 	💾*)
 		chosen="${chosen%% *}"
-		chosen=$(echo "$chosen" | awk '{print substr($0, 2)}')
+		chosen=$(printf '%s' "$chosen" | awk '{print substr($0, 2)}')
 		parttype="$(echo "$lsblkoutput" | grep "$chosen")"
 		attemptmount || getmount
 		case "${parttype##* }" in
@@ -73,7 +73,7 @@ case "$chosen" in
 		notify-send "❗Note" "Remember to allow file access on your phone now."
 		getmount
 		number="${chosen%%:*}"
-		number=$(echo "$chosen" | awk '{print substr($0, 2)}')
+		number=$(printf '%s' "$chosen" | awk '{print substr($0, 2)}')
 		sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$chosen")" --device "$number" "$mp"
 		notify-send "🤖 Android Mounted." "Android device mounted to $mp."
 		;;
