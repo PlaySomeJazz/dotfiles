@@ -1,6 +1,11 @@
 #!/bin/sh
 IFS='
 '
+
+case "$1" in
+	unmount) unmounter; exit ;;
+esac
+
 # Function for escaping cell-phone names.
 escape(){ echo "$@" | iconv -cf UTF-8 -t ASCII//TRANSLIT | tr -d '[:punct:]' | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | sed "s/-\+/-/g;s/\(^-\|-\$\)//g" ;}
 
@@ -56,7 +61,6 @@ attemptmount(){
 }
 
 unmounter(){
-set -e
 mounteddroids="$(grep simple-mtpfs /etc/mtab | awk '{print "📱" $2}')"
 lsblkoutput1="$(lsblk -nrpo "name,type,size,mountpoint")"
 mounteddrives="$(echo "$lsblkoutput1" | awk '($2=="part"||$2="crypt")&&$4!~/\/boot|\/home$|SWAP/&&length($4)>1{printf "💾%s (%s)\n",$4,$3}')"
@@ -88,12 +92,8 @@ case "$chosen" in
 		notify-send "❗Note" "Remember to allow file access on your phone now."
 		getmount
 		number="${chosen%%:*}"
-		chosen=$(printf '%s' "$chosen" | awk '{print substr($0, 2)}')
-		sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$chosen")" --device "$number" "$mp"
+		number=$(printf '%s' "$chosen" | awk '{print substr($0, 2)}')
+		sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$chosen")" --device "$number" "$mp" || (sleep 10 && sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$chosen")" --device "$number" "$mp")
 		notify-send "🤖 Android Mounted." "Android device mounted to $mp."
 		;;
-esac
-
-case "$1" in
-	unmount) unmounter ;;
 esac
