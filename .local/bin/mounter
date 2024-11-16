@@ -10,7 +10,6 @@ $mounteddrives" | sed "/^$/d;s/ *$//")"
 [ -z "$allunmountable" ] && exit
 selected="$(echo "$allunmountable" | dmenu -i -p "Unmount which drive?")"
 selected="${selected%% *}"
-test -n "$selected"
 [ -n "$selected" ] && sudo umount -l "/${selected#*/}" || exit
 notify-send "Device unmounted." "$selected has been unmounted."
 }
