@@ -1,24 +1,26 @@
 #!/bin/sh
-IFS='
-'
 
+# For convenience, the unmounter functionality is placed here as well.
 unmounter(){
 mounteddroids="$(grep simple-mtpfs /etc/mtab | awk '{print "📱" $2}')"
 lsblkoutput1="$(lsblk -nrpo "name,type,size,mountpoint")"
 mounteddrives="$(echo "$lsblkoutput1" | awk '($2=="part"||$2="crypt")&&$4!~/\/boot|\/home$|SWAP/&&length($4)>1{printf "💾%s (%s)\n",$4,$3}')"
 allunmountable="$(echo "$mounteddroids
 $mounteddrives" | sed "/^$/d;s/ *$//")"
-test -n "$allunmountable"
+[ -z "$allunmountable" ] && exit
 selected="$(echo "$allunmountable" | dmenu -i -p "Unmount which drive?")"
 selected="${selected%% *}"
 test -n "$selected"
-sudo umount -l "/${selected#*/}"
+[ -n "$selected" ] && sudo umount -l "/${selected#*/}" || exit
 notify-send "Device unmounted." "$selected has been unmounted."
 }
 
 case "$1" in
 	unmount) unmounter; exit ;;
 esac
+
+IFS='
+'
 
 # Function for escaping cell-phone names.
 escape(){ echo "$@" | iconv -cf UTF-8 -t ASCII//TRANSLIT | tr -d '[:punct:]' | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | sed "s/-\+/-/g;s/\(^-\|-\$\)//g" ;}
