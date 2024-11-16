@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 # For convenience, the unmounter functionality is placed here as well.
 unmounter(){
 mounteddroids="$(grep simple-mtpfs /etc/mtab | awk '{print "📱" $2}')"
@@ -49,9 +51,6 @@ normalparts="$(echo "$lsblkoutput"| grep -v crypto_LUKS | grep 'part\|rom\|crypt
 # Add all to one variable. If no mountable drives found, exit.
 alldrives="$(echo "$phones
 $normalparts" | sed "/^$/d;s/ *$//")"
-
-# Quit the script if a sequential command fails.
-set -e
 
 test -n "$alldrives"
 
