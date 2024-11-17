@@ -6,8 +6,8 @@ while true; do
   battery=/sys/class/power_supply/BAT?*
   batt_status=$(cat $battery/status 2>&1)
     if [ $batt_status = "Discharging" ] || [ $batt_status = "Charging" ]; then
-      capacity=$(cat $battery/capacity 2>&1); [ $capacity -le 25 ] && display_capacity="CRITICAL ($capacity%)" || display_capacity="$capacity%"
-      xsetroot -name "   BATT $display_capacity ($batt_status) | RAM $mem | TEMP $cpu | $time_date   "
+      capacity=$(cat $battery/capacity 2>&1); [ $capacity -le 25 ] && capacity="CRITICAL ($capacity%)"
+      xsetroot -name "   BATT $capacity ($batt_status) | RAM $mem | TEMP $cpu | $time_date   "
     else
       xsetroot -name "   RAM $mem | TEMP $cpu | $time_date   "
     fi
