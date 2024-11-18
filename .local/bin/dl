@@ -1,12 +1,12 @@
 #!/bin/sh
-while getopts vatidc: o; do case "{o}" in
+while getopts vatidc: opt; do case $opt in
     v) cmd="yt-dlp -i -o ~/Videos/Watchlist/%(title)s_%(epoch)s.%(ext)s" ;;
     a) cmd="yt-dlp --embed-metadata -x -f bestaudio -o ~/Music/%(title)s.%(ext)s" ;;
     t) cmd="yt-dlp --skip-download --write-thumbnail -o ~/Pictures/%(title)s.%(ext)s" ;;
     i) cmd="gallery-dl --cookies-from-browser firefox -d ~/Pictures" ;;
     d) cmd="aria2c --dir=${HOME}/Videos/Watchlist" ;;
-    c) cmd="${OPTARG}" ;;
-esac done
+    c) cmd=$OPTARG ;;
+esac; o=$opt; done
 shift $((OPTIND - 1))
 url=${1:-$(xclip -o)}
 [ "$o" = c ] || [ "$o" = d ] && name="${url##*/}" && name="${name%%\?*}" || name="${url##*/}"
