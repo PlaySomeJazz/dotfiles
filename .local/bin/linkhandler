@@ -4,9 +4,9 @@ case "$url" in
 	*youtube.com/watch*|*youtube.com/playlist*|*youtube.com/shorts*|*youtu.be*|*mkv|*webm|*mp4)
 		setsid -f mpv --terminal=no "$url" ;;
 	*png|*jpg|*jpe|*jpeg|*gif|*webp)
-		curl -sL "$url" > "/tmp/${url##*/}" && nsxiv -afq "/tmp/${url##*/}"  >/dev/null 2>&1 & ;;
+		curl -sL "$url" -o "/tmp/${url##*/}" && nsxiv -afq "/tmp/${url##*/}"  >/dev/null 2>&1 & ;;
 	*pdf|*cbz|*cbr)
-		curl -sL "$url" > "/tmp/${url##*/})" && zathura --mode fullscreen "/tmp/${url##*/}" >/dev/null 2>&1 & ;;
+		curl -sL "$url" -o "/tmp/${url##*/})" && zathura --mode fullscreen "/tmp/${url##*/}" >/dev/null 2>&1 & ;;
 	*mp3|*flac|*opus|*mp3?source*)
 		dl -c 'aria2c' "$url" >/dev/null 2>&1 ;;
 	*torrent)
