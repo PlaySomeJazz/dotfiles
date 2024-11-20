@@ -1,8 +1,12 @@
 #!/bin/sh
-cmd=$1; shift; while [ "$#" -gt 1 ]; do list="$list $1"; shift; done
+cmd=$1; shift
+while [ "$#" -gt 1 ]; do files="${files:+$files
+}$1"; shift; done
 dest_dir=$1
-
-for file_to_move in $list; do
+IFS='
+'
+set -f; set -- $files
+for file_to_move in $files; do
     name_of_file="${file_to_move##*/}"
     name_before_extension="${name_of_file%.*}"
     extension="${name_of_file##*.}"
