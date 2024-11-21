@@ -25,12 +25,8 @@ cmd open ${{
 cmd mkdir $mkdir -p "$@"
 
 cmd extract ${{
-	clear; tput cup $(($(tput lines)/3)); tput bold
 	set -f
-	printf "%s\n\t" "$fx"
-	printf "extract?[y/N]"
-	read ans
-	[ $ans = "y" ] && {
+	[ "$(printf "No\nYes\n" | dmenu -i -p "Extract files?")" = "Yes" ] && {
 		case $fx in
 			*.tar.bz2)   tar xjf $fx     ;;
 			*.tar.gz)    tar xzf $fx     ;;
