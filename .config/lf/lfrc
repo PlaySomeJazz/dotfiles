@@ -41,7 +41,7 @@ cmd extract ${{
 			*.7z)        7z x $fx        ;;
 			*.tar.xz)    tar xf $fx      ;;
 		esac
-	}
+	} || exit 0
 }}
 
 cmd moveto ${{
