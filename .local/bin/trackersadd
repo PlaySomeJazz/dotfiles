@@ -2,7 +2,7 @@
 
 ########## CONFIGURATIONS ##########
 # Host on which qBittorrent runs
-transmission_host="http://10.0.0.100"
+transmission_host="http://localhost"
 # Port -> the same port that is inside qBittorrent option -> Web UI -> Web User Interface
 transmission_port="9091"
 # Username to access to Web UI
@@ -67,27 +67,19 @@ get_cookie () {
 		| sed 's/.*<code>//g;s/<\/code>.*//g')
 }
 
-wait() {
-	w=$1
-	echo "I'll wait ${w}s to be sure ..."
-	while [ $w -gt 0 ]; do
-		echo -ne "$w\033[0K\r"
-		sleep 1
-		w=$((w-1))
-	done
-}
 ########## FUNCTIONS ##########
 
-if :; then
-	while getopts ":a" opt; do
+	while getopts ":ai:" opt; do
 		case ${opt} in
 			a ) # If used inject trackers to all torrent.
 				all_torrent=1
 				;;
+			i ) # Specify the id of the torrent example -i 5, multiple -i can be used.
+				tor_arg_id+=("$OPTARG")
+				;;
 		esac
 	done
 	shift $((OPTIND -1))
-fi
 
 	get_torrent_list
 
@@ -104,13 +96,32 @@ fi
 			torrent_private_array+=("$line")
 		done < <(echo $torrent_list | $jq_executable --raw-output '. | .arguments | .torrents | .[] | .isPrivate')
 
+		for i in "${tor_arg_id[@]}"; do
+			torrent_name_list=$(echo "$torrent_list" | $jq_executable --raw-output --argjson tosearch "$i" '. | .arguments | .torrents | .[] | select(.id == $tosearch) .name')
+
+			if [ -n "$torrent_name_list" ]; then # not empty
+				torrent_name_check=1
+			else
+				torrent_name_check=0
+			fi
+
+			if [ $torrent_name_check -eq 0 ]; then
+				shift
+				continue
+			else
+				while read -r single_found; do
+					torrent_name_array+=("$single_found")
+					id=$(echo "$torrent_list" | $jq_executable --raw-output --arg tosearch "$single_found" '. | .arguments | .torrents | .[] | select(.name == "\($tosearch)") .id')
+					torrent_id_array+=("$id")
+					private=$(echo "$torrent_list" | $jq_executable --raw-output --arg tosearch "$single_found" '. | .arguments | .torrents | .[] | select(.name == "\($tosearch)") .isPrivate')
+					torrent_private_array+=("$private")
+				done <<< "$torrent_name_list"
+			fi
+		done
 	fi
 
 	if [ ${#torrent_name_array[@]} -gt 0 ]; then
-		echo ""
 		for i in "${!torrent_name_array[@]}"; do
-			echo -ne "\n\e[0;1;4;32mFor the Torrent: \e[0;4;32m"
-			echo "${torrent_name_array[$i]}"
 				if [[ ${torrent_private_array[$i]} == true ]]; then
 					private_tracker_name=$(echo "$torrent_list" | $jq_executable --raw-output --argjson tosearch "${torrent_id_array[$i]}" '. | .arguments | .torrents | .[] | select(.id == $tosearch) .trackers | .[] | .announce' | sed -e 's/[^/]*\/\/\([^@]*@\)\?\([^:/]*\).*/\2/')
 					echo -e "\e[31m< Private tracker found \e[0m\e[33m-> $private_tracker_name <- \e[0m\e[31mI'll not add any extra tracker >\e[0m"
