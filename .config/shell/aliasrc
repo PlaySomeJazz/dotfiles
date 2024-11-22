@@ -32,7 +32,9 @@ alias \
 	t="tsp" \
 	ffmpeg="ffmpeg -hide_banner" \
 	k="dra-cla" \
-	a="ani-cli"
+	kk="dra-cla -c" \
+	a="ani-cli" \
+	aa="ani-cli -c"
 
 # Colorize commands when possible.
 alias \
