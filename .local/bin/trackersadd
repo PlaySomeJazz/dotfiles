@@ -2,7 +2,7 @@
 
 ########## CONFIGURATIONS ##########
 # Host on which qBittorrent runs
-transmission_host="http://localhost"
+transmission_host="http://10.0.0.100"
 # Port -> the same port that is inside qBittorrent option -> Web UI -> Web User Interface
 transmission_port="9091"
 # Username to access to Web UI
@@ -25,7 +25,6 @@ declare -a live_trackers_list_urls=(
 jq_executable="$(command -v jq)"
 curl_executable="$(command -v curl)"
 auto_tor_grab=0
-test_in_progress=0
 applytheforce=0
 all_torrent=0
 
@@ -51,68 +50,7 @@ generate_trackers_list () {
 
 	trackers_list=$(echo "$tmp_trackers_list" | awk '{for (i=1;i<=NF;i++) if (!a[$i]++) printf("%s%s",$i,FS)}{printf("\n")}' | xargs | tr ' ' '\n')
 	if [[ $? -ne 0 ]]; then
-		echo "I can't download the list, I'll use a static one"
-cat >"${trackers_list}" <<'EOL'
-udp://tracker.coppersurfer.tk:6969/announce
-http://tracker.internetwarriors.net:1337/announce
-udp://tracker.internetwarriors.net:1337/announce
-udp://tracker.opentrackr.org:1337/announce
-udp://9.rarbg.to:2710/announce
-udp://exodus.desync.com:6969/announce
-udp://explodie.org:6969/announce
-http://explodie.org:6969/announce
-udp://public.popcorn-tracker.org:6969/announce
-udp://tracker.vanitycore.co:6969/announce
-http://tracker.vanitycore.co:6969/announce
-udp://tracker1.itzmx.com:8080/announce
-http://tracker1.itzmx.com:8080/announce
-udp://ipv4.tracker.harry.lu:80/announce
-udp://tracker.torrent.eu.org:451/announce
-udp://tracker.tiny-vps.com:6969/announce
-udp://tracker.port443.xyz:6969/announce
-udp://open.stealth.si:80/announce
-udp://open.demonii.si:1337/announce
-udp://denis.stalker.upeer.me:6969/announce
-udp://bt.xxx-tracker.com:2710/announce
-http://tracker.port443.xyz:6969/announce
-udp://tracker2.itzmx.com:6961/announce
-udp://retracker.lanta-net.ru:2710/announce
-http://tracker2.itzmx.com:6961/announce
-http://tracker4.itzmx.com:2710/announce
-http://tracker3.itzmx.com:6961/announce
-http://tracker.city9x.com:2710/announce
-http://torrent.nwps.ws:80/announce
-http://retracker.telecom.by:80/announce
-http://open.acgnxtracker.com:80/announce
-wss://ltrackr.iamhansen.xyz:443/announce
-udp://zephir.monocul.us:6969/announce
-udp://tracker.toss.li:6969/announce
-http://opentracker.xyz:80/announce
-http://open.trackerlist.xyz:80/announce
-udp://tracker.swateam.org.uk:2710/announce
-udp://tracker.kamigami.org:2710/announce
-udp://tracker.iamhansen.xyz:2000/announce
-udp://tracker.ds.is:6969/announce
-udp://pubt.in:2710/announce
-https://tracker.fastdownload.xyz:443/announce
-https://opentracker.xyz:443/announce
-http://tracker.torrentyorg.pl:80/announce
-http://t.nyaatracker.com:80/announce
-http://open.acgtracker.com:1096/announce
-wss://tracker.openwebtorrent.com:443/announce
-wss://tracker.fastcast.nz:443/announce
-wss://tracker.btorrent.xyz:443/announce
-udp://tracker.justseed.it:1337/announce
-udp://thetracker.org:80/announce
-udp://packages.crunchbangplusplus.org:6969/announce
-https://1337.abcvg.info:443/announce
-http://tracker.tfile.me:80/announce.php
-http://tracker.tfile.me:80/announce
-http://tracker.tfile.co:80/announce
-http://retracker.mgts.by:80/announce
-http://peersteers.org:80/announce
-http://fxtt.ru:80/announce
-EOL
+		echo "I can't download the list..."
 	fi
 	number_of_trackers_in_list=$(echo "$trackers_list" | wc -l)
 }
@@ -172,8 +110,8 @@ wait() {
 }
 ########## FUNCTIONS ##########
 
-if [ -t 1 ] ; then
-	if [[ ! $@ =~ ^\-.+ ]]; then
+if :; then
+	if [[ ! $* =~ ^\-.+ ]]; then
 		echo "Arguments must be passed with - in front, like -n foo, or -i 5. Check the instructions"
 		echo ""
 		$0 -h
@@ -243,41 +181,6 @@ if [ -t 1 ] ; then
 		esac
 	done
 	shift $((OPTIND -1))
-else
-	if [[ -n "${sonarr_download_id}" ]] || [[ -n "${radarr_download_id}" ]] || [[ -n "${lidarr_download_id}" ]] || [[ -n "${readarr_download_id}" ]]; then
-		wait 5
-		if [[ -n "${sonarr_download_id}" ]]; then
-			echo "Sonarr varialbe found -> $sonarr_download_id"
-			hash=$(echo "$sonarr_download_id" | awk '{print tolower($0)}')
-		fi
-
-		if [[ -n "${radarr_download_id}" ]]; then
-			echo "Radarr varialbe found -> $radarr_download_id"
-			hash=$(echo "$radarr_download_id" | awk '{print tolower($0)}')
-		fi
-
-		if [[ -n "${lidarr_download_id}" ]]; then
-			echo "Lidarr varialbe found -> $lidarr_download_id"
-			hash=$(echo "$lidarr_download_id" | awk '{print tolower($0)}')
-		fi
-
-		if [[ -n "${readarr_download_id}" ]]; then
-			echo "Readarr varialbe found -> $readarr_download_id"
-			hash=$(echo "$readarr_download_id" | awk '{print tolower($0)}')
-		fi
-
-		hash_check "${hash}"
-		if [[ $? -ne 0 ]]; then
-			echo "The download is not for a torrent client, I'll exit"
-			exit 3
-		fi
-		auto_tor_grab="1"
-	fi
-
-	if [[ $sonarr_eventtype == "Test" ]] || [[ $radarr_eventtype == "Test" ]] || [[ $lidarr_eventtype == "Test" ]] || [[ $readarr_eventtype == "Test" ]]; then
-		echo "Test in progress..."
-		test_in_progress=1
-	fi
 fi
 
 for i in "${tor_arg_names[@]}"; do
@@ -302,9 +205,6 @@ if [ ${#tor_arg_id[@]} -gt 0 ]; then
 	done
 fi
 
-if [ $test_in_progress -eq 1 ]; then
-	echo "Good-bye!"
-elif [ $auto_tor_grab -eq 0 ]; then # manual run
 	get_torrent_list
 
 	if [ $all_torrent -eq 1 ]; then
@@ -404,23 +304,3 @@ elif [ $auto_tor_grab -eq 0 ]; then # manual run
 	else
 		echo "No torrents found, exiting"
 	fi
-else # auto_tor_grab active, so some *Arr
-	wait 5
-	get_torrent_list
-
-	torrent_name=$(echo "$torrent_list" | $jq_executable --raw-output --arg tosearch "$hash" '. | .arguments | .torrents | .[] | select(.hashString == "\($tosearch)") .name')
-	torrent_id=$(echo "$torrent_list" | $jq_executable --raw-output --arg tosearch "$hash" '. | .arguments | .torrents | .[] | select(.hashString == "\($tosearch)") .id')
-	private_check=$(echo "$torrent_list" | $jq_executable --raw-output --arg tosearch "$hash" '. | .arguments | .torrents | .[] | select(.hashString == "\($tosearch)") .isPrivate')
-
-	echo -ne "\n\e[0;1;4;32mFor the Torrent: \e[0;4;32m"
-	echo "$torrent_name"
-
-	if [[ $private_check == true ]]; then
-		private_tracker_name=$(echo "$torrent_list" | $jq_executable --raw-output --argjson tosearch "$torrent_id" '. | .arguments | .torrents | .[] | select(.id == $tosearch) .trackers | .[] | .announce' | sed -e 's/[^/]*\/\/\([^@]*@\)\?\([^:/]*\).*/\2/')
-		echo -e "\e[31m< Private tracker found \e[0m\e[33m-> $private_tracker_name <- \e[0m\e[31mI'll not add any extra tracker >\e[0m"
-	else
-		echo -e "\e[0m\e[33mThe torrent is not private, I'll inject trackers on it\e[0m"
-		[[ -z "$trackers_list" ]] && generate_trackers_list
-		inject_trackers $torrent_id
-	fi
-fi
