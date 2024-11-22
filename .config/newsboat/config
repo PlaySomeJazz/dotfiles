@@ -8,7 +8,7 @@ external-url-viewer "urlscan -dc -r 'linkhandler {}'"
 # Podcasts
 download-path "~/Music/Podcasts/%h/%n"
 download-filename-format "%F-%t.%e"
-player "mpv --player-operation-mode=pseudo-gui"
+player "mpv --terminal=no"
 
 bind-key j down
 bind-key k up
@@ -32,7 +32,7 @@ bind-key a pb-toggle-download-all
 bind-key BACKSPACE quit
 
 browser linkhandler
-macro , set browser "mpv --player-operation-mode=pseudo-gui"; one; set browser linkhandler
+macro , set browser "mpv --terminal=no"; one; set browser linkhandler
 macro t set browser "dl -v" ; open-in-browser ; set browser linkhandler
 macro a set browser "dl -a" ; open-in-browser ; set browser linkhandler
 macro w set browser "lynx" ; open-in-browser ; set browser linkhandler
