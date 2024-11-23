@@ -74,4 +74,4 @@ export MOZ_X11_EGL=1
 export MOZ_DISABLE_RDD_SANDBOX=1
 
 # Start Xorg after login
-[ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ] && exec startx "$XINITRC"
+[ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ] && exec startx "$XINITRC" &>/dev/null
