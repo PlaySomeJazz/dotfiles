@@ -95,7 +95,6 @@ get_cookie () {
 		while IFS= read -r line; do
 			torrent_private_array+=("$line")
 		done < <(echo $torrent_list | $jq_executable --raw-output '. | .arguments | .torrents | .[] | .isPrivate')
-
 		for i in "${tor_arg_id[@]}"; do
 			torrent_name_list=$(echo "$torrent_list" | $jq_executable --raw-output --argjson tosearch "$i" '. | .arguments | .torrents | .[] | select(.id == $tosearch) .name')
 
@@ -119,14 +118,11 @@ get_cookie () {
 			fi
 		done
 	fi
-
 	if [ ${#torrent_name_array[@]} -gt 0 ]; then
 		for i in "${!torrent_name_array[@]}"; do
 				if [[ ${torrent_private_array[$i]} == true ]]; then
 					private_tracker_name=$(echo "$torrent_list" | $jq_executable --raw-output --argjson tosearch "${torrent_id_array[$i]}" '. | .arguments | .torrents | .[] | select(.id == $tosearch) .trackers | .[] | .announce' | sed -e 's/[^/]*\/\/\([^@]*@\)\?\([^:/]*\).*/\2/')
-					echo -e "\e[31m< Private tracker found \e[0m\e[33m-> $private_tracker_name <- \e[0m\e[31mI'll not add any extra tracker >\e[0m"
 				else
-					echo -e "\e[0m\e[33mThe torrent is not private, I'll inject trackers on it\e[0m"
 					[[ -z "$trackers_list" ]] && generate_trackers_list
 					inject_trackers ${torrent_id_array[$i]}
 				fi
