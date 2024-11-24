@@ -21,10 +21,9 @@ generate_trackers_list () {
 }
 
 inject_trackers () {
-	start=1; echo "$trackers_list" | while read -r tracker; do if [ -n "$tracker" ]; then curl --silent --fail --show-error --anyauth \
+	echo "$trackers_list" | while read -r tracker; do if [ -n "$tracker" ]; then curl --silent --fail --show-error --anyauth \
 		--user ${transmission_username}:${transmission_password} --header "$qbt_cookie" "${transmission_host}:${transmission_port}/transmission/rpc/" \
-		-d "{\"method\":\"torrent-set\",\"arguments\": {\"fields\":[\"ids\",\"trackerAdd\"],\"ids\":[$1],\"trackerAdd\":[\"$tracker\"]}}"; fi
-	start=$((start + 1)); done
+		-d "{\"method\":\"torrent-set\",\"arguments\": {\"fields\":[\"ids\",\"trackerAdd\"],\"ids\":[$1],\"trackerAdd\":[\"$tracker\"]}}"; fi; done
 }
 
 get_cookie () {
@@ -39,7 +38,6 @@ get_torrent_list () {
 		--user ${transmission_username}:${transmission_password} --header "$qbt_cookie" "${transmission_host}:${transmission_port}/transmission/rpc/" \
 		-d "{\"method\":\"torrent-get\",\"arguments\": {\"fields\":[\"isPrivate\",\"id\",\"name\",\"hashString\",\"trackers\"]}}")
 }
-
 
 id=$(transmission-remote -l | awk '{print $1}' | sort -nr | head -n 1)
 get_torrent_list
