@@ -11,7 +11,7 @@ https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_best.txt
 "
 
 host="http://localhost"; port="9091"; user="transmission"; pass="transmission"
-id=$(transmission-remote -l | awk 'NR>1 {print $1}' | sort -nr | head -n 1)
+id=$(transmission-remote -l | awk '{print $1}' | sort -nr | head -n 1)
 cookie=$(curl -s --anyauth -u ${user}:${pass} "${host}:${port}/transmission/rpc/" | sed -n 's/.*<code>\(.*\)<\/code>.*/\1/p')
 torrent_list=$(curl -s --anyauth \
   -u ${user}:${pass} -H "$cookie" "${host}:${port}/transmission/rpc/" \

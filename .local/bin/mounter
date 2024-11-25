@@ -92,7 +92,7 @@ case "$chosen" in
 		getmount
 		number="${chosen%%:*}"
 		number=$(printf '%s' "$chosen" | awk '{print substr($0, 2)}')
-		sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$chosen")" --device "$number" "$mp" || (sleep 10 && sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$chosen")" --device "$number" "$mp")
+		sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$chosen")" --device "$number" "$mp" || { sleep 5 && sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$chosen")" --device "$number" "$mp"; }
 		notify-send "🤖 Android Mounted." "Android device mounted to $mp."
 		;;
 esac

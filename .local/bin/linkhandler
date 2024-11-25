@@ -10,7 +10,7 @@ case "$url" in
 	*mp3|*flac|*opus|*mp3?source*)
 		dl -c 'aria2c' "$url" >/dev/null 2>&1 ;;
 	*torrent)
-		transadd "$url" >/dev/null 2>&1 ;;
+		transadd "$url" >/dev/null 2>&1 & ;;
 	*)
 		[ -f "$url" ] && setsid -f "$TERMINAL" -e "$EDITOR" "$url" >/dev/null 2>&1 || setsid -f "$BROWSER" "$url" >/dev/null 2>&1
 esac
