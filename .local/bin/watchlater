@@ -8,10 +8,13 @@ music="$HOME/Music"
 [ ! -d "$music" ] && mkdir -p "$music"
 
 # Move videos to watchlist
-find "$source_dir" -type f \( -iname "*.mp4" -o -iname "*.mkv" \) -exec mv {} "$watchlist" \;
+find "$source_dir" -type f \( -iname "*.mp4" -o -iname "*.mkv" \) -exec mv {} "$watchlist" +
 
 # Move directories containing audio into Music
-find "$source_dir" -mindepth 1 -type d | while read -r dir; do if [ -n "$(find "$dir" -type f \( -iname "*.mp3" -o -iname "*.m4b" -o -iname "*.flac" -o -iname "*.m4a" -o -iname "*.opus" \))" ]; then mv "$dir" "$music"; fi; done >/dev/null 2>&1
+for dir in "$source_dir"/*/; do [ -n "$(find "$dir" -type f \( -iname "*.mp3" -o -iname "*.m4b" -o -iname "*.flac" -o -iname "*.m4a" -o -iname "*.opus" \) -print -quit)" ] && mv "$dir" "$music"; done
 
 # Delete directories with no files of these types
-find "$source_dir" -mindepth 1 -depth -type d | while read -r dir; do if [ -z "$(find "$dir" -type f \( -iname "*.pdf" -o -iname "*.djvu" -o -iname "*.epub" -o -iname "*.mobi" -o -iname "*.zip" -o -iname "*.rar" \))" ]; then rm -rf "$dir"; fi; done
+find "$source_dir" -depth \( ! -path "$1" -prune \) -type d | while read -r dir; do [ -z "$(find "$dir" -type f \( -iname "*.pdf" -o -iname "*.djvu" -o -iname "*.epub" -o -iname "*.mobi" -o -iname "*.zip" -o -iname "*.rar" \) -print -quit)" ] && rm -rf "$dir"; done
+
+# Send a notification
+notify-send "Your files are sorted"
