@@ -7,8 +7,8 @@ set drawbox true
 set mouse true
 set period 1
 set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml"
-set cleaner '~/.config/lf/cleaner'
-set previewer '~/.config/lf/scope'
+set previewer ~/.config/lf/previewer
+set cleaner ~/.config/lf/cleaner
 set autoquit true
 
 # cmds/functions
