@@ -5,7 +5,7 @@ while true; do
   while IFS= read -r temp; do cpu="${temp%???}°C"; done < /sys/class/thermal/thermal_zone0/temp
   battery=/sys/class/power_supply/BAT?*
   batt_status=$(cat $battery/status 2>&1)
-    if [ $batt_status = "Discharging" ] || [ $batt_status = "Charging" ]; then
+    if [ $batt_status != "Full" ]; then
       capacity=$(cat $battery/capacity 2>&1); [ $capacity -le 25 ] && capacity="🪫 $capacity"
       xsetroot -name "   BATT $capacity% ($batt_status) | RAM $mem | TEMP $cpu | $time_date   "
     else
