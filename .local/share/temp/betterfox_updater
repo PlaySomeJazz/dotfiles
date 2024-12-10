@@ -1,0 +1,5 @@
+#!/bin/sh
+t="/tmp/f$$"
+trap 'rm -f $t' EXIT
+curl -sL -o $t "https://raw.githubusercontent.com/yokoffing/Betterfox/refs/heads/main/user.js"
+cat "$HOME/.config/firefox/custom.js" $t > "$HOME/.config/firefox/user.js"
