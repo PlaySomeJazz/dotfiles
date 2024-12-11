@@ -15,7 +15,7 @@ set autoquit true
 cmd open ${{
     case $(file --mime-type "$(readlink -f $f)" -b) in
         text/*|application/json|inode/x-empty|application/x-subrip) $EDITOR $fx;;
-	image/gif|video/x-msvideo) setsid -f mpv --terminal=no $fx ;;
+	image/gif|video/x-msvideo|audio/*) setsid -f mpv --terminal=no $fx ;;
 	image/*) l="/tmp/p$$"; c="$(find ${f%/*} -maxdepth 1 -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.avif" \) | sort -V | tee "$l" | grep -nF "$f")"; trap 'rm -f $l' EXIT; setsid -f nsxiv -afiq -n "${c%%:*}" < "$l" ;;
 	application/pdf|application/vnd.djvu|application/epub*) setsid -f zathura --mode fullscreen $fx >/dev/null 2>&1 ;;
 	*) for f in $fx; do setsid -f $OPENER $f >/dev/null 2>&1; done;;
