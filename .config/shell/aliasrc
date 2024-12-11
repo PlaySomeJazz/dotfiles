@@ -1,7 +1,4 @@
-#!/bin/sh
-
-# Use neovim for vim if present.
-[ -x "$(command -v nvim)" ] && alias vim="nvim" vimdiff="nvim -d"
+#!/bin/zsh
 
 # Use $XINITRC variable if file exists.
 [ -f "$XINITRC" ] && alias startx="startx $XINITRC"
@@ -15,7 +12,7 @@ done; unset command
 
 se() {
 	s=("${HOME}/.local/bin/"**/*(.)); c="$(print -lnr ${s:t:r} | fzf)"
-	[ -n "${c}" ] && "${EDITOR}" ${${(M)s:#*/${c}*}[1]}
+	[[ "${c}" ]] && "${EDITOR}" ${${(M)s:#*/${c}*}[1]}
 }
 
 # Verbosity and settings that you pretty much just always are going to want.
@@ -28,6 +25,7 @@ alias \
 	bc="bc -ql" \
 	rsync="rsync -vrPlu" \
 	mkd="mkdir -pv" \
+	vim="nvim" \
 	y='yt-dlp --embed-metadata -i $(xclip -o)' \
 	t="tsp" \
 	ffmpeg="ffmpeg -hide_banner" \
@@ -47,9 +45,7 @@ alias \
 # These common commands are just too long! Abbreviate them.
 alias \
 	ka="killall" \
-	g="git" \
 	trem="transmission-remote" \
-	xx="watchlater" \
 	e="$EDITOR" \
 	v="$EDITOR" \
 	p="pacman" \
@@ -58,5 +54,4 @@ alias \
 
 alias \
 	lf="lfub" \
-	magit="nvim -c MagitOnly" \
 	ref="shortcuts >/dev/null; source ${XDG_CONFIG_HOME:-$HOME/.config}/shell/shortcutrc ; source ${XDG_CONFIG_HOME:-$HOME/.config}/shell/shortcutenvrc ; source ${XDG_CONFIG_HOME:-$HOME/.config}/shell/zshnameddirrc"
