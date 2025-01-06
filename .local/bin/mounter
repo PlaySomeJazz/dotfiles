@@ -1,7 +1,4 @@
 #!/bin/sh
-
-set -e
-
 # For convenience, the unmounter functionality is placed here as well.
 unmounter(){
 mounteddroids="$(grep simple-mtpfs /etc/mtab | awk '{print "📱" $2}')"
