@@ -1,10 +1,10 @@
 #!/bin/sh
+battery=$(echo /sys/class/power_supply/BAT?*)
 while true; do
   mem=$(awk '/MemTotal:/{total=$2} /MemAvailable:/{available=$2} END {printf("%.2f%%"), (total-available)/total*100}' /proc/meminfo)
   time_date=$(date "+%d %b (%a), %R")
   while read -r temp; do cpu="${temp%???}°C"; done < /sys/class/thermal/thermal_zone0/temp
   disk=$(df / --output=pcent | { read -r _; read -r usage; echo "$usage"; })
-  battery=$(echo /sys/class/power_supply/BAT?*)
   batt_status=$(cat "$battery/status" 2>&1)
     if [ "$batt_status" != "Full" ]; then
       capacity=$(cat "$battery/capacity" 2>&1); [ "$capacity" -le 25 ] && capacity="🪫 $capacity"
