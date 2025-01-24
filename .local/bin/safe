@@ -12,7 +12,7 @@ for file_to_move in $files; do
     extension="${name_of_file##*.}"
     new_file="$name_of_file"
     counter=1
-    while [ -f "$dest_dir/$new_file" ]; do
+    while [ -e "$dest_dir/$new_file" ]; do
         new_file="${name_before_extension}($counter).$extension"
         counter=$((counter + 1))
     done
