@@ -47,6 +47,9 @@ normalparts="$(echo "$lsblkoutput"| grep -v crypto_LUKS | grep 'part\|rom\|crypt
 alldrives="$(echo "$phones
 $normalparts" | sed "/^$/d;s/ *$//")"
 
+# Quit the script if a sequential command fails.
+set -e
+
 test -n "$alldrives"
 
 # Feed all found drives to dmenu and get user choice.
