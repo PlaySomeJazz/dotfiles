@@ -1,16 +1,14 @@
 #!/bin/sh
 # For convenience, the unmounter functionality is placed here as well.
 unmounter(){
-mounteddroids="$(grep simple-mtpfs /etc/mtab | awk '{print "📱" $2}')"
-blkoutput="$(lsblk -nrpo "name,type,size,mountpoint")"
-mounteddrives="$(echo "$blkoutput" | awk '($2=="part"||$2="crypt")&&$4!~/\/boot|\/home$|SWAP/&&length($4)>1{printf "💾%s (%s)\n",$4,$3}')"
-allunmountable="$(echo "$mounteddroids
-$mounteddrives" | sed "/^$/d;s/ *$//")"
-[ -z "$allunmountable" ] && exit
-selected="$(echo "$allunmountable" | dmenu -i -p "Unmount which drive?")"
-selected="${selected%% *}"
-[ -n "$selected" ] && sudo umount -l "/${selected#*/}" || exit
-notify-send "Device unmounted." "$selected has been unmounted."
+	mounteddroids="$(grep simple-mtpfs /etc/mtab | awk '{print "📱" $2}')"
+	mounteddrives="$(lsblk -nrpo "name,type,size,mountpoint" | awk '($2=="part"||$2="crypt")&&$4!~/\/boot|\/home$|SWAP/&&length($4)>1{printf "💾%s (%s)\n",$4,$3}')"
+	allunmountable="$(printf "%s\n%s" "$mounteddroids" "$mounteddrives" | sed "/^$/d;s/ *$//")"
+	[ -z "$allunmountable" ] && exit
+	selected="$(echo "$allunmountable" | dmenu -i -p "Unmount which drive?")"
+	selected="${selected%% *}"
+	[ -n "$selected" ] && sudo umount -l "/${selected#*/}" || exit
+	notify-send "Device unmounted." "$selected has been unmounted."
 }
 
 case "$1" in
