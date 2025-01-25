@@ -28,9 +28,7 @@ mountedphones="$(grep "simple-mtpfs" /etc/mtab)"
 [ -n "$mountedphones" ] && phones="$(for phone in $phones; do
 	for mounted in $mountedphones; do
 		escphone="$(escape "$phone")"
-		case "$mounted" in
-			*"$escphone"*) break 1 ;;
-		esac
+		case "$mounted" in *"$escphone"*) break 1 ;; esac
 	done && continue 1
 	echo "$phone"
 done)"
@@ -75,7 +73,7 @@ attemptmount(){
 case "$chosen" in
 	💾*)
 		chosen="${chosen%% *}"
-		chosen=$(printf '%s' "$chosen" | awk '{print substr($0, 2)}')
+		chosen=$(printf '%s' "$chosen" | cut -c2-)
 		parttype="$(echo "$lsblkoutput" | grep "$chosen")"
 		attemptmount || getmount
 		case "${parttype##* }" in
@@ -90,7 +88,7 @@ case "$chosen" in
 		notify-send "❗Note" "Remember to allow file access on your phone now."
 		getmount
 		number="${chosen%%:*}"
-		number=$(printf '%s' "$chosen" | awk '{print substr($0, 2)}')
+		number=$(printf '%s' "$chosen" | cut -c2-)
 		sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$chosen")" --device "$number" "$mp" || { sleep 5 && sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$chosen")" --device "$number" "$mp"; }
 		notify-send "🤖 Android Mounted." "Android device mounted to $mp."
 		;;
