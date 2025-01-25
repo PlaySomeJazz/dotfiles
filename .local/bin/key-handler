@@ -2,30 +2,28 @@
 while read -r file
 do
         case "$1" in
-        "w") setbg "$file" & ;;
+	"w")	setbg "$file" & ;;
         "s")
 		dest=$(sed -e 's/\s*#.*//' -e '/^$/d' -e 's/^\S*\s*//' "${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs" | dmenu -l 20 -i -p "Copy to where?")
-		[ -n "$dest" ] && dest=$(eval echo "$dest") && safe cp "$file" "$dest" && notify-send -i "$(readlink -f "$file")" "$file copied to $dest" &
+		[ -n "$dest" ] && dest=$(eval printf %s\\n "$dest") && safe cp "$file" "$dest" && notify-send -i "$(readlink -f "$file")" "$file copied to $dest" &
 		;;
         "c")
 		safe cp "$file" "$HOME/Pictures" && notify-send -i "$(readlink -f "$file")" "Copied to Pictures" &
 		;;
         "m")
 		dest=$(sed -e 's/\s*#.*//' -e '/^$/d' -e 's/^\S*\s*//' "${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs" | dmenu -l 20 -i -p "Move to where?")
-		[ -n "$dest" ] && dest=$(eval echo "$dest") && safe mv "$file" "$dest" && notify-send -i "$(readlink -f "$file")" "$file moved to $dest" &
+		[ -n "$dest" ] && dest=$(eval printf %s\\n "$dest") && safe mv "$file" "$dest" && notify-send -i "$(readlink -f "$file")" "$file moved to $dest" &
 		;;
 	"r")
-		magick -rotate 90 "$file" "$file" ;;
+		magick "$file" -rotate 90 "$file" ;;
 	"R")
-		magick -rotate -90 "$file" "$file" ;;
+		magick "$file" -rotate -90 "$file" ;;
 	"f")
-		magick -flop "$file" "$file" ;;
+		magick "$file" -flop "$file" ;;
 	"y")
-		printf "%s" "$file" | tr -d '\n' | xclip -selection clipboard &&
-		notify-send "$file copied to clipboard" & ;;
+		printf "%s" "${file##*/}" | xclip -selection clipboard && notify-send "Filename copied to clipboard" & ;;
 	"Y")
-		readlink -f "$file" | tr -d '\n' | xclip -selection clipboard &&
-			notify-send "$(readlink -f "$file") copied to clipboard" & ;;
+		readlink -f "$file" | xclip -selection clipboard && notify-send "File path copied to clipboard" & ;;
 	"d")
 		[ "$(printf "Yes\\nNo" | dmenu -i -p "Really delete $file?")" = "Yes" ] && rm "$file" && notify-send "$file deleted." ;;
 	"g")	setsid -f gimp "$file" ;;
