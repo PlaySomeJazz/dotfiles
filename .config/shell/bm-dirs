@@ -1,6 +1,6 @@
 # You can add comments to these files with #
-wl  ~/Videos/Watchlist
-mm   ${XDG_MUSIC_DIR:-$HOME/Music}
+wl  ${XDG_VIDEOS_DIR:-$HOME/Videos}/Watchlist
+mm  ${XDG_MUSIC_DIR:-$HOME/Music}
 cac ${XDG_CACHE_HOME:-$HOME/.cache}
 cf  ${XDG_CONFIG_HOME:-$HOME/.config}
 D   ${XDG_DOWNLOAD_DIR:-$HOME/Downloads}
