@@ -10,10 +10,11 @@ for file_to_move in $files; do
     name_of_file="${file_to_move##*/}"
     name_before_extension="${name_of_file%.*}"
     extension="${name_of_file##*.}"
+    [ "$name_before_extension" = "$extension" ] && extension=""
     new_file="$name_of_file"
     counter=1
     while [ -e "$dest_dir/$new_file" ]; do
-        new_file="${name_before_extension}($counter).$extension"
+        new_file="${name_before_extension}($counter).${extension}"
         counter=$((counter + 1))
     done
     "$cmd" "$file_to_move" "$dest_dir/$new_file"
