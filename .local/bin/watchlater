@@ -8,10 +8,10 @@ music="$HOME/Music"
 [ ! -d "$music" ] && mkdir -p "$music"
 
 # Move videos to watchlist
-find "$source_dir" -type f \( -iname "*.mp4" -o -iname "*.mkv" \) -exec mv -t "$watchlist" {} +
+find "$source_dir" -type f \( -iname "*.mp4" -o -iname "*.mkv" \) -exec safe mv -t "$watchlist" {} +
 
 # Move directories containing audio into Music
-for dir in "$source_dir"/*/; do [ -n "$(find "$dir" -type f \( -iname "*.mp3" -o -iname "*.m4b" -o -iname "*.flac" -o -iname "*.m4a" -o -iname "*.opus" \) -print -quit)" ] && mv "$dir" "$music"; done
+for dir in "$source_dir"/*/; do [ -n "$(find "$dir" -type f \( -iname "*.mp3" -o -iname "*.m4b" -o -iname "*.flac" -o -iname "*.m4a" -o -iname "*.opus" \) -print -quit)" ] && safe mv "$dir" "$music"; done
 
 # Delete directories with no files of these types
 find "$source_dir" -depth \( ! -path "$source_dir" -prune \) -type d | while read -r dir; do [ -z "$(find "$dir" -type f \( -iname "*.pdf" -o -iname "*.djvu" -o -iname "*.epub" -o -iname "*.mobi" -o -iname "*.zip" -o -iname "*.rar" \) -print -quit)" ] && rm -rf "$dir"; done

@@ -1,8 +1,11 @@
 #!/bin/sh
 cmd=$1; shift
-while [ "$#" -gt 1 ]; do files="${files:+$files
-}$1"; shift; done
-dest_dir=$1
+if [ "$1" = "-t" ]; then shift; dest_dir=$1; shift; for file in "$@"; do files="${files:+$files
+}$file"; done
+else while [ "$#" -gt 1 ]; do files="${files:+$files
+}$1"; shift; done; dest_dir=$1
+fi
+
 IFS='
 '
 set -f
