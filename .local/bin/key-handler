@@ -2,15 +2,15 @@
 file=$(cat)
 case "$1" in
 w)
-	setbg "$file" & ;;
+	setbg "$file" ;;
 s)
-	dest=$(sed -e 's/\s*#.*//' -e '/^$/d' -e 's/^\S*\s*//' "${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs" | dmenu -l 20 -i -p "Copy" | sed "s|~|$HOME|g")
+	dest=$(sed 's/\s*#.*// ; /^$/d ; s/^\S*\s*//' "${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs" | dmenu -l 20 -i -p "Copy" | sed 's|~|$HOME|')
 	[ -z "$dest" ] && exit || dest=$(eval printf '%s\\n' \"$dest\") && [ ! -d "$dest" ] && notify-send "$dest is not a directory" && exit ||
-	for i in $file; do safe cp "$i" "$dest"; done && notify-send "Done" "Image(s) copied to $dest" & ;;
+	for i in $file; do safe cp "$i" "$dest"; done && notify-send "Done" "Image(s) copied to $dest" ;;
 m)
-	dest=$(sed -e 's/\s*#.*//' -e '/^$/d' -e 's/^\S*\s*//' "${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs" | dmenu -l 20 -i -p "Move" | sed "s|~|$HOME|g")
+	dest=$(sed 's/\s*#.*// ; /^$/d ; s/^\S*\s*//' "${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs" | dmenu -l 20 -i -p "Move" | sed 's|~|$HOME|')
 	[ -z "$dest" ] && exit || dest=$(eval printf '%s\\n' \"$dest\") && [ ! -d "$dest" ] && notify-send "$dest is not a directory" && exit ||
-	for i in $file; do safe mv "$i" "$dest"; done && notify-send "Done" "Image(s) moved to $dest" & ;;
+	for i in $file; do safe mv "$i" "$dest"; done && notify-send "Done" "Image(s) moved to $dest" ;;
 r)
 	magick "$file" -rotate 90 "$file" ;;
 R)
@@ -18,13 +18,13 @@ R)
 f)
 	magick "$file" -flop "$file" ;;
 c)
-	xclip -selection clipboard -target image/png "$file" && notify-send "Image copied to clipboard" & ;;
+	xclip -sel c -target image/png "$file" && notify-send "Image copied to clipboard" ;;
 y)
-	for i in $file; do printf '%s\n' "${i##*/}"; done | xclip -sel c && notify-send "Filename(s) copied to clipboard" & ;;
+	for i in $file; do printf '%s\n' "${i##*/}"; done | xclip -sel c && notify-send "Filename(s) copied to clipboard" ;;
 Y)
-	for i in $file; do readlink -f "$i"; done | xclip -sel c && notify-send "File path(s) copied to clipboard" & ;;
+	for i in $file; do readlink -f "$i"; done | xclip -sel c && notify-send "File path(s) copied to clipboard" ;;
 d)
-	[ "$(printf "Yes\nNo\n" | dmenu -i -p "Delete selection?")" = "Yes" ] && for i in $file; do rm "$i"; done && notify-send "Done" "File(s) deleted." ;;
+	[ "$(printf "Yes\nNo\n" | dmenu -i -p "Delete selection?")" = "Yes" ] && for i in $file; do rm "$i"; done && notify-send "Done" "File(s) deleted" ;;
 g)
 	setsid -f gimp "$file" ;;
 i)
