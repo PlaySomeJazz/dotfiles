@@ -18,7 +18,7 @@ R)
 f)
 	magick "$file" -flop "$file" ;;
 c)
-	xclip -sel c -target image/png "$file" && notify-send "Image copied to clipboard" ;;
+	xclip -selection clipboard -target image/png "$file" && notify-send "Image copied to clipboard" ;;
 y)
 	for i in $file; do printf '%s\n' "${i##*/}"; done | xclip -sel c && notify-send "Filename(s) copied to clipboard" ;;
 Y)
