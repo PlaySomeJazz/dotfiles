@@ -1,24 +1,31 @@
 #!/bin/sh
+# shellcheck disable=SC2034
+
+set -f
 cmd=$1; shift
-if [ "$1" = "-t" ]; then shift; dest_dir=$1; shift; for file in "$@"; do files="${files:+$files
-}$file"; done
-else while [ "$#" -gt 1 ]; do files="${files:+$files
-}$1"; shift; done; dest_dir=$1
+
+if [ "$1" = "-t" ]; then
+	shift; dest_dir=$1; shift
+else
+	for i do
+		eval argv$#=\$i
+		argv="\"\$argv$#\" $argv"
+		shift
+	done
+	eval set x "$argv"
+	shift; dest_dir=$1; shift
 fi
 
-IFS='
-'
-set -f
-for file_to_move in $files; do
-    name_of_file="${file_to_move##*/}"
-    name_before_extension="${name_of_file%.*}"
-    extension="${name_of_file##*.}"
-    [ "$name_before_extension" = "$extension" ] && extension=""
-    new_file="$name_of_file"
-    counter=1
-    while [ -e "$dest_dir/$new_file" ]; do
-        new_file="${name_before_extension}($counter).${extension}"
-        counter=$((counter + 1))
-    done
-    "$cmd" "$file_to_move" "$dest_dir/$new_file"
+for file_to_move do
+	name_of_file="${file_to_move##*/}"
+	name_before_extension="${name_of_file%.*}"
+	extension="${name_of_file##*.}"
+	[ "$name_before_extension" = "$extension" ] && extension=""
+	new_file="$name_of_file"
+	counter=1
+	while [ -e "$dest_dir/$new_file" ]; do
+		new_file="${name_before_extension}($counter).${extension}"
+		counter=$((counter + 1))
+	done
+	echo "$cmd" -- "$file_to_move" "$dest_dir/$new_file"
 done
