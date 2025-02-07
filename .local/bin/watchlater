@@ -10,7 +10,7 @@ find "$source_dir" -type f \( -iname "*.mp4" -o -iname "*.mkv" \) -exec sh -c 's
 for dir in "$source_dir"/*/; do dir="${dir%/}"; [ -n "$(find "$dir" -type f \( -iname "*.mp3" -o -iname "*.m4b" -o -iname "*.flac" -o -iname "*.m4a" -o -iname "*.opus" \) -print -quit)" ] && safe mv "$dir" "$HOME/Music"; done
 
 # Delete directories with no files of these types
-find "$source_dir" -depth \( ! -path "$source_dir" -prune \) -type d -exec sh -c 'while read -r dir; do [ -z "$(find "$dir" -type f \( -iname "*.pdf" -o -iname "*.djvu" -o -iname "*.epub" -o -iname "*.mobi" -o -iname "*.zip" -o -iname "*.rar" \) -print -quit)" ] && rm -rf "$dir"; done' sh {} +
+find "$source_dir" -depth \( ! -path "$source_dir" -prune \) -type d -exec sh -c 'for dir do [ -z "$(find "$dir" -type f \( -iname "*.pdf" -o -iname "*.djvu" -o -iname "*.epub" -o -iname "*.mobi" -o -iname "*.zip" -o -iname "*.rar" \) -print -quit)" ] && rm -rf "$dir"; done' sh {} +
 
 # Send a notification
 notify-send "Done" "Your files are sorted"
