@@ -1,9 +1,8 @@
 #!/bin/sh
 
-torrents=/media_files/torrents
 has_files() { chdir "$1" || exit ; set -- * .[!.]* ..?* ; for f do [ -e "$f" ] && return ; done ; }
 
-if ! has_files "$torrents"; then notify-send "Empty" "Add some files..."; exit; fi
+if ! has_files /media_files/torrents; then notify-send "Empty" "Add some files..."; exit; fi
 
 for dir in $HOME/Videos/Watchlist $HOME/Music; do [ ! -d "$dir" ] && mkdir -p "$dir"; done
 
