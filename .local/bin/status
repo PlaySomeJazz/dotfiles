@@ -2,9 +2,11 @@
 battery=$(echo /sys/class/power_supply/BAT?*)
 wifi=$(echo /sys/class/net/w*/operstate)
 while :; do
-	read -r net < "$wifi"
-	mem=$(awk '/MemTotal:/{t=$2}/MemAvailable:/{a=$2}END{printf("%d%%", (t-a)/t*100)}' /proc/meminfo)
 	time_date=$(date "+%d %b (%a), %R")
+	read -r net < "$wifi"; ! ping -c 1 8.8.8.8 > /dev/null 2>&1 && net="[ \! ] $net"
+	while read -r key val _; do
+		case $key in MemTotal:) total=$val;; MemAvailable:) available=$val;; esac
+	done < /proc/meminfo ; mem=$(( (total - available) * 100 / total ))
 	read -r cpu < /sys/class/thermal/thermal_zone0/temp; cpu="${cpu%???}°C"
 	{ read -r _; read -r disk; } <<- EOF
 	$(df / --output=pcent)

@@ -6,7 +6,7 @@ add_note() { printf '%s\n' "$note" >>"$dir/$choice" && delete_note ; }
 
 notes=${1:-$HOME/.todo} ; [ ! -f "$notes" ] && log 'Add notes file\n' 31 && exit
 dir=$HOME/.notes ; [ ! -d "$dir" ] && mkdir -p "$dir"
-default_cat="$dir/Chores" ; [ ! -e "$default_cat" ] && :>"$default_cat"
+default_cat="$dir/Chores" ; [ ! -f "$default_cat" ] && :>"$default_cat"
 
 new_cat_option='(Add category)' delete_option='(Delete)'
 
