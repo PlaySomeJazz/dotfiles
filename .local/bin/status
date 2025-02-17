@@ -14,9 +14,9 @@ while :; do
 	read -r batt_status < "$battery/status"
 	if [ "$batt_status" != "Full" ]; then
 		read -r capacity < "$battery/capacity"; [ "$capacity" -le 25 ] && capacity="🪫 $capacity"
-		xsetroot -name "  BATT $capacity% ($batt_status)  |  DISK $disk  |  RAM $mem  |  TEMP $cpu  |  NET $net  |  $time_date  "
+		xsetroot -name "  BATT $capacity% ($batt_status)  |  DISK $disk  |  RAM $mem%  |  TEMP $cpu  |  NET $net  |  $time_date  "
 	else
-		xsetroot -name "  DISK $disk  |  RAM $mem  |  TEMP $cpu  |  NET $net  |  $time_date  "
+		xsetroot -name "  DISK $disk  |  RAM $mem%  |  TEMP $cpu  |  NET $net  |  $time_date  "
 	fi
 	sleep 10
 done
