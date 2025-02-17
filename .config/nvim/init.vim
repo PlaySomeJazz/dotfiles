@@ -11,7 +11,6 @@ call plug#begin(system('echo -n "${XDG_CONFIG_HOME:-$HOME/.config}/nvim/plugged"
 Plug 'junegunn/goyo.vim'
 Plug 'vimwiki/vimwiki'
 Plug 'vim-airline/vim-airline'
-Plug 'ap/vim-css-color'
 call plug#end()
 
 set title
@@ -44,7 +43,7 @@ colorscheme vim
 	endif
 	let g:airline_symbols.colnr = ' C:'
 	let g:airline_symbols.linenr = ' L:'
-	let g:airline_symbols.maxlinenr = '☰ '
+	let g:airline_symbols.maxlinenr = 'M '
 
 " Check file in shellcheck:
 	map <leader>s :!clear && shellcheck -x %<CR>
