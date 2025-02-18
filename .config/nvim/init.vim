@@ -14,10 +14,7 @@ Plug 'vim-airline/vim-airline'
 call plug#end()
 
 set title
-set bg=dark
 set go=a
-set mouse=a
-set nohlsearch
 set clipboard+=unnamedplus
 set noshowmode
 set noruler
@@ -27,13 +24,11 @@ colorscheme vim
 
 " Some basics:
 	filetype plugin on
-	syntax on
-	set encoding=utf-8
 	set number relativenumber
 " Disables automatic commenting on newline:
 	autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 " Goyo plugin makes text more readable when writing prose:
-	map <leader>f :Goyo \| set bg=light \| set linebreak<CR>
+	map <leader>f :Goyo \| set linebreak<CR>
 " Spell-check set to <leader>o, 'o' for 'orthography':
 	map <leader>o :setlocal spell! spelllang=en_us<CR>
 
@@ -44,6 +39,7 @@ colorscheme vim
 	let g:airline_symbols.colnr = ' C:'
 	let g:airline_symbols.linenr = ' L:'
 	let g:airline_symbols.maxlinenr = 'M '
+	let g:airline_symbols.whitespace = '!'
 
 " Check file in shellcheck:
 	map <leader>s :!clear && shellcheck -x %<CR>
