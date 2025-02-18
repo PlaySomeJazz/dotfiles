@@ -4,11 +4,11 @@ while getopts vatidc: opt; do case $opt in
     a) cmd="yt-dlp --embed-metadata -x -f bestaudio -o ~/Music/%(title)s.%(ext)s" ;;
     t) cmd="yt-dlp --skip-download --write-thumbnail -o ~/Pictures/%(title)s.%(ext)s" ;;
     i) cmd="gallery-dl --cookies-from-browser firefox -d ~/Pictures" ;;
-    d) cmd="aria2c --dir=${HOME}/Videos/Watchlist" ;;
-    c) cmd=$OPTARG ;;
-esac; o=$opt; done
+    d) cmd="aria2c --dir=${HOME}/Videos/Watchlist"; o=$opt ;;
+    c) cmd=$OPTARG; o=$opt ;;
+esac done
 shift $((OPTIND - 1))
 url=${1:-$(xclip -o)}
 [ "$o" = c ] || [ "$o" = d ] && name="${url##*/}" && name="${name%%\?*}" || name="${url##*/}"
 notify-send -i "$PIX/dlpending.svg" "Queuing download" "$name"
-tsp -D "$(tsp $cmd "$url")" notify-send -i "$PIX/dlcomplete.svg" "Download complete" "$name"
+tsp -w "$(tsp $cmd "$url")" && notify-send -i "$PIX/dlcomplete.svg" "Download complete" "$name" || notify-send -u critical "❗ Download failed" "$name"
