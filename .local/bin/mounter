@@ -11,9 +11,7 @@ unmounter(){
 	notify-send "Device unmounted." "$selected has been unmounted."
 }
 
-case "$1" in
-	unmount) unmounter; exit ;;
-esac
+[ "$1" = unmount ] && { unmounter; exit; }
 
 IFS='
 '
@@ -72,7 +70,7 @@ attemptmount(){
 
 case "$chosen" in
 	💾*)
-		chosen=$(printf '%s' "${chosen%% *}" | cut -c2-)
+		chosen=$(printf '%s' "${chosen%% *}" | awk '{print substr($0, 2)}')
 		parttype="$(echo "$lsblkoutput" | grep "$chosen")"
 		attemptmount || getmount
 		case "${parttype##* }" in
@@ -86,7 +84,7 @@ case "$chosen" in
 	📱*)
 		notify-send "❗Note" "Remember to allow file access on your phone now."
 		getmount
-		number=$(printf '%s' "${chosen%%:*}" | cut -c2-)
+		number=$(printf '%s' "${chosen%%:*}" | awk '{print substr($0, 2)}')
 		sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$chosen")" --device "$number" "$mp" || { sleep 5 && sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$chosen")" --device "$number" "$mp"; }
 		notify-send "🤖 Android Mounted." "Android device mounted to $mp."
 		;;

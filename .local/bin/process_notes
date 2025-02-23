@@ -4,7 +4,7 @@ log() { printf "\033[2K\r\033[1;${2:-33}m${1}\033[0m" ; }
 delete_note() { printf '%s' "`sed '1d' "$notes"`" >"$notes" ; }
 add_note() { printf '%s\n' "$note" >>"$dir/$choice" && delete_note ; }
 
-notes=${1:-$HOME/.todo} ; [ ! -f "$notes" ] && log 'Add notes file\n' 31 && exit
+notes=${1:-$HOME/.capture} ; [ ! -f "$notes" ] && log 'Add notes file\n' 31 && exit
 dir=$HOME/.notes ; [ ! -d "$dir" ] && mkdir -p "$dir"
 default_cat="$dir/Chores" ; [ ! -f "$default_cat" ] && :>"$default_cat"
 
