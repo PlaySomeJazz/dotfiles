@@ -4,8 +4,8 @@ log() { printf "\033[2K\r\033[1;${2:-33}m${1}\033[0m" ; }
 delete_note() { printf '%s' "`sed '1d' "$notes"`" >"$notes" ; }
 add_note() { printf '%s\n' "$note" >>"$dir/$choice" && delete_note ; }
 
-notes=${1:-$HOME/.capture} ; [ ! -f "$notes" ] && log 'Add notes file\n' 31 && exit
-dir=$HOME/.notes ; [ ! -d "$dir" ] && mkdir -p "$dir"
+notes=${1:-$NOTES_FILE} ; [ ! -f "$notes" ] && log 'Add notes file\n' 31 && exit
+dir=$NOTES_DIR ; [ ! -d "$dir" ] && mkdir -p "$dir"
 default_cat="$dir/Chores" ; [ ! -f "$default_cat" ] && :>"$default_cat"
 
 new_cat_option='(Add category)' delete_option='(Delete)'
@@ -15,7 +15,7 @@ while test -s "$notes"; do
 	read -r note <"$notes"
 	[ -z "$note" ] && delete_note && continue
 	log "$note\n\n"
-	categories=`set -- "$dir"/*; printf '%s\n' "${@##*/}"`
+	categories=`for list in "$dir"/*; do printf '%s\n' "${list##*/}"; done`
 	choice=`printf '%s\n' "$categories" "$new_cat_option" "$delete_option" | fzf`
 	[ -z "$choice" ] && tput clear && log 'Interrupted\n' 31 && exit
 	case "$choice" in
