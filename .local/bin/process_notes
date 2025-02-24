@@ -15,7 +15,7 @@ while test -s "$notes"; do
 	read -r note <"$notes"
 	[ -z "$note" ] && delete_note && continue
 	log "$note\n\n"
-	categories=`for list in "$dir"/*; do printf '%s\n' "${list##*/}"; done`
+	categories=`set -- "$dir"/*; printf '%s\n' "${@##*/}"`
 	choice=`printf '%s\n' "$categories" "$new_cat_option" "$delete_option" | fzf`
 	[ -z "$choice" ] && tput clear && log 'Interrupted\n' 31 && exit
 	case "$choice" in
