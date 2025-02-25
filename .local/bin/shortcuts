@@ -14,11 +14,11 @@ printf "# vim: filetype=sh\\n" > "$shell_shortcuts"
 # Format the `directories` file in the correct syntax and sent it to all three configs.
 eval "printf '%s\n' \"$(cat "$bmdirs")\"" |
 awk "!/^\s*#/ && !/^\s*\$/ {gsub(\"\\\s*#.*$\",\"\");
-	printf(\"alias %s=\47cd %s && ls -A\47; export %s \n\",\$1,\$2,\$1)   >> \"$shell_shortcuts\" ;
-	printf(\"map f%s cd \42%s\42 \n\",\$1,\$2)           >> \"$lf_shortcuts\" }"
+	printf(\"alias %s=\47cd %s && ls -A\47; export %s\n\",\$1,\$2,\$1)   >> \"$shell_shortcuts\" ;
+	printf(\"map f%s cd \42%s\42\n\",\$1,\$2)           >> \"$lf_shortcuts\" }"
 
 # Format the `files` file in the correct syntax and sent it to both configs.
 eval "printf '%s\n' \"$(cat "$bmfiles")\"" |
 awk "!/^\s*#/ && !/^\s*\$/ {gsub(\"\\\s*#.*$\",\"\");
-	printf(\"alias %s=\47\$EDITOR %s\47; export %s \n\",\$1,\$2,\$1)  >> \"$shell_shortcuts\" ;
-	printf(\"map F%s \$\$EDITOR \42%s\42 \n\",\$1,\$2)   >> \"$lf_shortcuts\" }"
+	printf(\"alias %s=\47\$EDITOR %s\47; export %s\n\",\$1,\$2,\$1)  >> \"$shell_shortcuts\" ;
+	printf(\"map F%s \$\$EDITOR \42%s\42\n\",\$1,\$2)   >> \"$lf_shortcuts\" }"
