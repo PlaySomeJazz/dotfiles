@@ -1,5 +1,8 @@
 #!/bin/zsh
 
+# Use neovim for vim if present.
+[ -x "$(command -v nvim)" ] && alias vim="nvim" vimdiff="nvim -d"
+
 # Use $XINITRC variable if file exists.
 [ -f "$XINITRC" ] && alias startx="startx $XINITRC"
 
@@ -25,9 +28,9 @@ alias \
 	bc="bc -ql" \
 	rsync="rsync -vrPlu" \
 	mkd="mkdir -pv" \
-	vim="nvim" \
-	y='yt-dlp --embed-metadata -i $(xclip -o)' \
+	y="dl -v" \
 	t="tsp" \
+	n="process_notes" \
 	ffmpeg="ffmpeg -hide_banner" \
 	k="dra-cla" \
 	kk="dra-cla -c" \
