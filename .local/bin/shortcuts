@@ -13,12 +13,14 @@ rm -f "$lf_shortcuts" "$zsh_named_dirs" 2>/dev/null
 printf "# vim: filetype=sh\\nalias " > "$shell_shortcuts"
 
 # Format the `directories` file in the correct syntax and sent it to all three configs.
+eval "printf '%s\n' \"$(cat "$bmdirs")\"" |
 awk "!/^\s*#/ && !/^\s*\$/ {gsub(\"\\\s*#.*$\",\"\"); gsub(\"~\",\"\$HOME\");
 	printf(\"%s='cd %s && ls -A' \\\\\n\",\$1,\$2)   >> \"$shell_shortcuts\" ;
 	printf(\"export %s=\42%s\42\n\",\$1,\$2)                 >> \"$zsh_named_dirs\"  ;
-	printf(\"map f%s cd \42%s\42\n\",\$1,\$2)           >> \"$lf_shortcuts\" }" < "$bmdirs"
+	printf(\"map f%s cd \42%s\42\n\",\$1,\$2)           >> \"$lf_shortcuts\" }"
 
 # Format the `files` file in the correct syntax and sent it to both configs.
+eval "printf '%s\n' \"$(cat "$bmfiles")\"" |
 awk "!/^\s*#/ && !/^\s*\$/ {gsub(\"\\\s*#.*$\",\"\"); gsub(\"~\",\"\$HOME\");
 	printf(\"%s='\$EDITOR %s' \\\\\n\",\$1,\$2)  >> \"$shell_shortcuts\" ;
-	printf(\"map F%s \$\$EDITOR \42%s\42\n\",\$1,\$2)   >> \"$lf_shortcuts\" }" < "$bmfiles"
+	printf(\"map F%s \$\$EDITOR \42%s\42\n\",\$1,\$2)   >> \"$lf_shortcuts\" }"

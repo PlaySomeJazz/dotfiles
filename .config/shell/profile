@@ -21,6 +21,7 @@ export BROWSER="firefox"
 # ~/ Clean-up:
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_STATE_HOME="$HOME/.local/state"
 export XDG_CACHE_HOME="$HOME/.cache"
 export XINITRC="$XDG_CONFIG_HOME/x11/xinitrc"
 #export XAUTHORITY="$XDG_RUNTIME_DIR/Xauthority" # This line will break some DMs.
@@ -51,7 +52,7 @@ export SQLITE_HISTORY="$XDG_DATA_HOME/sqlite_history"
 
 # Other program settings:
 export OPENSSL_CONF=/dev/null
-export TS_SLOTS="10"
+export TS_SLOTS="3"
 export DICS="/usr/share/stardict/dic/"
 export SUDO_ASKPASS="$HOME/.local/bin/dmenupass"
 export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
