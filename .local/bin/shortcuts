@@ -16,7 +16,7 @@ printf "# vim: filetype=sh\\nalias " > "$shell_shortcuts"
 eval "printf '%s\n' \"$(cat "$bmdirs")\"" |
 awk "!/^\s*#/ && !/^\s*\$/ {gsub(\"\\\s*#.*$\",\"\");
 	printf(\"%s='cd %s && ls -A' \\\\\n\",\$1,\$2)   >> \"$shell_shortcuts\" ;
-	printf(\"export %s=\42%s\42\n\",\$1,\$2)                 >> \"$zsh_named_dirs\"  ;
+	printf(\"export %s='%s'\n\",\$1,\$2)                 >> \"$zsh_named_dirs\"  ;
 	printf(\"map f%s cd \42%s\42\n\",\$1,\$2)           >> \"$lf_shortcuts\" }"
 
 # Format the `files` file in the correct syntax and sent it to both configs.
