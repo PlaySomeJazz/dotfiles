@@ -7,8 +7,8 @@ set drawbox true
 set mouse true
 set period 1
 set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml"
-set previewer ~/.config/lf/previewer
-set cleaner ~/.config/lf/cleaner
+set previewer ~/.local/etc/lf/previewer
+set cleaner ~/.local/etc/lf/cleaner
 set autoquit true
 
 # cmds/functions
@@ -94,6 +94,7 @@ map M moveto
 map <c-n> push :mkdir<space>""<left>
 map <c-s> set hidden!
 map <enter> shell
+map ` !true
 map x $$f
 map X !$f
 map o &mimeopen "$f"
@@ -111,4 +112,4 @@ map Y $printf "%s" "$fx" | xclip -selection clipboard
 map t $nsxiv -t "$(pwd)" # opens thumbnail mode
 
 # Source Bookmarks
-source "~/.config/lf/shortcutrc"
+source "~/.local/etc/lf/shortcutrc"
