@@ -1,1 +1,1 @@
-.config/shell/profile
+.local/etc/shell/profile
