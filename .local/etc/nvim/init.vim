@@ -14,7 +14,6 @@ Plug 'vim-airline/vim-airline'
 call plug#end()
 
 set title
-set go=a
 set clipboard+=unnamedplus
 set noshowmode
 set noruler
