@@ -15,8 +15,8 @@ set autoquit true
 cmd open ${{
     case $(file --mime-type "$(readlink -f $f)" -b) in
         text/*|application/json|inode/x-empty|application/x-subrip) $EDITOR $fx;;
-	image/gif|video/*|audio/*) l=/tmp/mpv-playlist; c="$(printf '%s\n' "${f%/*}"/* | sort -V | tee "$l" | grep -nF "$f")"; n=${c%%:*}; setsid -f mpv --terminal=no --playlist="$l" --playlist-start=$(( n - 1 )) >/dev/null 2>&1 ;;
-	image/*) l="/tmp/p$$"; c="$(find ${f%/*} -maxdepth 1 -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.avif" \) | sort -V | tee "$l" | grep -nF "$f")"; trap 'rm -f $l' EXIT; setsid -f nsxiv -afiq -n "${c%%:*}" < "$l" ;;
+	image/gif|video/*|audio/*) l=/tmp/mpv-playlist; c="$(find "${f%/*}" -maxdepth 1 -type f -iregex '.*\(mkv\|mp4\|avi\|mp3\|m4a\|m4b\|flac\|opus\|gif\)$' | sort -V | tee "$l" | grep -nF "$f")"; n=${c%%:*}; setsid -f mpv --terminal=no --playlist="$l" --playlist-start=$(( n - 1 )) >/dev/null 2>&1 ;;
+	image/*) l="/tmp/p$$"; c="$(find "${f%/*}" -maxdepth 1 -type f -iregex '.*\(jpe?g\|bmp\|png\|webp\|avif\)$' | sort -V | tee "$l" | grep -nF "$f")"; trap 'rm -f $l' EXIT; setsid -f nsxiv -afiq -n ${c%%:*} < "$l" ;;
 	application/pdf|application/vnd.djvu|application/epub*) setsid -f zathura --mode fullscreen $fx >/dev/null 2>&1 ;;
 	*) for f in $fx; do setsid -f $OPENER $f >/dev/null 2>&1; done;;
     esac
