@@ -20,7 +20,9 @@ set noruler
 set laststatus=0
 set noshowcmd
 colorscheme vim
-hi StatusLine gui=NONE
+hi statusline cterm=NONE gui=NONE
+hi tabline cterm=NONE gui=NONE
+hi winbar cterm=NONE gui=NONE
 
 " Some basics:
 	filetype plugin on
