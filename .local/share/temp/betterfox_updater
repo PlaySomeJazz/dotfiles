@@ -5,7 +5,7 @@ profilesini="$profile_dir/profiles.ini"
 profile="$(sed -n "/Default=.*.default-release/ s/.*=//p" "$profilesini")"
 pdir="$profile_dir/$profile"
 
-rm -rf "$pdir/prefs.js
+rm -rf "$pdir/prefs.js"
 
 t="/tmp/f$$"
 trap 'rm -f $t' EXIT

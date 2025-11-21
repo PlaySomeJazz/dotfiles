@@ -3,7 +3,7 @@ battery=$(echo /sys/class/power_supply/BAT?*)
 wifi=$(echo /sys/class/net/w*/operstate)
 while :; do
 	time_date=$(date "+%d %b (%a), %R")
-	read -r net < "$wifi"; ! ping -c 1 -W 3 8.8.8.8 > /dev/null 2>&1 && net="[ ! ] $net"
+	read -r net < "$wifi"; ! ping -c 1 -W 6 8.8.8.8 > /dev/null 2>&1 && net="[ ! ] $net"
 	while read -r key val _; do
 		case $key in MemTotal:) total=$val;; MemAvailable:) available=$val;; esac
 	done < /proc/meminfo ; mem=$(( (total - available) * 100 / total ))
