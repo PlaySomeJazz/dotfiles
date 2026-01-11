@@ -1,0 +1,5 @@
+#!/bin/sh
+while :; do
+	ping -c 1 -W 7 1.1.1.1 > /dev/null 2>&1 && echo 1 > /tmp/net_stat || echo 0 > /tmp/net_stat
+	sleep 30
+done &

@@ -2,16 +2,12 @@
 battery=$(echo /sys/class/power_supply/BAT?*)
 wifi=$(echo /sys/class/net/w*/operstate)
 bluetooth=$(echo /sys/class/bluetooth/hci0/rfkill*/state)
-net_file=/tmp/net_stat; :> "$net_file"
-trap "kill 0" EXIT
-while :; do
-	ping -c 1 -W 7 1.1.1.1 > /dev/null 2>&1 && echo 1 > "$net_file" || echo 0 > "$net_file"
-	sleep 30
-done &
-while :; do
+net_file=/tmp/net_stat
+get_bt() { read -r bt < "$bluetooth"; [ "$bt" -eq 1 ] && bt=on || bt=off; }
+get_bt
+update() {
 	time_date=$(date "+%d %b (%a), %R")
-	read -r bt < "$bluetooth"; [ "$bt" -eq 1 ] && bt=on || bt=off
-	read -r net < "$wifi"; read -r net_val < "$net_file"; [ "${net_val:-1}" -eq 0 ] && net="[ ! ] $net"
+	read -r net < "$wifi"; read -r net_val < "$net_file"; [ "$net" = "up" ] && [ "${net_val:-1}" -eq 0 ] && net="[ ! ] up"
 	while read -r key val _; do
 		case $key in MemTotal:) total=$val;; MemAvailable:) available=$val;; esac
 	done < /proc/meminfo ; mem=$(( (total - available) * 100 / total ))
@@ -22,9 +18,16 @@ while :; do
 	read -r batt_status < "$battery/status"
 	if [ "$batt_status" != "Full" ]; then
 		read -r capacity < "$battery/capacity"; [ "$capacity" -le 25 ] && capacity="🪫 $capacity"
-		xsetroot -name "  BATT $capacity% ($batt_status)  |  DISK $disk  |  RAM $mem%  |  TEMP $cpu  |  BT $bt  |  NET $net  |  $time_date  "
+		batt="  BATT $capacity% ($batt_status)  |"
 	else
-		xsetroot -name "  DISK $disk  |  RAM $mem%  |  TEMP $cpu  |  BT $bt  |  NET $net  |  $time_date  "
+		batt=""
 	fi
-	sleep 10
+	xsetroot -name "$batt  DISK $disk  |  RAM $mem%  |  TEMP $cpu  |  BT $bt  |  NET $net  |  $time_date  "
+}
+
+trap 'get_bt; update' TRAP
+
+while :; do
+	update
+	sleep 10 & wait
 done
