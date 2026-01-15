@@ -9,6 +9,9 @@ while getopts vatidc: opt; do case $opt in
 esac done
 shift $((OPTIND - 1))
 url=${1:-$(xclip -o)}
-[ "$o" = c ] || [ "$o" = d ] && name="${url##*/}" && name="${name%%\?*}" || name="${url##*/}"
+name="${url##*/}"
+[ "$o" = c ] || [ "$o" = d ] && name="${name%%\?*}"
 notify-send -i "$PIX/dlpending.svg" "Queuing download" "$name"
-tsp -w "$(tsp $cmd "$url")" && notify-send -i "$PIX/dlcomplete.svg" "Download complete" "$name" || notify-send -u critical "❗ Download failed" "$name"
+id="$(tsp $cmd "$url")"
+pkill -10 status
+( tsp -w "$id" && notify-send -i "$PIX/dlcomplete.svg" "Download complete" "$name" || notify-send -u critical "❗ Download failed" "$name"; pkill -10 status ) &

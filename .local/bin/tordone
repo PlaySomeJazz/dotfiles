@@ -2,3 +2,4 @@
 
 dunstify -a "Transmission" "Torrent complete" "$TR_TORRENT_NAME" -i "$PIX/transmission.svg"
 transmission-remote -t "$TR_TORRENT_ID" -r
+pkill -12 status

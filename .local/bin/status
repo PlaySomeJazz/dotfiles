@@ -1,26 +1,30 @@
 #!/bin/sh
-battery=$(echo /sys/class/power_supply/BAT?*)
-wifi=$(echo /sys/class/net/w*/operstate)
-bluetooth=$(echo /sys/class/bluetooth/hci0/rfkill*/state)
+battery=`echo /sys/class/power_supply/BAT?*`
+wifi=`echo /sys/class/net/w*/operstate`
+bluetooth=`echo /sys/class/bluetooth/hci0/rfkill*/state`
 get_bt() { read -r bt < "$bluetooth"; [ "$bt" -eq 1 ] && bt=on || bt=off; } ; get_bt
+get_tasks() { ts="$(tasks)"; test "$ts" && ts="  TSP $ts  |" || ts=""; }
+get_torr() { t=$(torr); [ "${t:-0}" -ne 0 ] && t="  TORR $t  |" || t=""; }
 update() {
-	time_date=$(date "+%d %b (%a), %R")
-	read -r net < "$wifi"; read -r net_val < /tmp/net_stat; [ "$net" = "up" ] && [ "${net_val:-1}" -eq 0 ] && net="[ ! ] up"
+	time_date=`date "+%d %b (%a), %R"`
+	read -r net < "$wifi"; read -r net_val < /tmp/net_stat; [ "$net" = "up" -a "${net_val:-1}" -eq 0 ] && net="[ ! ] up"
 	while read -r key val _; do
 		case $key in MemTotal:) total=$val;; MemAvailable:) available=$val;; esac
 	done < /proc/meminfo ; mem=$(( (total - available) * 100 / total ))
 	read -r cpu < /sys/class/thermal/thermal_zone0/temp; cpu="${cpu%000}°C"
 	{ read -r _; read -r disk; } <<- EOF
-	$(df / --output=pcent)
+	`df / --output=pcent`
 	EOF
 	read -r batt_status < "$battery/status"
 	[ "$batt_status" != "Full" ] && {
 		read -r capacity < "$battery/capacity"; [ "$capacity" -le 25 ] && capacity="🪫 $capacity"
 		batt="  BATT $capacity% ($batt_status)  |"
 	} || batt=""
-	xsetroot -name "$batt  DISK $disk  |  RAM $mem%  |  TEMP $cpu  |  BT $bt  |  NET $net  |  $time_date  "
+	xsetroot -name "$batt$ts$t  DISK $disk  |  RAM $mem%  |  TEMP $cpu  |  BT $bt  |  NET $net  |  $time_date  "
 }
-trap 'get_bt; update' TRAP
+trap 'get_bt; update' 5
+trap 'get_tasks; update' 10
+trap 'get_torr; update' 12
 
 while :; do
 	update
