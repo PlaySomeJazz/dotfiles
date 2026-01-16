@@ -10,8 +10,10 @@ esac done
 shift $((OPTIND - 1))
 url=${1:-$(xclip -o)}
 name="${url##*/}"
-[ "$o" = c ] || [ "$o" = d ] && name="${name%%\?*}"
+[ "$o" = c -o "$o" = d ] && name="${name%%\?*}"
 notify-send -i "$PIX/dlpending.svg" "Queuing download" "$name"
 id="$(tsp $cmd "$url")"
 pkill -10 status
-( tsp -w "$id" && notify-send -i "$PIX/dlcomplete.svg" "Download complete" "$name" || notify-send -u critical "❗ Download failed" "$name"; pkill -10 status ) &
+( tsp -w "$id" && notify-send -i "$PIX/dlcomplete.svg" "Download complete" "$name" ||
+	notify-send -u critical "❗ Download failed" "$name"; pkill -10 status
+) &

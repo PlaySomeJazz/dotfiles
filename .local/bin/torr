@@ -1,7 +1,0 @@
-#!/bin/dash
-export LC_ALL=C
-set -f
-IFS='
-'
-set -- $(transmission-remote -l 2>/dev/null)
-echo "$(( $# > 2 ? $# - 2 : 0 ))"

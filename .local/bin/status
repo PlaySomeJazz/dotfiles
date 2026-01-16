@@ -1,14 +1,22 @@
 #!/bin/sh
-battery=`echo /sys/class/power_supply/BAT?*`
-wifi=`echo /sys/class/net/w*/operstate`
-bluetooth=`echo /sys/class/bluetooth/hci0/rfkill*/state`
+export LC_ALL=C
+IFS='
+'
+battery=`echo /sys/class/power_supply/BAT?*` wifi=`echo /sys/class/net/w*/operstate` bluetooth=`echo /sys/class/bluetooth/hci0/rfkill*/state`
+set -f
+get_tasks()
+{
+	r=0 q=0; while IFS=' ' read -r _ s _; do case $s in running) r=$((r + 1)) ;; queued) q=$((q + 1)) ;; esac; done <<- !
+	`tsp 2>/dev/null`
+	!
+	ts=$((r + q)); [ "$ts" -gt 0 ] && ts="  TSP $ts ($q)  ::" || ts=""
+}
 get_bt() { read -r bt < "$bluetooth"; [ "$bt" -eq 1 ] && bt=on || bt=off; } ; get_bt
-get_tasks() { ts="$(tasks)"; test "$ts" && ts="  TSP $ts  |" || ts=""; }
-get_torr() { t=$(torr); [ "${t:-0}" -ne 0 ] && t="  TORR $t  |" || t=""; }
+get_torr() { set -- `transmission-remote -l 2>/dev/null`; t=$(( $# > 2 ? $# - 2 : 0 )); [ "${t:-0}" -ne 0 ] && t="  TORR $t  ::" || t=""; }
 update() {
 	time_date=`date "+%d %b (%a), %R"`
-	read -r net < "$wifi"; read -r net_val < /tmp/net_stat; [ "$net" = "up" -a "${net_val:-1}" -eq 0 ] && net="[ ! ] up"
-	while read -r key val _; do
+	read -r net < "$wifi"; read -r net_val < /tmp/pg 2>/dev/null; [ "$net" = "up" -a "${net_val:-1}" -eq 0 ] && net="[ ! ] up"
+	while IFS=' ' read -r key val _; do
 		case $key in MemTotal:) total=$val;; MemAvailable:) available=$val;; esac
 	done < /proc/meminfo ; mem=$(( (total - available) * 100 / total ))
 	read -r cpu < /sys/class/thermal/thermal_zone0/temp; cpu="${cpu%000}°C"
@@ -17,16 +25,11 @@ update() {
 	EOF
 	read -r batt_status < "$battery/status"
 	[ "$batt_status" != "Full" ] && {
-		read -r capacity < "$battery/capacity"; [ "$capacity" -le 25 ] && capacity="🪫 $capacity"
-		batt="  BATT $capacity% ($batt_status)  |"
+		read -r capacity < "$battery/capacity"; [ "$capacity" -le 25 ] && capacity="[ ! ] $capacity"
+		batt="  BATT $capacity% ($batt_status)  ::"
 	} || batt=""
 	xsetroot -name "$batt$ts$t  DISK $disk  |  RAM $mem%  |  TEMP $cpu  |  BT $bt  |  NET $net  |  $time_date  "
 }
-trap 'get_bt; update' 5
-trap 'get_tasks; update' 10
-trap 'get_torr; update' 12
-
-while :; do
-	update
-	sleep 10 & wait
-done
+trap 'get_bt; update' 5 ; trap 'get_tasks; update' 10 ; trap 'get_torr; update' 12
+while :; do ping -c 2 -W 5 1.1.1.1 > /dev/null 2>&1 && echo 1 > /tmp/pg || echo 0 > /tmp/pg; kill -12 $$; sleep 1m; done &
+while :; do update; sleep 10 & wait $!; done

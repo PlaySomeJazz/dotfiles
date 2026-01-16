@@ -10,4 +10,4 @@ rm -rf "$pdir/prefs.js"
 t="/tmp/f$$"
 trap 'rm -f $t' EXIT
 curl -sL -o $t "https://raw.githubusercontent.com/yokoffing/Betterfox/refs/heads/main/user.js"
-cat "$config_dir/custom.js" $t > "$config_dir/user.js"
+cat "$config_dir/custom.js" $t > "$pdir/user.js"
