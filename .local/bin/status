@@ -18,7 +18,7 @@ update() {
 	time_date=`date "+%d %b (%a), %R"`
 	read -r net < "$wifi"; [ "$net" = "up" -a "${net_val:-1}" -eq 0 ] && net="[ ! ] up"
 	while IFS=' ' read -r key val _; do
-		case $key in MemTotal:) total=$val;; MemAvailable:) available=$val;; esac
+		case $key in MemTotal:) total=$val;; MemAvailable:) available=$val; break;; esac
 	done < /proc/meminfo ; mem=$(( (total - available) * 100 / total ))
 	read -r cpu < /sys/class/thermal/thermal_zone0/temp; cpu="${cpu%000}°C"
 	set -- `df / --output=pcent`; disk=$2
