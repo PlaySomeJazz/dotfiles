@@ -1,4 +1,5 @@
 #!/bin/sh
+: 'Fancy shells can print time without forking `date`, e.g. ksh93 can do time_date=`printf "%(%d %b (%a), %R)T\n"`'
 export LC_ALL=C
 IFS='
 '
@@ -15,21 +16,19 @@ get_bt() { read -r bt < "$bluetooth"; [ "$bt" -eq 1 ] && bt=on || bt=off; } ; ge
 get_torr() { set -- `transmission-remote -l 2>/dev/null`; t=$(( $# > 2 ? $# - 2 : 0 )); [ "${t:-0}" -ne 0 ] && t="  TORR $t  ::" || t=""; }
 update() {
 	time_date=`date "+%d %b (%a), %R"`
-	read -r net < "$wifi"; read -r net_val < /tmp/pg 2>/dev/null; [ "$net" = "up" -a "${net_val:-1}" -eq 0 ] && net="[ ! ] up"
+	read -r net < "$wifi"; [ "$net" = "up" -a "${net_val:-1}" -eq 0 ] && net="[ ! ] up"
 	while IFS=' ' read -r key val _; do
 		case $key in MemTotal:) total=$val;; MemAvailable:) available=$val;; esac
 	done < /proc/meminfo ; mem=$(( (total - available) * 100 / total ))
 	read -r cpu < /sys/class/thermal/thermal_zone0/temp; cpu="${cpu%000}°C"
-	{ read -r _; read -r disk; } <<- EOF
-	`df / --output=pcent`
-	EOF
+	set -- `df / --output=pcent`; disk=$2
 	read -r batt_status < "$battery/status"
 	[ "$batt_status" != "Full" ] && {
 		read -r capacity < "$battery/capacity"; [ "$capacity" -le 25 ] && capacity="[ ! ] $capacity"
 		batt="  BATT $capacity% ($batt_status)  ::"
 	} || batt=""
-	xsetroot -name "$batt$ts$t  DISK $disk  |  RAM $mem%  |  TEMP $cpu  |  BT $bt  |  NET $net  |  $time_date  "
+	xsetroot -name "$batt$ts$t  DISK$disk  |  RAM $mem%  |  TEMP $cpu  |  BT $bt  |  NET $net  |  $time_date  "
 }
-trap 'get_bt; update' 5 ; trap 'get_tasks; update' 10 ; trap 'get_torr; update' 12
-while :; do ping -c 2 -W 5 1.1.1.1 > /dev/null 2>&1 && echo 1 > /tmp/pg || echo 0 > /tmp/pg; kill -12 $$; sleep 1m; done &
+trap 'get_bt; update' 5 ; trap 'get_tasks; update' 10 ; trap 'get_torr; update' 12 ; trap 'net_val=1' RTMIN ; trap 'net_val=0' RTMIN+1
+while :; do ping -c 2 -W 5 1.1.1.1 > /dev/null 2>&1 && kill -RTMIN $$ || kill -RTMIN+1 $$; kill -12 $$; sleep 1m; done &
 while :; do update; sleep 10 & wait $!; done
