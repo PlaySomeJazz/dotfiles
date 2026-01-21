@@ -1,6 +1,6 @@
 #!/bin/ksh
 
-: 'For dash use time_date=`date "+%d %b (%a), %R"` ; Signal 34 is RTMIN'
+: 'For dash use time_date=`date "+%d %b (%a), %R"` ; Signal 34 is RTMIN ; Most shells require `sleep 10 & wait $!`'
 
 IFS='
 '
@@ -25,6 +25,6 @@ update() {
 	read bs<$batt/status;case "$bs" in Full)b='';;*)read c<$batt/capacity;[ $c -le 25 ] && c="[ ! ] $c";b="  BATT $c% ($bs)  ::";;esac
 	xsetroot -name "$b$ts$t  DISK$disk  |  RAM $mem%  |  TEMP $cpu  |  BT $bt  |  WIFI $net  |  $time_date  "
 }
-trap get_bt 5 ; trap get_tasks 10 ; trap get_torr 12 ; trap net_val=1 35 ; trap net_val=0 36
+trap get_tasks 10 ; trap get_torr 12 ; trap get_bt 34 ; trap net_val=1 35 ; trap net_val=0 36
 while :; do ping -c 2 -W 5 1.1.1.1 > /dev/null 2>&1 && kill -35 $$ || kill -36 $$; kill -12 $$; sleep 60; done &
-while :; do update; sleep 10 & wait $!; done
+while :; do update; sleep 10; done
