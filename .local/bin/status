@@ -1,33 +1,30 @@
 #!/bin/ksh
 
-: 'For dash use time_date=`date "+%d %b (%a), %R"`'
+: 'For dash use time_date=`date "+%d %b (%a), %R"` ; Signal 35 is RTMIN in ksh93, RTMIN+1 in dash'
 
 IFS='
 '
 export LC_ALL=C
-battery=`echo /sys/class/power_supply/BAT?*`
-wifi=`echo /sys/class/net/w*/operstate`
-bluetooth=`echo /sys/class/bluetooth/hci0/rfkill*/state`
+batt=`echo /sys/class/power_supply/BAT?*` wifi=`echo /sys/class/net/w*/operstate` btooth=`echo /sys/class/bluetooth/hci0/rfkill*/state`
 set -f
-get_bt() { read -r bt < "$bluetooth"; [ "$bt" -eq 1 ] && bt=on || bt=off; } ; get_bt
-get_torr() { set -- `transmission-remote -l 2>/dev/null`; t=$(( $# > 2 ? $# - 2 : 0 )); [ "${t:-0}" -ne 0 ] && t="  TORR $t  ::" || t=""; }
+get_bt() { read bt < $btooth; [ $bt -eq 1 ] && bt=on || bt=off; } ; get_bt
+get_torr() { set -- `transmission-remote -l 2>/dev/null`; t=$(( $# > 2 ? $# - 2 : 0 )); [ ${t:-0} -ne 0 ] && t="  TORR $t  ::" || t=''; }
 get_tasks()
 {
 	r=0 q=0; while IFS=' ' read -r _ s _; do case $s in running) r=$((r + 1)) ;; queued) q=$((q + 1)) ;; esac; done <<- !
 	`tsp 2>/dev/null`
 	!
-	ts=$((r + q)); [ "$ts" -gt 0 ] && ts="  TSP $ts ($q)  ::" || ts=""
+	ts=$((r + q)); [ $ts -gt 0 ] && ts="  TSP $ts ($q)  ::" || ts=''
 }
 update() {
 	printf -v time_date '%(%d %b (%a), %R)T\n' -1
-	read -r net < "$wifi"; [ "$net" = "up" -a "${net_val:-1}" -eq 0 ] && net="[ ! ] up"
+	read net < $wifi; [ $net = up -a ${net_val:-1} -eq 0 ] && net='[ ! ] up'
 	while IFS=' ' read -r k v _;do case $k in MemTotal:)all=$v;;MemAvailable:)free=$v;break;;esac;done</proc/meminfo;mem=$(((all-free)*100/all))
-	read -r cpu < /sys/class/thermal/thermal_zone0/temp; cpu="${cpu%000}°C"
+	read cpu < /sys/class/thermal/thermal_zone0/temp; cpu=${cpu%000}°C
 	set -- `df / --output=pcent`; disk=$2
-	read -r batt_stat < "$battery/status"
-	case "$batt_stat" in Full) batt='' ;; *) read -r c < "$battery/capacity"; [ "$c" -le 25 ] && c="[ ! ] $c"; batt="  BATT $c% ($batt_stat)  ::" ;; esac
-	xsetroot -name "$batt$ts$t  DISK$disk  |  RAM $mem%  |  TEMP $cpu  |  BT $bt  |  WIFI $net  |  $time_date  "
+	read bs<$batt/status;case "$bs" in Full)b='';;*)read c<$batt/capacity;[ $c -le 25 ] && c="[ ! ] $c";b="  BATT $c% ($bs)  ::";;esac
+	xsetroot -name "$b$ts$t  DISK$disk  |  RAM $mem%  |  TEMP $cpu  |  BT $bt  |  WIFI $net  |  $time_date  "
 }
-trap 'get_bt; update' 5 ; trap 'get_tasks; update' 10 ; trap 'get_torr; update' 12 ; trap 'net_val=1' RTMIN ; trap 'net_val=0' RTMIN+1
-while :; do ping -c 2 -W 5 1.1.1.1 > /dev/null 2>&1 && kill -RTMIN $$ || kill -RTMIN+1 $$; kill -12 $$; sleep 60; done &
+trap 'get_bt; update' 5 ; trap 'get_tasks; update' 10 ; trap 'get_torr; update' 12 ; trap 'net_val=1' 35 ; trap 'net_val=0' 36
+while :; do ping -c 2 -W 5 1.1.1.1 > /dev/null 2>&1 && kill -35 $$ || kill -36 $$; kill -12 $$; sleep 60; done &
 while :; do update; sleep 10 & wait $!; done
