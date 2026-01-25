@@ -1,13 +1,13 @@
 #!/bin/ksh
 export LC_ALL=C
 
-: 'These paths should be portable, except if using multiple batteries or dongles'
+: 'These paths should be portable, unless using multiple batteries or dongles'
 batt=`echo /sys/class/power_supply/BAT?*`
 btooth=`echo /sys/class/bluetooth/hci0/rfkill*/state`
 wifi=`echo /sys/class/net/w*/operstate` flag=`echo /sys/class/net/w*/flags`
 ethernet=`echo /sys/class/net/e*/operstate`
 
-: 'Run these when triggered by signals, instead of every n seconds'
+: 'Run these when receiving signals, instead of every n seconds'
 get_torr()
 {
 	t=0; while read -r _ p _; do case $p in 100%) ;; *%|n/a) t=$((t+1));;esac;done <<-EOF
@@ -27,19 +27,20 @@ get_bt() { read bt < $btooth; [ $bt -eq 1 ] && bt=on || bt=off; } ; get_bt
 : 'Set your signals here'
 trap get_tasks 10 ; trap get_torr 12 ; trap get_bt 34
 
-: 'The refresh loop'
+: 'The loop. `printf` for time and interruptible sleep are not POSIX'
 n=0
 while :; do
 	n=$((n+1))
 	[ $n -ge 4 ] && {
 		ping -c 1 -W 1 1.1.1.1 > /dev/null 2>&1 || ping -c 1 -W 3 1.1.1.1 > /dev/null 2>&1 && net_val=1 || net_val=0
-		for f in /sys/class/net/tun*/operstate; do [ -e "$f" ] && vpn='::  VPN on  ' || vpn='' && break; done
+		for f in /sys/class/net/tun*/operstate; do [ -e $f ] && vpn='::  VPN on  ' || vpn='' && break; done
 		get_torr
 		n=0
 	}
 	printf -v time_date '%(%d %b (%a), %R)T\n' -1
-	read net < $wifi; read fl < $flag ; read eth < $ethernet
-	[ $net = up -a ${net_val:-1} -eq 0 ] && net='[ ! ] up' ; [ $net = down ] && { test $fl = 0x1003 && net='[ w ]' || net='[ off ]' ; }
+	read net < $wifi; read eth < $ethernet
+	[ $net = up -a ${net_val:-1} -eq 0 ] && net='[ ! ] up' ||
+		test $net = down && read fl < $flag && { test $fl = 0x1003 && net='[ w ]' || net='[ off ]' ; }
 	[ $eth = up ] && eth='::  ETH on  ' || eth=''
 	while read -r k v _;do case $k in MemTotal:)all=$v;;MemAvailable:)free=$v;break;;esac;done</proc/meminfo;mem=$(((all-free)*100/all))
 	read r_cpu < /sys/class/thermal/thermal_zone0/temp; cpu=${r_cpu%000}°C
