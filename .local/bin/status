@@ -4,7 +4,8 @@ export LC_ALL=C
 : 'These paths should be portable, unless using multiple batteries or dongles'
 batt=`echo /sys/class/power_supply/BAT?*`
 btooth=`echo /sys/class/bluetooth/hci0/rfkill*/state`
-wifi=`echo /sys/class/net/w*/operstate` flag=`echo /sys/class/net/w*/flags`
+wifi=`echo /sys/class/net/w*/operstate`
+flag=`echo /sys/class/net/w*/flags`
 ethernet=`echo /sys/class/net/e*/operstate`
 
 : 'Run these when receiving signals, instead of every n seconds'
@@ -28,24 +29,32 @@ get_bt() { read bt < $btooth; [ $bt -eq 1 ] && bt=on || bt=off; } ; get_bt
 trap get_tasks 10 ; trap get_torr 12 ; trap get_bt 34
 
 : 'The loop. `printf` for time and interruptible sleep are not POSIX'
-n=0
+n=0 nv=1
 while :; do
 	n=$((n+1))
-	[ $n -ge 4 ] && {
-		ping -c 1 -W 1 1.1.1.1 > /dev/null 2>&1 || ping -c 1 -W 3 1.1.1.1 > /dev/null 2>&1 && net_val=1 || net_val=0
-		for f in /sys/class/net/tun*/operstate; do [ -e $f ] && vpn='::  VPN on  ' || vpn='' && break; done
-		get_torr
-		n=0
-	}
 	printf -v time_date '%(%d %b (%a), %R)T\n' -1
 	read net < $wifi; read eth < $ethernet
-	[ $net = up -a ${net_val:-1} -eq 0 ] && net='[ ! ] up' ||
-		test $net = down && read fl < $flag && { test $fl = 0x1003 && net='[ w ]' || net='[ off ]' ; }
 	[ $eth = up ] && eth='::  ETH on  ' || eth=''
 	while read -r k v _;do case $k in MemTotal:)all=$v;;MemAvailable:)free=$v;break;;esac;done</proc/meminfo;mem=$(((all-free)*100/all))
-	read r_cpu < /sys/class/thermal/thermal_zone0/temp; cpu=${r_cpu%000}°C
-	set -- `df / --output=pcent`; disk=$2
+	read raw_cpu < /sys/class/thermal/thermal_zone0/temp; cpu=${raw_cpu%000}°C
+	set -- `df / --output=pcent`
 	read bs<$batt/status;case "$bs" in Full)b='';;*)read c<$batt/capacity;[ $c -le 25 ] && c="[ ! ] $c";b="  BATT $c% ($bs)  ::";;esac
-	xsetroot -name "$b$ts$t  DISK $disk  |  RAM $mem%  |  TEMP $cpu  |  BT $bt  |  WIFI $net  |  $time_date  $eth$vpn"
+	[ \( $net = up -a $nv -eq 0 \) -o $net = down -o $n -eq 4 ] &&
+		case $net in
+			up)
+				if ping -c 1 -W 1 1.1.1.1 > /dev/null 2>&1 || ping -c 1 -W 3 1.1.1.1 > /dev/null 2>&1; then
+					nv=1 warn=''
+				else
+					nv=0 warn='[ ! ]'
+				fi
+				for f in /sys/class/net/tun*/operstate; do [ -e $f ] && vpn='::  VPN on  ' || vpn='' && break; done
+				;;
+			*)
+				read fl < $flag && { test $fl = 0x1003 && warn='[ w ]' || warn='[ off ]' ; }
+				nv=0
+				;;
+		esac
+	case $n in 4) get_torr; n=0;;esac
+	xsetroot -name "$b$ts$t  DISK $2  |  RAM $mem%  |  TEMP $cpu  |  BT $bt  |  WIFI $warn $net  |  $time_date  $eth$vpn"
 	sleep 10
 done
