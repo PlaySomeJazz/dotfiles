@@ -10,7 +10,7 @@ esac done
 shift $((OPTIND - 1))
 url=${1:-$(xclip -o)}
 name="${url##*/}"
-case "$o" in c|d) name="${name%%\?*}"; esac
+case "$o" in [cd]) name="${name%%\?*}"; esac
 notify-send -i "$PIX/dlpending.svg" "Queuing download" "$name"
 id="$(tsp $cmd "$url")"
 pkill -10 status
