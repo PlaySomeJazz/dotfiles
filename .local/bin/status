@@ -36,7 +36,7 @@ torr()
 	do	case $p in
 		100%)	;;
 		*%|n/a)	t=$((t+1))
-	esac
+		esac
 	done <<-EOF
 	`transmission-remote -l`
 	EOF
