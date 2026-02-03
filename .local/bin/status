@@ -1,95 +1,113 @@
 #!/bin/sh
-export LC_ALL=C
+LC_ALL=C export LC_ALL
+T=/tmp/p$$
+trap 'rm -f $T; xsetroot -name ""; exit' 0 1 2 3 15
 
-: These paths should be portable, unless using multiple batteries or dongles
+: Those paths are portable to most setups
 B=`echo /sys/class/power_supply/BAT?*`
 BS=$B/status
 BC=$B/capacity
 BT=`echo /sys/class/bluetooth/hci0/rfkill*/state`
+E=`echo /sys/class/net/e*/operstate`
 W=`echo /sys/class/net/w*/operstate`
 WF=`echo /sys/class/net/w*/flags`
-E=`echo /sys/class/net/e*/operstate`
 
-: Run these when called or when receiving signals, instead of every n seconds
+: Things to run only when called or signaled
+tsk()
+{
+	r=0 q=0
+	while read -r _ s _
+	do	case $s in
+		running)r=$((r+1));;
+		queued)	q=$((q+1))
+		esac
+	done <<- !
+	`tsp -l`
+	!
+	ts=$((r+q))
+	test $ts -gt 0 &&
+	ts="  TSP $ts ($q)  ::" || ts=''
+}
+
 torr()
 {
 	t=0
-	while read -r _ p _; do
-	case $p in 100%) ;; *%|n/a) t=$((t+1));; esac; done <<-EOF
+	while read -r _ p _
+	do	case $p in
+		100%)	;;
+		*%|n/a)	t=$((t+1))
+	esac
+	done <<-EOF
 	`transmission-remote -l`
 	EOF
 	test $t -ne 0 &&
 	t="  TORR $t  ::" || t=''
 }
-tsk()
-{
-	r=0 q=0
-	while read -r _ s _; do
-	case $s in running) r=$((r+1)) ;; queued) q=$((q+1)) ;;esac;done <<- !
-	`tsp`
-	!
-	ts=$((r+q)); test $ts -gt 0 &&
-	ts="  TSP $ts ($q)  ::" || ts=''
-}
-cchk()
-{
-	case $net in
-	up)	if ping -c 1 -W 1 1.1.1.1 > /dev/null 2>&1 ||
-		ping -c 1 -W 2 1.1.1.1 > /dev/null 2>&1
-		then	p=1 w=''
-		else	p=0 w='[ ! ] '
-		fi
-		for f in /sys/class/net/tun*/operstate
-		do	[ -e $f ] && vpn='::  VPN on  ' ||
-			vpn='' && break
-		done ;;
-	*)	read fl < $WF
-		test $fl = 0x1003 && net='[ w ]' || net='[ off ]'
-		p=0 w='' ;;
-	esac
-}
-btt() { read bt < $BT; test $bt -eq 1 && bt=on || bt=off; } ; btt
+
+btt() { read bt <$BT; test $bt -eq 1 && bt=on || bt=off; } ; btt
+
+netchk() { ping -c 1 -W 3 1.1.1.1 > /dev/null 2>&1; echo $? >$T; }
 
 : Set your signals here
 trap tsk 10
 trap torr 12
 trap btt 34
 
-: The loop
+: Initial values
 td=`date '+%d %b (%a), %R'`
-p=0
+netchk
+
+: The loop
 while :; do
 	otd=$td
 	td=`date '+%d %b (%a), %R'`
-	read net < $W; read eth < $E
-	test $eth = up && eth='::  ETH on  ' || eth=''
+	read net <$W
+	case $net in
+	up)	read g <$T
+		if test $g -ne 0
+		then	net='[ ! ] up'
+			netchk &
+		elif test "$td" != "$otd"
+		then	netchk &
+			torr
+			for i in /sys/class/net/[tw][ug]*/operstate
+			do	if test -e $i
+				then	vpn='::  VPN on  '
+				else	vpn=''
+				fi
+				break
+			done
+		fi ;;
+	down)	read fl < $WF
+		test $fl = 0x1003 &&
+		net='[ w ]' || net='[ off ]'
+	esac
+	read eth <$E
+	case $eth in
+	up)	eth='::  ETH on  ' ;;
+	*)	eth=''
+	esac
 	while read k v _
 	do	case $k in
 		MemTotal:)	a=$v;;
-		MemAvailable:)	f=$v; break;;
-	esac
+		MemAvailable:)	f=$v; break
+		esac
 	done </proc/meminfo
-	m=$(((a-f)*100/a))
-	read rc < /sys/class/thermal/thermal_zone0/temp; cpu=${rc%000}°C
-	set -- `df / --output=pcent`
-	read bs<$BS
+	m=$(( (a-f)*100/a ))
+	read rc </sys/class/thermal/thermal_zone0/temp &&
+	cpu=${rc%000}°C
+	read a f <<-!
+	`stat -f -c '%b %a' /`
+	!
+	disk=$(( (a-f)*100/a ))
+	read bs <$BS
 	case "$bs" in
-	Full)	b='';;
+	Full)	b='' ;;
 	*)	read c <$BC
 		test $c -le 25 && c="[ ! ] $c"
-		b="  BATT $c% ($bs)  ::" ;;
+		b="  BATT $c% ($bs)  ::"
 	esac
-	test \( $net = up -a $p -eq 0 \) -o \
-			$net = down -o \
-			"$td" != "$otd" &&
-	cchk
-
-	if test ! "$td" = "$otd"; then
-		case $td in
-		*[02468])	torr;;
-		esac
-	fi
 	xsetroot -name \
-		"$b$ts$t  DISK $2  |  RAM $m%  |  TEMP $cpu  |  BT $bt  |  WIFI $w$net  |  $td  $eth$vpn"
+		"$b$ts$t  DISK $disk%  |  RAM $m%  |  TEMP $cpu  |  BT $bt  |  WIFI $net  |  $td  $eth$vpn"
 	sleep 10 & wait
 done
