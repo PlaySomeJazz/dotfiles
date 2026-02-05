@@ -3,8 +3,8 @@
 
 # Profile file, runs on login. Environmental variables are set here.
 
-# Add all directories in `~/.local/bin` to $PATH
-export PATH="$PATH:$(find ~/.local/bin -type d | paste -sd ':' -)"
+# Add all directories in `~/local/bin` to $PATH
+export PATH="$PATH:$(find ~/local/bin -type d | paste -sd ':' -)"
 
 unsetopt PROMPT_SP 2>/dev/null
 
@@ -55,7 +55,7 @@ export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
 #export OPENSSL_CONF=/dev/null
 export TS_SLOTS="3"
 export DICS="/usr/share/stardict/dic/"
-export SUDO_ASKPASS="$HOME/.local/bin/dmenupass"
+export SUDO_ASKPASS="$HOME/local/bin/dmenupass"
 export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
 export QT_QPA_PLATFORMTHEME="gtk2"        # Have QT use gtk2 theme.
 export MOZ_USE_XINPUT2=1                  # Mozilla smooth scrolling/touchpads.
