@@ -1,4 +1,4 @@
-mpd_music_dir = ~/Music
+mpd_music_dir = ~/music
 ncmpcpp_directory = ~/local/etc/ncmpcpp
 lyrics_directory = ~/local/share/lyrics
 message_delay_time = "1"

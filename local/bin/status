@@ -52,6 +52,7 @@ netchk() { ping -c 1 -W 3 1.1.1.1 > /dev/null 2>&1; echo $? >$T; }
 trap tsk 10
 trap torr 12
 trap btt 34
+trap 'read net <$W' 35
 
 : Initial values
 td=`date '+%d %b (%a), %R'`
@@ -85,7 +86,7 @@ while :; do
 	read eth <$E
 	case $eth in
 	up)	eth='::  ETH on  ' ;;
-	*)	eth=''
+	down)	eth=''
 	esac
 	while read k v _
 	do	case $k in
