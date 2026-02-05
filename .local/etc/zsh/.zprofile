@@ -19,10 +19,10 @@ export BROWSER="firefox"
 # export WTTRURL="wttr.in"
 
 # ~/ Clean-up:
-export XDG_CONFIG_HOME="$HOME/.local/etc"
-export XDG_DATA_HOME="$HOME/.local/share"
-export XDG_CACHE_HOME="$HOME/.local/var/cache"
-export XDG_STATE_HOME="$HOME/.local/var/state"
+export XDG_CONFIG_HOME="$HOME/local/etc"
+export XDG_DATA_HOME="$HOME/local/share"
+export XDG_CACHE_HOME="$HOME/local/var/cache"
+export XDG_STATE_HOME="$HOME/local/var/state"
 export XINITRC="$XDG_CONFIG_HOME/x11/xinitrc"
 export XAUTHORITY="$XDG_RUNTIME_DIR/Xauthority" # This line will break some DMs.
 export NOTMUCH_CONFIG="$XDG_CONFIG_HOME/notmuch-config"
@@ -52,7 +52,7 @@ export SQLITE_HISTORY="$XDG_DATA_HOME/sqlite_history"
 export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
 
 # Other program settings:
-export OPENSSL_CONF=/dev/null
+#export OPENSSL_CONF=/dev/null
 export TS_SLOTS="3"
 export DICS="/usr/share/stardict/dic/"
 export SUDO_ASKPASS="$HOME/.local/bin/dmenupass"

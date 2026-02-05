@@ -11,7 +11,9 @@ unmounter(){
 	notify-send "Device unmounted." "$selected has been unmounted."
 }
 
-[ "$1" = unmount ] && { unmounter; exit; }
+case $1 in
+unmount) unmounter; exit
+esac
 
 IFS='
 '

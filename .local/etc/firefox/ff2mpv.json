@@ -1,7 +1,0 @@
-{
-    "name": "ff2mpv",
-    "description": "ff2mpv's external manifest",
-    "path": "/usr/local/bin/ff2mpv-rust",
-    "type": "stdio",
-    "allowed_extensions": ["ff2mpv@forkofyossarian.net"]
-}

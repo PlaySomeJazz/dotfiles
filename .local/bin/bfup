@@ -1,0 +1,13 @@
+#!/bin/sh
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/firefox"
+profile_dir="${XDG_CONFIG_HOME:-$HOME/.config}/mozilla/firefox"
+profilesini="$profile_dir/profiles.ini"
+profile="$(sed -n "/Default=.*.default-release/ s/.*=//p" "$profilesini")"
+pdir="$profile_dir/$profile"
+
+rm -rf "$pdir/prefs.js"
+
+t="/tmp/f$$"
+trap 'rm -f $t' EXIT
+curl -sL -o $t "https://raw.githubusercontent.com/yokoffing/Betterfox/refs/heads/main/user.js"
+cat "$config_dir/custom.js" $t > "$pdir/user.js"

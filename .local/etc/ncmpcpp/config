@@ -1,6 +1,6 @@
 mpd_music_dir = ~/Music
-ncmpcpp_directory = ~/.local/etc/ncmpcpp
-lyrics_directory = ~/.local/share/lyrics
+ncmpcpp_directory = ~/local/etc/ncmpcpp
+lyrics_directory = ~/local/share/lyrics
 message_delay_time = "1"
 autocenter_mode = "yes"
 follow_now_playing_lyrics = "yes"
