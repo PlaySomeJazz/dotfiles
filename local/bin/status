@@ -71,6 +71,7 @@ while :; do
 		elif test "$td" != "$otd"
 		then	netchk &
 			torr
+			tsk
 			for i in /sys/class/net/[tw][ug]*/operstate
 			do	if test -e $i
 				then	vpn='::  VPN on  '
