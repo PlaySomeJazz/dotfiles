@@ -1,5 +1,6 @@
 #!/bin/sh
 set -euf
+p="${XDG_CONFIG_HOME:-$HOME/local/etc}/lf"
 if [ -n "${DISPLAY-}" ] && [ -z "${FIFO_UEBERZUG-}" ]; then
   export FIFO_UEBERZUG="${TMPDIR:-/tmp}/lf-ueberzug-$$"
   cleanup() {
@@ -10,7 +11,7 @@ if [ -n "${DISPLAY-}" ] && [ -z "${FIFO_UEBERZUG-}" ]; then
   while [ -p "$FIFO_UEBERZUG" ] && ! ueberzug layer -s <"$FIFO_UEBERZUG"; do :; done &
   exec 3>"$FIFO_UEBERZUG"
   trap cleanup EXIT
-  lf "$@" 3>&-
+  lf -command "set previewer $p/previewer; set cleaner $p/cleaner; source $p/shortcutrc" "$@" 3>&-
 else
   exec lf "$@"
 fi

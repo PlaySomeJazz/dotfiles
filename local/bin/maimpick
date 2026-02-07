@@ -1,7 +1,7 @@
 #!/bin/sh
 
 output="$(date '+%y%m%d-%H%M-%S').png"
-dir=~/pictures
+dir=${XDG_PICTURES_DIR:-$HOME/pictures}
 xclip_cmd="xclip -sel clip -t image/png"
 ocr_cmd="xclip -sel clip"
 

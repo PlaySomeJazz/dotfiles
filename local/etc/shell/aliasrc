@@ -13,7 +13,7 @@ for command in mount umount sv pacman updatedb su shutdown poweroff reboot ; do
 	alias $command="sudo $command"
 done; unset command
 
-se() { c="$(print -lnr "${HOME}/local/bin/"**/*(.) | fzf -d / --with-nth -1)"; [[ "$c" ]] && "$EDITOR" "$c"; }
+se() { c="$(print -lnr "$DOTS/bin/"**/*(.) | fzf -d / --with-nth -1)"; [[ "$c" ]] && "$EDITOR" "$c"; }
 
 # Verbosity and settings that you pretty much just always are going to want.
 alias \

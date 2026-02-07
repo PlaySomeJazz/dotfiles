@@ -49,7 +49,7 @@ hi winbar cterm=NONE gui=NONE
 " Ensure files are read as what I want:
 	let g:vimwiki_ext2syntax = {'.Rmd': 'markdown', '.rmd': 'markdown','.md': 'markdown', '.markdown': 'markdown', '.mdown': 'markdown'}
 	map <leader>v :VimwikiIndex<CR>
-	let g:vimwiki_list = [{'path': '~/.local/share/nvim/vimwiki', 'syntax': 'markdown', 'ext': '.md'}]
+	let g:vimwiki_list = [{'path': stdpath('data') . '/vimwiki', 'syntax': 'markdown', 'ext': '.md'}]
 	let g:vimwiki_folding='list'
 
 " When shortcut files are updated, renew bash and ranger configs with new material:

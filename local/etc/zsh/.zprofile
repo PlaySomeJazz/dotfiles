@@ -1,10 +1,11 @@
-#!/bin/sh
+#!/bin/zsh
 # shellcheck disable=SC2155
 
 # Profile file, runs on login. Environmental variables are set here.
+export DOTS="$HOME/local" # Might save some headaches
 
-# Add all directories in `~/local/bin` to $PATH
-export PATH="$PATH:$(find ~/local/bin -type d | paste -sd ':' -)"
+# Add all directories in $DOTS to $PATH
+export PATH="$PATH:$(find "$DOTS/bin" -type d | paste -sd ':' -)"
 
 unsetopt PROMPT_SP 2>/dev/null
 
@@ -18,11 +19,19 @@ export BROWSER="firefox"
 # export CRYPTOURL="rate.sx"
 # export WTTRURL="wttr.in"
 
+# XDG
+export XDG_CONFIG_HOME="$DOTS/etc"
+export XDG_DATA_HOME="$DOTS/share"
+export XDG_CACHE_HOME="$DOTS/var/cache"
+export XDG_STATE_HOME="$DOTS/var/state"
+
+if [ -f "$XDG_CONFIG_HOME/user-dirs.dirs" ]; then
+    set -a
+    . "$XDG_CONFIG_HOME/user-dirs.dirs"
+    set +a
+fi
+
 # ~/ Clean-up:
-export XDG_CONFIG_HOME="$HOME/local/etc"
-export XDG_DATA_HOME="$HOME/local/share"
-export XDG_CACHE_HOME="$HOME/local/var/cache"
-export XDG_STATE_HOME="$HOME/local/var/state"
 export XINITRC="$XDG_CONFIG_HOME/x11/xinitrc"
 export XAUTHORITY="$XDG_RUNTIME_DIR/Xauthority" # This line will break some DMs.
 export NOTMUCH_CONFIG="$XDG_CONFIG_HOME/notmuch-config"
@@ -33,6 +42,7 @@ export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export GNUPGHOME="$XDG_DATA_HOME/gnupg"
 export WINEPREFIX="$XDG_DATA_HOME/wineprefixes/default"
 export KODI_DATA="$XDG_DATA_HOME/kodi"
+export WL="${XDG_VIDEOS_DIR:-$HOME/videos}/Watchlist"
 export PIX="$XDG_DATA_HOME/icons"
 export NOTES_DIR="$XDG_DATA_HOME/notes"
 export NOTES_FILE="$XDG_DATA_HOME/capture"
@@ -55,7 +65,7 @@ export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
 #export OPENSSL_CONF=/dev/null
 export TS_SLOTS="3"
 export DICS="/usr/share/stardict/dic/"
-export SUDO_ASKPASS="$HOME/local/bin/dmenupass"
+export SUDO_ASKPASS="$DOTS/bin/dmenupass"
 export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
 export QT_QPA_PLATFORMTHEME="gtk2"        # Have QT use gtk2 theme.
 export MOZ_USE_XINPUT2=1                  # Mozilla smooth scrolling/touchpads.

@@ -8,8 +8,6 @@ set mouse true
 set period 1
 #set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml"
 set hiddenfiles ".ssh:/home:lib32:lib64:lost+found:/run:/usr/sbin"
-set previewer ~/local/etc/lf/previewer
-set cleaner ~/local/etc/lf/cleaner
 set autoquit true
 
 # cmds/functions
@@ -112,6 +110,3 @@ map W $setsid -f $TERMINAL >/dev/null 2>&1
 map Y $printf "%s" "$fx" | xclip -selection clipboard
 map t $nsxiv -t "$(pwd)" # opens thumbnail mode
 map <esc> cd /srv/media/tv
-
-# Source Bookmarks
-source "~/local/etc/lf/shortcutrc"

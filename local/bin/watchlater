@@ -2,13 +2,15 @@
 
 has_files() { chdir "$1" || exit ; set -- * .[!.]* ..?* ; for f do [ -e "$f" ] && return ; done ; }
 
-if ! has_files /srv/media/torrents; then notify-send "Empty" "Add some files..."; exit; fi
+l=${1:-/srv/media/torrents}
 
-for dir in $HOME/videos/Watchlist $HOME/music; do [ ! -d "$dir" ] && mkdir -p "$dir"; done
+if ! has_files "$l"; then notify-send "Empty" "Add some files..."; exit; fi
 
-find . -type f \( -iname "*.mp4" -o -iname "*.mkv" \) -exec sh -c 'safe mv "$@" $HOME/videos/Watchlist/' sh {} +
+for dir in "${WL:-$HOME/videos/Watchlist}" "${XDG_MUSIC_DIR:-$HOME/music}"; do [ ! -d "$dir" ] && mkdir -p "$dir"; done
 
-find . ! -name . -prune -type d -exec sh -c 'for dir do [ -n "$(find "$dir" -type f \( -iname "*.mp3" -o -iname "*.m4b" -o -iname "*.flac" -o -iname "*.m4a" -o -iname "*.opus" \) -print -quit)" ] && safe mv "$dir" "$HOME/music"; done' sh {} +
+find . -type f \( -iname "*.mp4" -o -iname "*.mkv" \) -exec sh -c 'safe mv "$@" "${WL:-$HOME/videos/Watchlist}"' sh {} +
+
+find . ! -name . -prune -type d -exec sh -c 'for dir do [ -n "$(find "$dir" -type f \( -iname "*.mp3" -o -iname "*.m4b" -o -iname "*.flac" -o -iname "*.m4a" -o -iname "*.opus" \) -print -quit)" ] && safe mv "$dir" "${XDG_MUSIC_DIR:-$HOME/music}"; done' sh {} +
 
 find . -depth ! -name . -prune -type d -exec sh -c 'for dir do [ -z "$(find "$dir" -type f \( -iname "*.pdf" -o -iname "*.djvu" -o -iname "*.epub" -o -iname "*.mobi" -o -iname "*.zip" -o -iname "*.rar" \) -print -quit)" ] && rm -rf "$dir"; done' sh {} +
 

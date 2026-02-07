@@ -7,7 +7,7 @@ download-timeout 3
 external-url-viewer "urlscan -dc -r 'linkhandler {}'"
 
 # Podcasts
-download-path "~/Music/Podcasts/%h/%n"
+download-path "~/music/podcasts/%h/%n"
 download-filename-format "%F-%t.%e"
 player "mpv --terminal=no"
 
