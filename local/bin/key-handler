@@ -1,30 +1,34 @@
 #!/bin/sh
 [ "$NSXIV_USING_NULL" = 1 ] && DELIM='\0' || DELIM='\n'
-escape() { printf "'%s' " "$(printf '%s' "$1" | sed -e "s/'/'\\\\''/g")"; }
-rotate() { tr "$DELIM" '\0' | xargs -0 realpath -z | sort -z -u | xargs -0 -I {} sh -c '
+escape() { printf "'%s'\\n" "$(printf '%s' "$1" | sed -e "s/'/'\\\\''/g")"; }
+rotate() {
+	tr "$DELIM" '\0' | xargs -0 realpath -z | sort -z -u | xargs -0 -I {} sh -c '
 		degree="$1"
 		case "$(file -b -i "{}")" in
 		image/jpeg*) jpegtran -rotate "$degree" -copy all -outfile "{}" "{}" ;;
 		*)           mogrify  -rotate "$degree" "{}" ;;
-		esac' -- "$1"
+		esac
+	' -- "$1"
 }
 
 case "$1" in
-w) read -r file; setbg "$file" ;;
-s) while read -r file; do xclip -sel c -target image/png "$file"; done && notify-send "🖼️ Done" "Image copied to clipboard" ;;
-d) [ "$(printf "Yes\nNo\n" | dmenu -i -p "Delete selection?")" = "Yes" ] && while read -r file; do rm "$file"; done && notify-send "Done" "File(s) deleted" ;;
-y) xclip -in -filter | while read -r file; do escape "$(realpath "$file")"; done | xclip -in -selection clipboard && notify-send "🗃️ Copied" "Filename(s)" ;;
+w) read -r file; setbg "$file" & ;;
+s) while read file; do xclip -sel c -target image/png "$file"; done && notify-send "📋 Done" "Image(s) copied to clipboard" ;;
+d) [ "$(printf "Yes\nNo\n" | dmenu -i -p "Delete selection?")" = "Yes" ] && while read -r file; do rm -f "$file"; done && notify-send "Done" "File(s) deleted" ;;
+y) xclip -in -filter | while read -r file; do escape "$(realpath $file)"; done | xclip -in -selection clipboard && notify-send "🗃️ Copied" "Filename(s)" ;;
 g) tr '\n' '\0' | xargs -0 gimp & ;;
 l) rotate 270 ;;
 r) rotate  90 ;;
 f) rotate 180 ;;
-i) while read -r file; do notify-send -t 10000 "File information" "$(mediainfo "$file" | sed "s/[ ]\+:/:/g;s/: /: <b>/;s/$/<\/b>/" | grep "<b>")"; done ;;
-c)
-   dest=$(sed 's/\s*#.*// ; /^$/d ; s/^\S*\s*//' "${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs" | dmenu -l 20 -i -p "Copy" | sed 's|~|$HOME|')
-   [ -z "$dest" ] && exit; dest=$(eval printf '%s\\n' \"$dest\"); [ ! -d "$dest" ] && notify-send "❗ No such directory" "$dest" && exit
-   while read -r file; do safe cp "$file" "$dest"; done && notify-send "📋 Done" "Image(s) copied to $dest" ;;
+i) read -r file; notify-send "File information" "$(mediainfo "$file" | sed "s/[ ]\+:/:/g;s/: /: <b>/;s/$/<\/b>/" | grep "<b>")" ;;
 m)
-   dest=$(sed 's/\s*#.*// ; /^$/d ; s/^\S*\s*//' "${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs" | dmenu -l 20 -i -p "Move" | sed 's|~|$HOME|')
-   [ -z "$dest" ] && exit; dest=$(eval printf '%s\\n' \"$dest\"); [ ! -d "$dest" ] && notify-send "❗ No such directory" "$dest" && exit
-   while read -r file; do safe mv "$file" "$dest"; done && notify-send "🚚 Done" "Image(s) moved to $dest" ;;
+    set -f
+    dest=$(sed 's/\s*#.*// ; /^$/d ; s/^\S*\s*//' "${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs" | dmenu -l 20 -i -p "Move" | sed 's|~|$HOME|')
+    [ -z "$dest" ] && exit; dest=$(eval printf '%s\\n' \"$dest\"); [ ! -d "$dest" ] && notify-send "$dest is not a directory" && exit
+    while read -r file; do safe mv $file "$dest" && notify-send "🚚 Done" "File(s) moved to $dest"; done ;;
+c)
+    set -f
+    dest=$(sed 's/\s*#.*// ; /^$/d ; s/^\S*\s*//' "${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs" | dmenu -l 20 -i -p "Copy" | sed 's|~|$HOME|')
+    [ -z "$dest" ] && exit; dest=$(eval printf '%s\\n' \"$dest\"); [ ! -d "$dest" ] && notify-send "$dest is not a directory" && exit
+    while read -r file; do safe cp $file "$dest" && notify-send "📋 Done" "File(s) copied to $dest"; done ;;
 esac
