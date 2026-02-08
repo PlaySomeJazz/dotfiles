@@ -1,6 +1,7 @@
 #!/bin/sh
-set -f
+
 [ "$NSXIV_USING_NULL" = 1 ] && DELIM='\0' || DELIM='\n'
+set -f
 escape() { printf "'%s' " "$(printf '%s' "$1" | sed -e "s/'/'\\\\''/g")"; }
 rotate() {
 	tr "$DELIM" '\0' | xargs -0 realpath -z | sort -z -u | xargs -0 -I {} sh -c '
@@ -31,4 +32,3 @@ c)
     [ -z "$dest" ] && exit; dest=$(eval printf '%s\\n' \"$dest\"); [ ! -d "$dest" ] && notify-send "$dest is not a directory" && exit
     while read -r file; do safe cp "$file" "$dest"; done && notify-send "📋 Done" "Image(s) copied to $dest" ;;
 esac
-

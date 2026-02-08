@@ -1,15 +1,15 @@
 #!/bin/sh
 while getopts vatidc: opt; do case $opt in
-    v) cmd="yt-dlp -i -o \
-	    ${XDG_VIDEOS_DIR:-$HOME/videos}/W/%(title)s-$(date +%s).%(ext)s" ;;
-    a) cmd="yt-dlp --embed-metadata -x -f bestaudio -o \
-	    ${XDG_MUSIC_DIR:-$HOME/music}/%(title)s.%(ext)s" ;;
-    t) cmd="yt-dlp --skip-download --write-thumbnail -o \
-	    ${XDG_PICTURES_DIR:-$HOME/pictures}/%(title)s.%(ext)s" ;;
-    i) cmd="gallery-dl --cookies-from-browser firefox -d \
-	    ${XDG_PICTURES_DIR:-$HOME/pictures}" ;;
-    d) cmd="aria2c --dir=\
-	    ${WL:-$HOME/videos/Watchlist}"
+    v) cmd="yt-dlp -i \
+	    -o ${XDG_VIDEOS_DIR:-$HOME/videos}/W/%(title)s-$(date +%s).%(ext)s" ;;
+    a) cmd="yt-dlp --embed-metadata -x -f bestaudio \
+	    -o ${XDG_MUSIC_DIR:-$HOME/music}/%(title)s.%(ext)s" ;;
+    t) cmd="yt-dlp --skip-download --write-thumbnail \
+	    -o ${XDG_PICTURES_DIR:-$HOME/pictures}/%(title)s.%(ext)s" ;;
+    i) cmd="gallery-dl --cookies-from-browser firefox \
+	    -d ${XDG_PICTURES_DIR:-$HOME/pictures}" ;;
+    d) cmd="aria2c \
+	    --dir=${WL:-$HOME/videos/Watchlist}"
 	    o=$opt ;;
     c) cmd=$OPTARG; o=$opt ;;
     *) exit ;;
