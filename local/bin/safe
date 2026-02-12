@@ -1,10 +1,10 @@
 #!/bin/sh
-
 set -f
-cmd=$1; shift
+cmd=$1;shift
 
-if [ "X$1" = "X-t" ]; then
-	shift; dest_dir=$1; shift
+if [ X"$1" = X-t ]; then
+	shift
+	dest=$1;shift
 else
 	for i do
 		eval argv$#=\$i
@@ -12,19 +12,24 @@ else
 		shift
 	done
 	eval set x "$argv"
-	shift; dest_dir=$1; shift
+	shift
+	dest=$1;shift
 fi
 
-for file_to_move do
-	name_of_file="${file_to_move##*/}"
-	name_before_extension="${name_of_file%.*}"
-	extension="${name_of_file##*.}"
-	[ "$name_before_extension" = "$extension" ] && extension=""
-	new_file="$name_of_file"
-	counter=1
-	while [ -e "$dest_dir/$new_file" ]; do
-		new_file="${name_before_extension}($counter).${extension}"
-		counter=$((counter + 1))
-	done
-	"$cmd" -- "$file_to_move" "$dest_dir/$new_file"
+for f do
+    {
+	filename="${f##*/}"
+	newfile="$filename"
+	if [ -e "$dest/$newfile" ]; then
+		name="${filename%.*}"
+		ext="${filename##*.}"
+		[ "$name" = "$ext" ] && ext=""
+		c=1
+		while [ -e "$dest/$newfile" ]; do
+			newfile="${name}_${c}.${ext}"
+			c=$((c+1))
+		done
+	fi
+	"$cmd" -- "$f" "$dest/$newfile"
+    } &
 done
