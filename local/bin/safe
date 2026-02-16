@@ -12,8 +12,8 @@ for dest do :; done
 test ! -d "$dest" && echo bad directory 1>&2 && exit 1
 
 extensions="
-mp3 m4a m4b opus wav flac mp4 mkv wmv webm tar.gz tar.bz2 tar.xz gz zip rar 7z
-pdf PDF md doc docx odt djvu azw3 epub mobi txt gif jpeg jpg png webp avif apk html
+mp4 mkv wmv webm jpg jpeg png webp gif avif mp3 m4a m4b opus wav flac pdf PDF md
+doc docx odt djvu azw3 epub mobi txt apk html tar.gz tar.bz2 tar.xz gz zip rar 7z
 "
 
 while test $# -gt 1; do
@@ -23,11 +23,12 @@ while test $# -gt 1; do
 		case "$file" in
 		?*.?*)	for i in $extensions
 			do	case "$file" in
-				*.$i) ext=.$i; break ;;
+				*.$i)	ext=.$i
+					break
 				esac
 			done
 			name="${file%"$ext"}" ;;
-		*)      name="$file" ;;
+		*)	name="$file"
 		esac
 		c=1
 		while test -e "$dest/$file" || test -L "$dest/$file"; do
