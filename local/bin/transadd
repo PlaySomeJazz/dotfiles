@@ -21,9 +21,8 @@ for i do
 			i="${i}&tr=${tr}"
 		done
 	esac
-	if transmission-remote -a "$i"
-	then	notify-send -i $PIX/transmission.svg \
-			Transmission 'Torrent added'
-		pkill -12 status
-	fi
+	n=`transmission-remote -a "$i"`
+	n=${n##*\"name\":\"} n=${n%\"*}
+	notify-send -i $PIX/transmission.svg Added "${n}"
+	pkill -12 status
 done
