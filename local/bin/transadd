@@ -1,29 +1,29 @@
 #!/bin/sh
-pidof transmission-daemon >/dev/null || {
-	transmission-daemon &&
-	notify-send -i "$PIX/transmission.svg" "Starting Transmission..." &&
-	sleep 3 &&
+
+T='
+https://ngosang.github.io/trackerslist/trackers_best.txt
+'
+
+if ! pidof transmission-daemon >/dev/null
+then
+	transmission-daemon
+	notify-send -i $PIX/transmission.svg Starting...
+	sleep 3
 	transmission-remote --blocklist-update
-}
-transmission-remote -a $* && notify-send -i "$PIX/transmission.svg" "Transmission" "Torrent added" && pkill -12 status
+fi
 
-trackers_list="
-https://newtrackon.com/api/stable
-https://trackerslist.com/best.txt
-https://trackerslist.com/http.txt
-https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_best.txt
-"
+t=`curl -sLZ $T | sort -u`
 
-host="http://localhost"; port="9091"; user="transmission"; pass="transmission"
-id=$(transmission-remote -l | awk '{print $1}' | sort -nr | head -n 1)
-cookie=$(curl -s --anyauth -u ${user}:${pass} "${host}:${port}/transmission/rpc/" | sed -n 's/.*<code>\(.*\)<\/code>.*/\1/p')
-torrent_list=$(curl -s --anyauth \
-  -u ${user}:${pass} -H "$cookie" "${host}:${port}/transmission/rpc/" \
-  -d '{"method":"torrent-get","arguments":{"fields":["isPrivate","id"]}}')
-is_private=$(echo "$torrent_list" | jq --argjson id "$id" '.arguments.torrents[] | select(.id == $id).isPrivate')
-[ "$is_private" = "true" ] && exit
-tmp_trackers_list=$(echo "$trackers_list" | xargs -n 1 -P 4 curl -sS | sort -u)
-echo "$tmp_trackers_list" | while read -r tracker; do
-  [ -n "$tracker" ] && curl -s --fail --anyauth \
-    -u ${user}:${pass} -H "$cookie" "${host}:${port}/transmission/rpc/" \
-    -d "{\"method\":\"torrent-set\",\"arguments\":{\"ids\":[$id],\"trackerAdd\":[\"$tracker\"]}}"; done
+for i do
+	case $i in
+	magnet:\?*)
+		for tr in $t; do
+			i="${i}&tr=${tr}"
+		done
+	esac
+	if transmission-remote -a "$i"
+	then	notify-send -i $PIX/transmission.svg \
+			Transmission 'Torrent added'
+		pkill -12 status
+	fi
+done
