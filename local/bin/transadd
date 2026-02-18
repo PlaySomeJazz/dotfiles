@@ -2,6 +2,7 @@
 
 T='
 https://ngosang.github.io/trackerslist/trackers_best.txt
+https://cf.trackerslist.com/best.txt
 '
 
 if ! pidof transmission-daemon >/dev/null; then
@@ -11,14 +12,16 @@ if ! pidof transmission-daemon >/dev/null; then
 	transmission-remote --blocklist-update
 fi
 
+if ! test -s /tmp/tr; then
+	curl -sLZ $T | sort -u >/tmp/tr
+fi
+
 for i do
 	case $i in
 	magnet:\?*)
 		while read tr; do
 			i="${i}&tr=${tr}"
-		done <<- MAGNETS
-		`curl -sLZ $T | sort -u`
-		MAGNETS
+		done </tmp/tr
 	esac
 	n=`transmission-remote -a "$i"`
 	n=${n#*\"name\":\"} n=${n%\"*}
