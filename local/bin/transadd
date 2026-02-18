@@ -12,17 +12,17 @@ then
 	transmission-remote --blocklist-update
 fi
 
-t=`curl -sLZ $T | sort -u`
-
 for i do
 	case $i in
 	magnet:\?*)
-		for tr in $t; do
-			i="${i}&tr=${tr}"
-		done
+		while read tr; do
+			t="${t}&tr=${tr}"
+		done <<- MAGNETS
+		`curl -sLZ $T | sort -u`
+		MAGNETS
 	esac
-	n=`transmission-remote -a "$i"`
-	n=${n##*\"name\":\"} n=${n%\"*}
-	notify-send -i $PIX/transmission.svg Added "${n}"
+	n=`transmission-remote -a "$t"`
+	n=${n#*\"name\":\"} n=${n%\"*}
+	notify-send -i $PIX/transmission.svg Added "$n"
 	pkill -12 status
 done
