@@ -4,8 +4,7 @@ T='
 https://ngosang.github.io/trackerslist/trackers_best.txt
 '
 
-if ! pidof transmission-daemon >/dev/null
-then
+if ! pidof transmission-daemon >/dev/null; then
 	transmission-daemon
 	notify-send -i $PIX/transmission.svg Starting...
 	sleep 3
@@ -16,12 +15,12 @@ for i do
 	case $i in
 	magnet:\?*)
 		while read tr; do
-			t="${t}&tr=${tr}"
+			i="${i}&tr=${tr}"
 		done <<- MAGNETS
 		`curl -sLZ $T | sort -u`
 		MAGNETS
 	esac
-	n=`transmission-remote -a "$t"`
+	n=`transmission-remote -a "$i"`
 	n=${n#*\"name\":\"} n=${n%\"*}
 	notify-send -i $PIX/transmission.svg Added "$n"
 	pkill -12 status
