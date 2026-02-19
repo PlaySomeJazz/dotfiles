@@ -1,19 +1,18 @@
 #!/bin/sh
-
-T='
-https://ngosang.github.io/trackerslist/trackers_best.txt
-https://cf.trackerslist.com/best.txt
-'
+T=/tmp/tr I=$PIX/transmission.svg
 
 if ! pidof transmission-daemon >/dev/null; then
 	transmission-daemon
-	notify-send -i $PIX/transmission.svg Starting...
-	sleep 3
+	notify-send -i $I Transmission Starting...
+	sleep 2
 	transmission-remote --blocklist-update
 fi
 
-if ! test -s /tmp/tr; then
-	curl -sLZ $T | sort -u >/tmp/tr
+find "$T" -mtime +0 -exec rm {} \; 2>/dev/null
+
+if ! test -s $T; then
+	curl -sLZ https://cf.trackerslist.com/best.txt \
+	| awk 'NF && !seen[$0]++' >$T
 fi
 
 for i do
@@ -21,10 +20,10 @@ for i do
 	magnet:\?*)
 		while read tr; do
 			i="${i}&tr=${tr}"
-		done </tmp/tr
+		done <$T
 	esac
 	n=`transmission-remote -a "$i"`
 	n=${n#*\"name\":\"} n=${n%\"*}
-	notify-send -i $PIX/transmission.svg Added "$n"
+	notify-send -i $I 'Torrent added' "$n"
 	pkill -12 status
 done
