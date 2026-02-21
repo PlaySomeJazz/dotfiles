@@ -1,5 +1,5 @@
 #!/bin/sh
-T=/tmp/tr I=$PIX/transmission.svg
+T=$XDG_CONFIG_HOME/tr I=$PIX/transmission.svg
 
 if ! pidof transmission-daemon >/dev/null; then
 	transmission-daemon
