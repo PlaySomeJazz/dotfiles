@@ -1,5 +1,6 @@
 #!/bin/sh
 T=$XDG_DATA_HOME/trackers I=$PIX/transmission.svg
+D=https://nyaa.si
 
 if ! pidof transmission-daemon >/dev/null; then
 	transmission-daemon
@@ -20,10 +21,30 @@ for i do
 	magnet:\?*)
 		while read tr; do
 			i="${i}&tr=${tr}"
-		done <$T
+		done <$T ;;
+	*.torrent)
+		;;
+	*)
+		i=`
+		curl -sL "$D/?page=rss&q=${i}&c=0_0&f=0" \
+		| awk '
+		/title/{gsub(/<[^>]*>|^[[:space:]]+/,"");t=$0}
+		/seeder/{gsub(/<[^>]*>/,"");s=$1}
+		/Hash/{gsub(/<[^>]*>/,"");h=$1}
+		/size/{gsub(/<[^>]*>/,"");g=$1;u=$2
+		g=u~/M/?g/1024:u~/T/?g*1024:g}
+		/\/item/{if(g<=3&&s>=10&&s>p){p=s;a=h;A=t}
+		if(g<=6&&s>=15&&s>q){q=s;b=h;B=t}}
+		END{if(a){x=a;n=A}else{x=b;n=B}
+		if(x){gsub(/ /,"%20",n)
+		print"magnet:?xt=urn:btih:"x"&dn="n}}
+		'
+		`
 	esac
-	n=`transmission-remote -a "$i"`
-	n=${n#*\"name\":\"} n=${n%\"*}
-	notify-send -i $I 'Torrent added' "$n"
-	pkill -12 status
+	if test "$i"; then
+		n=`transmission-remote -a "$i"`
+		n=${n#*\"name\":\"} n=${n%\"*}
+		notify-send -i $I 'Torrent added' "$n"
+		pkill -12 status
+	fi
 done
