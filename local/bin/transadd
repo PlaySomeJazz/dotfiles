@@ -1,6 +1,8 @@
 #!/bin/sh
-T=$XDG_DATA_HOME/trackers I=$PIX/transmission.svg
+T=$XDG_DATA_HOME/trackers
+I=$PIX/transmission.svg
 D=https://nyaa.si
+S=https://example.com/search
 
 if ! pidof transmission-daemon >/dev/null; then
 	transmission-daemon
@@ -18,13 +20,11 @@ fi
 
 for i do
 	case $i in
-	magnet:\?*)
-		while read tr; do
-			i="${i}&tr=${tr}"
-		done <$T ;;
-	*.torrent)
+	magnet:\?*|*.torrent)
 		;;
 	*)
+		s="$i"
+
 		i=`
 		curl -sL "$D/?page=rss&q=${i}&c=0_0&f=0" \
 		| awk '
@@ -41,10 +41,19 @@ for i do
 		'
 		`
 	esac
+
+	case $i in
+	magnet:\?*)
+		while read tr; do
+			i="${i}&tr=${tr}"
+		done <$T
+	esac
 	if test "$i"; then
 		n=`transmission-remote -a "$i"`
 		n=${n#*\"name\":\"} n=${n%\"*}
 		notify-send -i $I 'Torrent added' "$n"
 		pkill -12 status
+	else
+		$BROWSER "$S/$s"
 	fi
 done
