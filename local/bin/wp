@@ -1,0 +1,65 @@
+#!/bin/sh
+
+[ $# -ne 1 ] && exit
+t=/tmp/wp$$
+trap 'rm -f $t; exit' 0
+echo site\?
+
+S=$(
+for blog in \
+	https://wpexample1.com/category \
+	https://wpexample2.com/category \
+	https://wpexample3.com/category \
+	https://wpexample4.com/category
+do
+	n=$(curl -sL $blog/$1/ | awk -vRS=page/ '$1+0>m{m=$1+0}END{print(m>0?m:1)}')
+	echo "$blog ($n)"
+done | fzf
+)
+
+[ ! "$S" ] && exit
+n=${S#* \(}; n=${n%?}
+S=${S% *}
+
+echo pick from $n pages
+read p
+case $p in ''|*[!0-9]*) exit; esac
+
+case $S in
+*e1*) f(){ grep -oP 'wp-content\S+(?= \d+w")';};;
+*e2*) f(){ sed -nE 's|.*src=".*com/(wp.*)-[0-9x]+(\.[^."]*)".*|\1\2|p';};;
+*e3*) f(){ sed -En 's|.*thumb/([^"]*).*|files/src/\1|p';};;
+*e4*) f(){ grep -o 'wp-content/uploads/[^"]*jpg';}
+esac
+
+b=${S#*://} b=${b%/*}
+
+i=1
+url=$S/$1/
+while [ $i -le $p ]; do
+	curl -sL $url | f >>$t
+	echo gathering links from $b page $i
+	i=$((i+1))
+	url=$S/$1/page/$i/
+done
+
+echo --------------------------------
+
+S=${S%/*}
+d=${XDG_PICTURES_DIR:-$HOME/pictures}/scrape/${b}_$1
+n=`wc -l <$t`
+
+i=1
+while read l; do
+	file=${l##*/} name=${file%.*} ext=${file##*.}
+	echo "Downloading $file ($i out of $n)"
+	c=1
+	while [ -f $d/$file ]; do
+		file=${name}_${c}.${ext}
+		c=$((c+1))
+	done
+	curl -fsL --create-dirs -o $d/$file $S/$l
+	i=$((i+1))
+done <$t
+
+echo 'done'

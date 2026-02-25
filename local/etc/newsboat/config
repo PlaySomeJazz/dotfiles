@@ -3,6 +3,7 @@ max-items 20
 scrolloff 10
 auto-reload yes
 download-timeout 3
+reload-threads 100
 
 external-url-viewer "urlscan -dc -r 'linkhandler {}'"
 
