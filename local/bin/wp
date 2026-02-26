@@ -12,7 +12,7 @@ for blog in \
 	https://wpexample3.com/category \
 	https://wpexample4.com/category
 do
-	n=$(curl -sL $blog/$1/ | awk -vRS=page/ '$1+0>m{m=$1+0}END{print(m>0?m:1)}')
+	n=$(curl -sL $blog/$1/ | awk -vRS=page/ '$1+0>m{m=$1+0}END{print m?m:1}')
 	echo "$blog ($n)"
 done | fzf
 )
@@ -51,13 +51,16 @@ n=`wc -l <$t`
 
 i=1
 while read l; do
-	file=${l##*/} name=${file%.*} ext=${file##*.}
+	file=${l##*/}
 	echo "Downloading $file ($i out of $n)"
-	c=1
-	while [ -f $d/$file ]; do
-		file=${name}_${c}.${ext}
-		c=$((c+1))
-	done
+	if [ -f $d/$file ]; then
+		name=${file%.*} ext=${file##*.}
+		c=1
+		while [ -f $d/$file ]; do
+			file=${name}_${c}.${ext}
+			c=$((c+1))
+		done
+	fi
 	curl -fsL --create-dirs -o $d/$file $S/$l
 	i=$((i+1))
 done <$t
