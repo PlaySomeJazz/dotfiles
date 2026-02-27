@@ -3,7 +3,6 @@
 [ $# -ne 1 ] && exit
 t=/tmp/wp$$
 trap 'rm -f $t; exit' 0
-echo site\?
 
 S=$(
 for blog in https://wpexample1.com/category \
@@ -40,14 +39,12 @@ while [ $i -le $p ]; do
 	i=$((i+1))
 	url=$S/$1/page/$i/
 done | curl -sLZ -K - | f >$t
-echo ---------------------------------------------
 
 b=${S#*://} b=${b%/*}
 S=${S%/*}
 d=${XDG_PICTURES_DIR:-$HOME/pictures}/scrape/${b}_$1
 while read l; do
 	printf 'url = "%s/%s"\n-O\n' $S $l
-done <$t | curl -fLZ --parallel-max 50 --output-dir $d --create-dirs --no-clobber -K - >/dev/null
+done <$t | curl -fLZ --parallel-max 100 --output-dir $d --create-dirs --no-clobber -K -
 
 for f in $d/*[0-9]; do [ -f $f ] && safe mv $f ${f%.[0-9]*}; done
-echo done
