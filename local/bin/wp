@@ -36,7 +36,7 @@ esac
 i=1
 url=$S/$1/
 while [ $i -le $p ]; do
-	printf 'url = "%s"\n' $url
+	echo url = \"$url\"
 	i=$((i+1))
 	url=$S/$1/page/$i/
 done | curl -sLZ -K - | f >$t
@@ -46,8 +46,8 @@ b=${S#*://} b=${b%/*}
 S=${S%/*}
 d=${XDG_PICTURES_DIR:-$HOME/pictures}/scrape/${b}_$1
 while read l; do
-	printf 'url = "%s/%s"\n-O\n' "$S" "$l"
-done <$t | curl -fLZ --parallel-max 10 --output-dir $d --create-dirs --no-clobber -K - >/dev/null
+	printf 'url = "%s/%s"\n-O\n' $S $l
+done <$t | curl -fLZ --parallel-max 50 --output-dir $d --create-dirs --no-clobber -K - >/dev/null
 
 for f in $d/*[0-9]; do [ -f $f ] && safe mv $f ${f%.[0-9]*}; done
-echo 'done'
+echo done
