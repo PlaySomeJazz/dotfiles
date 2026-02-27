@@ -4,6 +4,7 @@ scrolloff 10
 auto-reload yes
 download-timeout 3
 reload-threads 100
+cleanup-on-quit yes
 
 external-url-viewer "urlscan -dc -r 'linkhandler {}'"
 

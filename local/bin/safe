@@ -1,41 +1,48 @@
 #!/bin/sh
 
 if test $# -lt 3 -o \( "X$1" != Xmv -a "X$1" != Xcp \); then
-	echo usage: safe command source ... directory 1>&2
+	echo try again
 	exit 1
 fi
 
 set -f
-
-cmd=$1; shift
-for dest do :; done
-test ! -d "$dest" && echo bad directory 1>&2 && exit 1
-
 extensions="
 mp4 mkv wmv webm jpg jpeg png webp gif avif mp3 m4a m4b opus wav flac pdf PDF md
 doc docx odt djvu azw3 epub mobi txt apk html tar.gz tar.bz2 tar.xz gz zip rar 7z
 "
 
+cmd=$1; shift
+test $cmd = cp && r='-R'
+for dest do :; done
+
 while test $# -gt 1; do
-	file="${1##*/}"
-	if test -e "$dest/$file" || test -L "$dest/$file"
+	if test -d "$dest"
+	then	target="$dest/${1##*/}"
+	else	target="$dest"
+	fi
+
+	if test -e "$target" || test -L "$target"
 	then	ext=
-		case "$file" in
-		?*.?*)	for i in $extensions
-			do	case "$file" in
-				*.$i)	ext=.$i
-					break
-				esac
-			done
-			name="${file%"$ext"}" ;;
-		*)	name="$file"
-		esac
+		if test -f "$target"
+		then	case "$target" in
+			?*.?*)	for i in $extensions
+				do	case "$target" in
+					*.$i)	ext=.$i
+						break
+					esac
+				done
+				name="${target%"$ext"}" ;;
+			*)	name="$target"
+			esac
+		else
+			name="$target"
+		fi
 		c=1
-		while test -e "$dest/$file" || test -L "$dest/$file"; do
-			file="${name}_COPY${c}${ext}"
+		while test -e "$target" || test -L "$target"; do
+			target="${name}_COPY${c}${ext}"
 			c=$((c+1))
 		done
 	fi
-	$cmd -- "$1" "$dest/$file"
+	$cmd $r -- "$1" "$target"
 	shift
 done
