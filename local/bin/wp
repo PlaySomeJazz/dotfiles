@@ -1,15 +1,12 @@
 #!/bin/sh
 
 [ $# -ne 1 ] && exit
-
-S=$(
-for blog in https://wpexample1.com/category \
+S=$(for blog in https://wpexample1.com/category \
 	https://wpexample2.com/category \
 	https://wpexample3.com/category \
 	https://wpexample4.com/category
-do
-	{
-	n=$(curl -sL $blog/$1/ | awk -vRS=page/ '$1+0>m{m=$1+0}END{print m?m:1}')
+do	{
+	n=$(curl -4 -sL $blog/$1/ | awk -vRS=page/ '$1+0>m{m=$1+0}END{print m?m:1}')
 	echo "$blog ($n)"
 	} &
 done | fzf
@@ -19,13 +16,10 @@ done | fzf
 n=${S#* \(} n=${n%?}
 S=${S% *}
 
-echo pick from $n pages
-read p
-case $p in ''|*[!0-9]*) exit; esac
-
+echo pick from $n pages ; read p ; case $p in ''|*[!0-9]*) exit; esac
 case $S in
 	*e1*) f(){ grep -oP 'wp-content\S+(?= \d+w")';};;
-	*e2*) f(){ sed -nE 's|.*src=".*com/(wp.*)-[0-9x]+(\.[^."]*)".*|\1\2|p';};;
+	*e2*) f(){ sed -nE 's|.*src=".*com/(wp.*)-[0-9x]+(\.[^ ".]*).*|\1\2|p';};;
 	*e3*) f(){ sed -En 's|.*thumb/([^"]*).*|files/src/\1|p';};;
 	*e4*) f(){ grep -o 'wp-content/uploads/[^"]*jpg';}
 esac
@@ -41,8 +35,8 @@ while [ $i -le $p ]; do
 	i=$((i+1))
 	url=$S/$1/page/$i/
 done \
-| curl -sLZ -K - | f \
+| curl -4 -sLZ -K - | f \
 | while read l; do printf 'url = "%s/%s"\n-O\n' $R $l; done \
-| curl -fLZ --parallel-max 100 --output-dir $d --create-dirs --no-clobber -K -
+| curl -4 -fLZ --parallel-max 100 --output-dir $d --create-dirs --no-clobber -K -
 
 for f in $d/*[0-9]; do [ -f $f ] && safe mv $f ${f%.[0-9]*}; done
