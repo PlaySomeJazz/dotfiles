@@ -24,9 +24,9 @@ case $S in
 	*4*) f(){ grep -o 'wp[^"]*jpg';}
 esac
 
-b=${S#*://} b=${b%/*}
-d=${XDG_PICTURES_DIR:-$HOME/pictures}/scrape/$1_$b
 R=${S%/*}
+b=${R#*://}
+d=${XDG_PICTURES_DIR:-$HOME/pictures}/scrape/$1/$b
 
 i=1
 url=$S/$1/
