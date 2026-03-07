@@ -8,28 +8,27 @@ notes=${1:-$NOTES_FILE} ; [ ! -f "$notes" ] && log 'Add notes file\n' 31 && exit
 dir=$NOTES_DIR ; [ ! -d "$dir" ] && mkdir -p "$dir"
 default_cat="$dir/Chores" ; [ ! -f "$default_cat" ] && :>"$default_cat"
 
-new_cat_option='(Add category)' delete_option='(Delete)'
-
-cd "$dir"
+chdir "$dir"
 while test -s "$notes"; do
 	tput clear
-	read -r note <"$notes"
-	[ -z "$note" ] && delete_note && continue
+	read -r note <"$notes"; [ -z "$note" ] && delete_note && continue
 	log "$note\n\n"
-	choice=`printf '%s\n' * "$new_cat_option" "$delete_option" | fzf`
+	choice=`printf '%s\n' * '<Add category>' '<Delete>' | fzf`
 	[ -z "$choice" ] && tput clear && log 'Interrupted\n' 31 && exit
 	case "$choice" in
-		"$new_cat_option")
+		*Add*)
 			log 'Enter title:\n'; read -r choice; [ -z "$choice" ] && continue
 			[ ! -f "$dir/$choice" ] && add_note || {
 				tput clear; log 'Category already exists!\n' 31; sleep 1
 			} ;;
-		"$delete_option")
-			log 'Delete note? [y/N] ' 32; read ans; [ "$ans" = y ] && delete_note;;
+		*Delete*)
+			log 'Delete note?' 32; ans=`printf '%s\n' yes no | fzf`
+			[ "$ans" = yes ] && delete_note;;
 		*)
-			add_note;;
+			add_note
 	esac
 done
 
 tput clear
+for i in $NOTES_DIR/*; do [ -s $i ] && mail -s ${i##*/} $USER <$i && :> $i; done
 log 'All done!\n' 34
