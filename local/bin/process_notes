@@ -14,7 +14,7 @@ dir=$NOTES_DIR ; [ ! -d $dir ] && mkdir -p $dir
 default=Chores
 
 chdir $dir
-[ ! -f $default ] && :>$default
+[ ! -f $default ] && >$default
 while test -s $notes; do
 	tput clear
 	read -r note <$notes; [ -z "$note" ] && del && continue
@@ -24,12 +24,12 @@ while test -s $notes; do
 	case $c in
 		*Add*)	log 'Enter title:\n'; read c; [ -z $c ] && continue
 			[ ! -f $c ] && add || { tput clear; log '!\n' 31; sleep 1;} ;;
-		*Del*)	log 'Delete note?' 32; a=`printf '%s\n' yes no | fzf`
+		*Del*)	log 'Delete?' 32; a=`printf '%s\n' yes no | fzf`
 			[ $a = yes ] && del;;
 		*)	add
 	esac
 done
 
 tput clear
-for i in *; do [ -s $i ] && mail -s $i $USER <$i && : >$i; done
+for i in *; do [ -s $i ] && mail -s $i $USER <$i && >$i; done
 log 'All done!\n' 34
