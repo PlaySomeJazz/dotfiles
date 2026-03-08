@@ -1,34 +1,35 @@
 #!/bin/sh
 
 log() { printf "\033[2K\r\033[1;${2:-33}m${1}\033[0m" ; }
-delete_note() { printf '%s' "`sed '1d' "$notes"`" >"$notes" ; }
-add_note() { printf '%s\n' "$note" >>"$dir/$choice" && delete_note ; }
+delete_note() { printf %s "`sed '1d' $notes`" >$notes ; }
+add_note() { printf '%s\n' "$note" >>$choice && delete_note ; }
 
-notes=${1:-$NOTES_FILE} ; [ ! -f "$notes" ] && log 'Add notes file\n' 31 && exit
-dir=$NOTES_DIR ; [ ! -d "$dir" ] && mkdir -p "$dir"
-default_cat="$dir/Chores" ; [ ! -f "$default_cat" ] && :>"$default_cat"
+notes=${1:-$NOTES_FILE} ; [ ! -f $notes ] && log 'Add notes file\n' 31 && exit
+dir=$NOTES_DIR ; [ ! -d $dir ] && mkdir -p $dir
+default_cat=$dir/Chores ; [ ! -f $default_cat ] && :>$default_cat
 
-chdir "$dir"
-while test -s "$notes"; do
+case $notes in /*) ;; *) notes=$PWD/$notes; esac
+chdir $dir
+while test -s $notes; do
 	tput clear
-	read -r note <"$notes"; [ -z "$note" ] && delete_note && continue
+	read -r note <$notes; [ -z "$note" ] && delete_note && continue
 	log "$note\n\n"
 	choice=`printf '%s\n' * '<Add category>' '<Delete>' | fzf`
 	[ -z "$choice" ] && tput clear && log 'Interrupted\n' 31 && exit
 	case "$choice" in
 		*Add*)
-			log 'Enter title:\n'; read -r choice; [ -z "$choice" ] && continue
-			[ ! -f "$dir/$choice" ] && add_note || {
+			log 'Enter title:\n'; read -r choice; [ -z $choice ] && continue
+			[ ! -f $choice ] && add_note || {
 				tput clear; log 'Category already exists!\n' 31; sleep 1
 			} ;;
 		*Delete*)
 			log 'Delete note?' 32; ans=`printf '%s\n' yes no | fzf`
-			[ "$ans" = yes ] && delete_note;;
+			[ $ans = yes ] && delete_note;;
 		*)
 			add_note
 	esac
 done
 
 tput clear
-for i in $NOTES_DIR/*; do [ -s $i ] && mail -s ${i##*/} $USER <$i && :> $i; done
+for i in *; do [ -s $i ] && mail -s $i $USER <$i && : >$i; done
 log 'All done!\n' 34
