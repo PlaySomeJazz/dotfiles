@@ -27,10 +27,7 @@ alias \
 	mkd="mkdir -pv" \
 	y='yt-dlp "$(xclip -o)"' \
 	t="tsp" \
-	n="process_notes" \
 	ffmpeg="ffmpeg -hide_banner" \
-	k="dra-cla" \
-	kk="dra-cla -c" \
 	a="ani-cli" \
 	aa="ani-cli -c"
 

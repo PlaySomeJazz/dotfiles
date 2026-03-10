@@ -15,4 +15,4 @@ pp  ${XDG_PICTURES_DIR:-$HOME/pictures}
 sc  ${DOTS:-$HOME/local}/bin
 src ${DOTS:-$HOME/local}/src
 vv  ${XDG_VIDEOS_DIR:-$HOME/videos}
-nn  $NOTES_DIR
+n   $NOTES_DIR

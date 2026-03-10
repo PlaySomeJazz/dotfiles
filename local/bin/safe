@@ -1,5 +1,7 @@
 #! /bin/sh
 
+o=
+
 if test $# -lt 3 -o \( "X$1" != Xmv -a "X$1" != Xcp \); then
 	echo try again 1>&2
 	exit 1
@@ -10,8 +12,12 @@ mp4 mkv wmv webm jpg jpeg png webp gif avif mp3 m4a m4b opus wav flac pdf PDF md
 doc docx odt djvu azw3 epub mobi txt apk html tar.gz tar.bz2 tar.xz gz zip rar 7z
 '
 
-cmd=$1 ; shift
-case $cmd in cp) o=-R; esac
+cmd=$1
+shift
+
+case $cmd in
+cp)	o=-R
+esac
 
 set -f
 for dest do :; done
