@@ -1,7 +1,6 @@
 #!/bin/sh
 LC_ALL=C export LC_ALL
-T=/tmp/p$$
-trap 'rm -f $T; xsetroot -name ""; exit' 0 1 2 3 15
+trap 'xsetroot -name ""; exit' 0 1 2 3 15
 
 : Those paths are portable to most setups
 B=`echo /sys/class/power_supply/BAT?*`
@@ -46,7 +45,7 @@ torr()
 
 btt() { read bt <$BT; test $bt -eq 1 && bt=on || bt=off; } ; btt
 
-netchk() { ping -c 1 -W 3 1.1.1.1 > /dev/null 2>&1; echo $? >$T; }
+netchk() { ping -c 1 -W 3 1.1.1.1 > /dev/null 2>&1; ret=$?; }
 
 : Set your signals here
 trap tsk 10
@@ -64,8 +63,7 @@ while :; do
 	td=`date '+%d %b (%a), %R'`
 	read net <$W
 	case $net in
-	up)	read g <$T
-		if test $g -ne 0
+	up)	if test $ret -ne 0
 		then	net='[ ! ] up'
 			netchk &
 		elif test "$td" != "$otd"
