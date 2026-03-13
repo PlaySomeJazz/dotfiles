@@ -28,7 +28,7 @@ while test $# -gt 1; do
 	else	target="$dest"
 	fi
 
-	if test -e "$target" || test -L "$target"
+	if test -e "$target" || test -h "$target"
 	then	ext=
 		if test -f "$target"
 		then	case "$target" in
@@ -45,7 +45,7 @@ while test $# -gt 1; do
 			name="$target"
 		fi
 		c=1
-		while test -e "$target" || test -L "$target"; do
+		while test -e "$target" || test -h "$target"; do
 			target="${name}_COPY${c}${ext}"
 			c=$((c+1))
 		done
