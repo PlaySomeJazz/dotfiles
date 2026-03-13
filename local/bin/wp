@@ -9,7 +9,7 @@ do echo "$b (\`curl -4sL $b/$1/|awk -vRS=page/ '$1+0>m{m=$1+0}END{print m?m:1}'\
 
 [ "$S" ] || exit
 case $S in *'
-'*)	echo "$S" | while read l; do S="$l" A=s $0 $1; done; exit
+'*)	echo "$S" | while read l; do S="$l" A=s $0 $1; echo "$l" OK & done; exit
 esac
 
 p=${S#* \(} p=${p%?} S=${S% *} R=${S%/*} d=${XDG_PICTURES_DIR:-$HOME/pictures}/scrape/$1/${R#*://}
