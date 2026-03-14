@@ -23,7 +23,7 @@ set -f
 for dest do :; done
 
 if test $# -gt 2 -a ! -d "$dest"; then
-	echo $dest is a file 1>&2
+	echo \'$dest\' is a file 1>&2
 	exit 1
 fi
 

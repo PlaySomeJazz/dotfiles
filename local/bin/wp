@@ -7,7 +7,7 @@ test $# -ne 1 && exit
 	https://wp2.com/category \
 	https://wp3.com/category
 do
-	echo "$b (\`curl -4sL $b/$1/|awk -vRS=page/ '$1+0>m{m=$1+0}END{print m?m:1}'\`)" &
+	echo "$b (\`curl -sL $b/$1/|awk -vRS=page/ '$1+0>m{m=$1+0}END{print m?m:1}'\`)" &
 done | fzf -m
 `}
 
@@ -15,7 +15,10 @@ test ! "$S" && exit
 
 case $S in *'
 '*)	echo waiting...
-	while read l; do S="$l" A=s $0 $1 && echo "$l" OK || echo "$l" ERROR & done <<-%
+	while read l; do
+		S="$l" A=s $0 $1 &&
+		echo "$l" OK || echo "$l" ERR &
+	done <<-%
 	$S
 	%
 	wait; exit
@@ -27,6 +30,7 @@ R=${S%/*}
 d=${XDG_PICTURES_DIR:-$HOME/pictures}/scrape/$1/${R#*://}
 
 if test ! "$A"; then echo $p pages; read p; case $p in ''|*[!0-9]*) exit; esac; fi
+
 case $S in
 	*1*) f(){ grep -oP 'wp\S+(?= \d+w")';};;
 	*2*) f(){ sed -nE 's|.*src=".*(wp.*)-[0-9x]+(\.[^ ]*)".*|\1\2|p';};;
@@ -39,13 +43,12 @@ while [ $i -le $p ]; do
 	echo url = \"$url\"
 	i=$((i+1)) url=$S/$1/page/$i/
 done \
-| curl -4sLZ -K - \
+| curl -sLZ -K - \
 | f \
 | while read l; do printf 'url = "%s/%s"\n-O\n' $R $l; done \
-| curl -4fLZ$A --parallel-max 100 --output-dir $d --create-dirs --no-clobber -K -
+| curl -fLZ$A --parallel-max 100 --output-dir $d --create-dirs --no-clobber -K -
 
 ret=$?
 
 for f in $d/*[0-9]; do [ -f $f ] && safe mv $f ${f%.[0-9]*}; done
-
 exit $ret
