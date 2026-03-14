@@ -22,6 +22,11 @@ esac
 set -f
 for dest do :; done
 
+if $# -gt 2 -a ! -d "$dest"; then
+	echo "$dest" is a file 1>&2
+	exit 1
+fi
+
 while test $# -gt 1; do
 	if test -d "$dest"
 	then	target="$dest/${1##*/}"
