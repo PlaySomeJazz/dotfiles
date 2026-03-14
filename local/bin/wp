@@ -1,5 +1,7 @@
-#!/bin/sh
-[ $# -ne 1 ] && exit
+#! /bin/sh
+
+test $# -ne 1 && exit
+
 : ${S=`for b in \
 	https://wp1.com/category \
 	https://wp2.com/category \
@@ -7,14 +9,22 @@
 do echo "$b (\`curl -4sL $b/$1/|awk -vRS=page/ '$1+0>m{m=$1+0}END{print m?m:1}'\`)" & done | fzf -m
 `}
 
-[ "$S" ] || exit
+test "x$S" = x && exit
+
 case $S in *'
-'*)	echo "$S" | while read l; do S="$l" A=s $0 $1; echo "$l" OK & done; exit
+'*)	echo waiting...
+	while read l; do S="$l" A=s $0 $1 && echo "$l" OK & done <<-%
+	$S
+	%
+	wait; exit
 esac
 
-p=${S#* \(} p=${p%?} S=${S% *} R=${S%/*} d=${XDG_PICTURES_DIR:-$HOME/pictures}/scrape/$1/${R#*://}
+p=${S#* \(} p=${p%?}
+S=${S% *}
+R=${S%/*}
+d=${XDG_PICTURES_DIR:-$HOME/pictures}/scrape/$1/${R#*://}
 
-[ "$A" ] || { echo $p pages; read p; case $p in ''|*[!0-9]*) exit; esac; }
+if test "x$A" = x; then echo $p pages; read p; case $p in ''|*[!0-9]*) exit; esac; fi
 case $S in
 	*1*) f(){ grep -oP 'wp\S+(?= \d+w")';};;
 	*2*) f(){ sed -nE 's|.*src=".*(wp.*)-[0-9x]+(\.[^ ]*)".*|\1\2|p';};;
@@ -24,9 +34,11 @@ esac
 
 i=1 url=$S/$1/
 while [ $i -le $p ]; do
-	echo url = \"$url\"; i=$((i+1)) url=$S/$1/page/$i/
+	echo url = \"$url\"
+	i=$((i+1)) url=$S/$1/page/$i/
 done \
-| curl -4sLZ -K - | f \
+| curl -4sLZ -K - \
+| f \
 | while read l; do printf 'url = "%s/%s"\n-O\n' $R $l; done \
 | curl -4fLZ$A --parallel-max 100 --output-dir $d --create-dirs --no-clobber -K -
 
