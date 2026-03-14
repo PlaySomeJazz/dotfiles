@@ -6,14 +6,16 @@ test $# -ne 1 && exit
 	https://wp1.com/category \
 	https://wp2.com/category \
 	https://wp3.com/category
-do echo "$b (\`curl -4sL $b/$1/|awk -vRS=page/ '$1+0>m{m=$1+0}END{print m?m:1}'\`)" & done | fzf -m
+do
+	echo "$b (\`curl -4sL $b/$1/|awk -vRS=page/ '$1+0>m{m=$1+0}END{print m?m:1}'\`)" & done \
+	| fzf -m
 `}
 
 test ! "$S" && exit
 
 case $S in *'
 '*)	echo waiting...
-	while read l; do S="$l" A=s $0 $1 && echo "$l" OK & done <<-%
+	while read l; do S="$l" A=s $0 $1 && echo "$l" OK || echo "$l" ERROR & done <<-%
 	$S
 	%
 	wait; exit
@@ -42,4 +44,8 @@ done \
 | while read l; do printf 'url = "%s/%s"\n-O\n' $R $l; done \
 | curl -4fLZ$A --parallel-max 100 --output-dir $d --create-dirs --no-clobber -K -
 
+ret=$?
+
 for f in $d/*[0-9]; do [ -f $f ] && safe mv $f ${f%.[0-9]*}; done
+
+exit $ret
