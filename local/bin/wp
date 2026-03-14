@@ -9,7 +9,7 @@ test $# -ne 1 && exit
 do echo "$b (\`curl -4sL $b/$1/|awk -vRS=page/ '$1+0>m{m=$1+0}END{print m?m:1}'\`)" & done | fzf -m
 `}
 
-test "x$S" = x && exit
+test ! "$S" && exit
 
 case $S in *'
 '*)	echo waiting...
@@ -24,7 +24,7 @@ S=${S% *}
 R=${S%/*}
 d=${XDG_PICTURES_DIR:-$HOME/pictures}/scrape/$1/${R#*://}
 
-if test "x$A" = x; then echo $p pages; read p; case $p in ''|*[!0-9]*) exit; esac; fi
+if test ! "$A"; then echo $p pages; read p; case $p in ''|*[!0-9]*) exit; esac; fi
 case $S in
 	*1*) f(){ grep -oP 'wp\S+(?= \d+w")';};;
 	*2*) f(){ sed -nE 's|.*src=".*(wp.*)-[0-9x]+(\.[^ ]*)".*|\1\2|p';};;
