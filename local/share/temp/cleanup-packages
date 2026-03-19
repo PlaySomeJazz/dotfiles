@@ -5,4 +5,10 @@ paccache -rvk0
 
 echo Detecting more unneeded packages...
 [ "`pacman -Qdtq`" ] && echo Orphaned packages found
-[ "`pacman -Qqd | pacman -Rsu --print -`" ] && echo Optional packages found
+
+case `pacman -Qqd | pacman -Rsu --print -` in
+*'there is nothing'*)
+	;;
+*)
+	echo Optional packages found
+esac

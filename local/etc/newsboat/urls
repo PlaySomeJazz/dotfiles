@@ -1,3 +1,31 @@
-"query:Unread Articles:unread = \"yes\""
+"query:Unread Articles:unread = \"yes\"" All
+"query:YLYL:tags # \"ylyl\"" All
 
----FEED---
+art
+https://dramaday.me/tag/romance/atom						art
+https://www.youtube.com/feeds/videos.xml?channel_id=UCEIi7zFR_wE23jFncVtd6-A	art
+https://www.youtube.com/feeds/videos.xml?channel_id=UCt7fwAhXDy3oNFTAzF2o8Pw	art
+https://feeds.simplecast.com/p7Q9jZ0K						art
+https://publicfeeds.net/f/6562/poetry						art
+https://publicfeeds.net/f/6232/new-yorker-fiction				art
+https://www.youtube.com/feeds/videos.xml?channel_id=UCtRkmSO4PrhJ4TzNOmFIwjw	art
+
+tech
+https://unix.stackexchange.com/feeds/user/22565					tech
+https://utcc.utoronto.ca/~cks/space/blog/unix/?atom				tech
+https://hnrss.org/newest?q=unix+OR+bourne+OR+shell				tech
+
+learn
+https://www.youtube.com/feeds/videos.xml?channel_id=UCXft1hOjbuFq3C6Ne_IsD4A	learn
+https://www.youtube.com/feeds/videos.xml?channel_id=UCsXVk37bltHxD1rDPwtNM8Q	learn
+https://www.youtube.com/feeds/videos.xml?channel_id=UCddBETK7I59iZ3a0zJBqj2A	learn
+https://www.youtube.com/feeds/videos.xml?channel_id=UC70eGJralPomhRI1l_6YSEA	learn
+
+relax
+https://www.youtube.com/feeds/videos.xml?channel_id=UCqFzWxSCi39LnW1JKFR3efg	relax
+
+news
+https://audiobookbay.lu/audio-books/tag/economist-audio-edition/rss		news
+
+ylyl
+https://www.youtube.com/feeds/videos.xml?channel_id=UClI8C7mmrHfN_aDRkXmTSbw	ylyl
