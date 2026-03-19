@@ -2,10 +2,10 @@
 inbox=${1:-$NOTES_FILE} t=/tmp/$$ def=Chores addc='<Add category>' deln='<Delete>'
 trap 'rm -f $t' 0 1 2 3 15
 case $inbox in [!/]*) inbox=`pwd`/$inbox; esac
+log(){ printf "\033[2K\r\033[1;${2:-33}m${1}\033[0m";}
 test ! -f "$inbox" && log 'Missing file\n' 31 && exit
 test ! -d ${NOTES_DIR?} && mkdir -p $NOTES_DIR
 
-log() { printf "\033[2K\r\033[1;${2:-33}m${1}\033[0m"; }
 add() { printf '%s\n' "$*" >>$c && del; }
 del() { ed - $inbox <<-\#
 	1d
