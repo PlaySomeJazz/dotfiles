@@ -16,8 +16,7 @@ test ! "$S" && exit
 case $S in *'
 '*)	echo waiting...
 	while read l; do
-		S="$l" A=s $0 $1 &&
-		echo "$l" OK || echo "$l" ERR &
+		S="$l" A=s $0 $1&
 	done <<-%
 	$S
 	%
@@ -43,12 +42,15 @@ while [ $i -le $p ]; do
 	echo url = \"$url\"
 	i=$((i+1)) url=$S/$1/page/$i/
 done \
-| curl -sLZ -K - \
-| f \
-| while read l; do printf 'url = "%s/%s"\n-O\n' $R $l; done \
-| curl -fLZ$A --parallel-max 100 --output-dir $d --create-dirs --no-clobber -K -
-
+	| curl -sLZ -K - \
+	| f \
+	| while read l; do printf 'url = "%s/%s"\n-O\n' $R $l; done \
+	| curl -fLZ$A --parallel-max 100 --output-dir $d --create-dirs --no-clobber -K -
 ret=$?
 
 for f in $d/*[0-9]; do [ -f $f ] && safe mv $f ${f%.[0-9]*}; done
-exit $ret
+
+case $ret in
+0)	echo $R OK ;;
+*)	echo $R ERR $ret
+esac
