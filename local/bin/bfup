@@ -7,7 +7,7 @@ f=https://raw.githubusercontent.com/yokoffing/Betterfox/refs/heads/main/user.js
 ff=$XDG_CONFIG_HOME/mozilla/firefox
 pd=$ff/`sed -n '/Default=.*.default-release/ s/.*=//p' $ff/profiles.ini`
 
-rm -rf $pd/prefs.js
+rm -f $pd/prefs.js
 
 curl -sL -o $t $f
 cat $XDG_CONFIG_HOME/firefox/custom.js $t >$pd/user.js

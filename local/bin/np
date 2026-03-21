@@ -21,7 +21,7 @@ while test -s $inbox; do
 	log "$note\n\n"
 	c=`printf '%s\n' * "$addc" "$deln" | fzf`
 	case $c in
-	"$addc")	log 'Enter title:\n' 36; read c; test "x$c" = x && continue
+	"$addc")	log 'Enter title:\n' 36; read c; test x$c = x && continue
 			test ! -f $c && add \($c\) "$note" ||
 				{ tput clear; log 'Duplicate\n' 31; sleep 1;} ;;
 	"$deln")	log 'Delete?' 31; a=`printf '%s\n' yes no | fzf`
