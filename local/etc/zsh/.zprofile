@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/sh
 # shellcheck disable=SC2155
 
 # Profile file, runs on login. Environmental variables are set here.

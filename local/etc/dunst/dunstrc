@@ -1,7 +1,7 @@
 [global]
     follow = mouse
     width = 250
-    offset = 48x48
+    offset = (48, 48)
     progress_bar_max_width = 400
     progress_bar_corner_radius = 5
     separator_color = "#11111b"
