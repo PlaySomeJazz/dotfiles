@@ -1,54 +1,50 @@
 #!/bin/sh
 
-# Use neovim for vim if present.
-[ -x "$(command -v nvim)" ] && alias vim="nvim" vimdiff="nvim -d"
-
-# Use $XINITRC variable if file exists.
+[ -x /bin/nvim ] && alias vim=nvim vimdiff='nvim -d'
 [ -f "$XINITRC" ] && alias startx='startx $XINITRC'
-
 [ -f "$MBSYNCRC" ] && alias mbsync='mbsync -c $MBSYNCRC'
 
-# sudo not required for some system commands
-for command in mount umount sv pacman updatedb su shutdown poweroff reboot ; do
+for command in \
+	mount umount sv pacman updatedb su shutdown poweroff reboot
+do
 	alias $command="sudo $command"
 done; unset command
 
-se(){ c=`find "$DOTS/bin" -type f | fzf -d / --with-nth -1`; [ $c ] && $EDITOR $c ;}
+se(){ c=`find $DOTS/bin -type f|fzf -d / --with-nth -1`; [ $c ] && $EDITOR $c ;}
 
 # Verbosity and settings that you pretty much just always are going to want.
 alias \
-	cp="cp -iv" \
-	cp1="safe cp" \
-	mv="mv -iv" \
-	mv1="safe mv" \
-	rm="rm -vI" \
-	bc="bc -ql" \
-	rsync="rsync -vrPlu" \
-	mkd="mkdir -pv" \
+	cp='cp -iv' \
+	cp1='safe cp' \
+	mv='mv -iv' \
+	mv1='safe mv' \
+	rm='rm -vI' \
+	bc='bc -ql' \
+	rsync='rsync -vrPlu' \
+	mkd='mkdir -pv' \
 	y='yt-dlp "$(xclip -o)"' \
-	t="tsp" \
-	ffmpeg="ffmpeg -hide_banner" \
-	a="ani-cli" \
-	aa="ani-cli -c"
+	t=tsp \
+	ffmpeg='ffmpeg -hide_banner' \
+	a=ani-cli \
+	aa='ani-cli -c'
 
 # Colorize commands when possible.
 alias \
-	ls="ls -hN --color=auto --group-directories-first" \
-	grep="grep --color=auto" \
-	diff="diff --color=auto" \
-	ccat="highlight --out-format=ansi" \
-	ip="ip -color=auto"
+	ls='ls -hN --color=auto --group-directories-first' \
+	grep='grep --color=auto' \
+	diff='diff --color=auto' \
+	ip='ip -color=auto'
 
 # These common commands are just too long! Abbreviate them.
 alias \
-	ka="killall" \
-	trem="transmission-remote" \
+	ka=killall \
+	trem=transmission-remote \
 	e='$EDITOR' \
 	v='$EDITOR' \
-	p="pacman" \
-	cl="pacman -Qdtq | pacman -Rns - ; pacman -Qqd | pacman -Rsu -" \
-	z="pacman -Syu"
+	p=pacman \
+	cl='pacman -Qdtq | pacman -Rns - ; pacman -Qqd | pacman -Rsu -' \
+	z='pacman -Syu'
 
 alias \
-	lf="lfub" \
+	lf=lfub \
 	ref='shortcuts >/dev/null; source ${XDG_CONFIG_HOME:-$HOME/.config}/shell/shortcutrc ; source ${XDG_CONFIG_HOME:-$HOME/.config}/shell/zshnameddirrc'

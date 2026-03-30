@@ -11,7 +11,7 @@ chdir ${1:-/srv/media/torrents} || exit
 
 if ! foundfiles; then notify-send Empty; exit; fi
 
-for dir in $watch $music; do [ ! -d $dir ] && mkdir -p $dir; done
+for dir in $watch $music; do [ ! -d "$dir" ] && mkdir -p $dir; done
 
 find . -type f \( -iname '*.mp4' -o -iname '*.mkv' \) -exec sh -c 'safe mv "$@" $watch' sh {} +
 

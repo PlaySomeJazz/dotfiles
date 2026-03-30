@@ -1,4 +1,3 @@
-#!/bin/sh
 inbox=${1:-$NOTES_FILE} t=/tmp/$$ def=Chores addc='<Add category>' deln='<Delete>'
 trap 'rm -f $t' 0 1 2 3 15
 case $inbox in [!/]*) inbox=`pwd`/$inbox; esac
@@ -10,8 +9,9 @@ del() { ed - $inbox <<-\#
 	w
 	#
 }
+
 test ! -f "$inbox" && log 'Missing file\n' 31 && exit
-test ! -d ${NOTES_DIR?} && mkdir -p $NOTES_DIR
+test ! -d "${NOTES_DIR?}" && mkdir -p $NOTES_DIR
 
 chdir $NOTES_DIR
 >>$def
@@ -19,12 +19,12 @@ while test -s $inbox; do
 	tput clear
 	read -r note <$inbox; test "x$note" = x && del && continue
 	log "$note\n\n"
-	c=`printf '%s\n' * "$addc" "$deln" | fzf`
+	c=`printf '%s\n' * "$addc" "$deln" ^ fzf`
 	case $c in
 	"$addc")	log 'Enter title:\n' 36; read c; test x$c = x && continue
 			test ! -f $c && add \($c\) "$note" ||
 				{ tput clear; log 'Duplicate\n' 31; sleep 1;} ;;
-	"$deln")	log 'Delete?' 31; a=`printf '%s\n' yes no | fzf`
+	"$deln")	log 'Delete?' 31; a=`printf '%s\n' yes no^fzf`
 			test "$a" = yes && del;;
 	'')		tput clear; log 'Interrupted\n' 31; exit;;
 	*)		add \($c\) "$note"
