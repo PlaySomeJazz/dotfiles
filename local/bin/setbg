@@ -1,20 +1,20 @@
-#! /bin/sh
+#!/bin/sh
 
-f= s=
+f= s=no
 l=${XDG_DATA_HOME?}/bg
 
 while getopts s o; do case $o in s) s=yes; esac done
 shift $((OPTIND - 1))
 
-f="`readlink -f "$1"`" &&
+f=`readlink -f "$1"` &&
 case `file --mime-type -b "$f"` in
 image/*)
-	ln -sf "$f" $l &&
-	test -z $s && notify-send -i "$l" 'Changing wallpaper...'
+	ln -sf "$f" "$l" &&
+	test "$s" = no && notify-send -i "$l" 'Changing wallpaper...'
 	;;
 inode/directory)
-	ln -sf "`find "$f" -iregex '.*.\(jpg\|jpeg\|png\|gif\)' -type f | shuf -n 1`" "$l" &&
-	test -z $s && notify-send -i "$l" 'Random Wallpaper chosen'
+	ln -sf "`find "$f" -iregex '.*\(jpe?g\|png\)$' -type f | shuf -n 1`" "$l" &&
+	test "$s" = no && notify-send -i "$l" 'Random Wallpaper chosen'
 	;;
 *)
 	notify-send '🖼️ Error' 'Not a valid image or directory'
