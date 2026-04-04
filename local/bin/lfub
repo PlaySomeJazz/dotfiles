@@ -1,12 +1,12 @@
-#!/bin/sh
+#! /bin/sh
 
 set -euf
 p=${XDG_CONFIG_HOME?}/lf
 
 if test -n "${DISPLAY-}" -a -z "${FIFO_UEBERZUG-}"; then
-	export FIFO_UEBERZUG=/tmp/lf$$
+	FIFO_UEBERZUG=/tmp/lf$$ export FIFO_UEBERZUG
 	mkfifo $FIFO_UEBERZUG
-	while test -p $FIFO_UEBERZUG && ! ueberzug layer -s <$FIFO_UEBERZUG; do :; done &
+	until test ! -p $FIFO_UEBERZUG || ueberzug layer -s <$FIFO_UEBERZUG; do :; done &
 	exec 3>$FIFO_UEBERZUG
 	trap 'exec 3>&-; rm $FIFO_UEBERZUG' EXIT
 	lf -command "set previewer $p/previewer; set cleaner $p/cleaner; source $p/shortcutrc" ${1+"$@"} 3>&-

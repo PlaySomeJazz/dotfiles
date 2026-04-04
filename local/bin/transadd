@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/dash
 T=$XDG_DATA_HOME/trackers
 I=$PIX/transmission.svg
 D=https://nyaa.si

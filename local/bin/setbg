@@ -1,24 +1,23 @@
-#!/bin/sh
+#! /bin/sh
 
-f= s=no
-l=${XDG_DATA_HOME?}/bg
+b=${XDG_DATA_HOME?}/bg s=no
 
 while getopts s o; do case $o in s) s=yes; esac done
-shift $((OPTIND - 1))
+shift `expr $OPTIND - 1`
 
-f=`readlink -f "$1"` &&
-case `file --mime-type -b "$f"` in
+test "$1" &&
+case `file --mime-type -Lb "$1"` in
 image/*)
-	ln -sf "$f" "$l" &&
-	test "$s" = no && notify-send -i "$l" 'Changing wallpaper...'
+	ln -sf "$1" "$b" &&
+	test "$s" = no && notify-send -i "$b" 'Changing wallpaper...'
 	;;
 inode/directory)
-	ln -sf "`find "$f" -iregex '.*\(jpe?g\|png\)$' -type f | shuf -n 1`" "$l" &&
-	test "$s" = no && notify-send -i "$l" 'Random Wallpaper chosen'
+	ln -sf "`find "$1" -iregex '.*\(jpe?g\|png\)$' -type f | shuf -n 1`" "$b" &&
+	test "$s" = no && notify-send -i "$b" 'Random Wallpaper chosen'
 	;;
 *)
-	notify-send '🖼️ Error' 'Not a valid image or directory'
+	notify-send Error 'Not a valid image or directory'
 	exit 1
 esac
 
-xwallpaper --zoom "$l"
+xwallpaper --zoom "$b"

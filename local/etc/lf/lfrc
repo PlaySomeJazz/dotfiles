@@ -1,88 +1,102 @@
-# Basic vars
+# Set some preferences
 set shellopts '-eu'
 set ifs "\n"
 set scrolloff 10
 set icons
-set drawbox true
-set mouse true
+set drawbox
+set mouse
 set period 1
-#set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml"
 set hiddenfiles ".ssh:/home:lib32:lib64:lost+found:/run:/usr/sbin"
-set autoquit true
 
-# cmds/functions
-cmd open ${{
-    case $(file --mime-type "$(readlink -f $f)" -b) in
-        text/*|application/json|inode/x-empty|application/x-subrip) $EDITOR $fx;;
-	image/gif|video/*|audio/*) l=/tmp/mpv$$; c="$(find "${f%/*}" -maxdepth 1 -type f -iregex '.*\(mkv\|mp4\|avi\|webm\|wmv\|mp3\|m4a\|m4b\|flac\|opus\|gif\)$' | sort -V | tee "$l" | grep -nF "$f")"; trap 'rm -f $l' EXIT; setsid -f mpv --terminal=no --playlist=- --playlist-start=$(( ${c%%:*} - 1 )) >/dev/null 2>&1 <"$l" ;;
-	image/*) l="/tmp/p$$"; c="$(find "${f%/*}" -maxdepth 1 -type f -iregex '.*\(jpe?g\|bmp\|png\|webp\|avif\)$' | sort -V | tee "$l" | grep -nF "$f")"; trap 'rm -f $l' EXIT; setsid -f nsxiv -afiq -n ${c%%:*} < "$l" ;;
-	application/pdf|application/vnd.djvu|application/epub*) setsid -f zathura --mode fullscreen $fx >/dev/null 2>&1 ;;
-	*) for f in $fx; do setsid -f $OPENER $f >/dev/null 2>&1; done;;
-    esac
+# Commands
+cmd open &{{
+	case `file --mime-type -Lb "$f"` in
+	text/*|application/json|inode/x-empty|application/x-subrip)
+		lf -remote "send $id \$$EDITOR \$fx";;
+	image/gif|video/*|audio/*)
+		l=/tmp/mpv$$
+		trap 'rm -f $l' 0
+		c="`find "${f%/*}" -maxdepth 1 -type f -iregex '.*\(mkv\|mp[34]\|avi\|webm\|wmv\|m4[ab]\|flac\|opus\|gif\)$' \
+			| sort -V | tee $l | grep -nF "$f"`"
+		setsid -f mpv --terminal=no --playlist=- --playlist-start=$(( ${c%%:*} - 1 )) >/dev/null 2>&1 <$l;;
+	image/*)
+		l=/tmp/p$$
+		trap 'rm -f $l' 0
+		c="`find "${f%/*}" -maxdepth 1 -type f -iregex '.*\(jpe?g\|bmp\|png\|webp\|avif\)$' \
+			| sort -V | tee $l | grep -nF "$f"`"
+		setsid -f nsxiv -afiq -n ${c%%:*} < $l;;
+	application/pdf|application/vnd.djvu|application/epub*)
+		setsid -f zathura --mode fullscreen $fx >/dev/null 2>&1;;
+	*)
+		for f in $fx; do setsid -f $OPENER $f >/dev/null 2>&1 & done
+	esac
 }}
 
-cmd mkdir $mkdir -p "$@"
-
-cmd extract ${{
+cmd extract %{{
 	set -f
-	[ "$(printf "No\nYes\n" | dmenu -i -p "Extract files?")" = "Yes" ] && {
+	if test `printf 'No\nYes\n' | dmenu -i -p 'Extract files?'` = Yes; then
 		case $fx in
-			*.tar.bz2)   tar xjf $fx     ;;
-			*.tar.gz)    tar xzf $fx     ;;
-			*.bz2)       bunzip2 $fx     ;;
-			*.rar)       unrar e $fx     ;;
-			*.gz)        gunzip $fx      ;;
-			*.tar)       tar xf $fx      ;;
-			*.tbz2)      tar xjf $fx     ;;
-			*.tgz)       tar xzf $fx     ;;
-			*.zip)       unzip $fx       ;;
-			*.Z)         uncompress $fx  ;;
-			*.7z)        7z x $fx        ;;
-			*.tar.xz)    tar xf $fx      ;;
-		esac; clear
-	} || exit 0
+		*.tar) tar xvf $fx;;
+		*.tar.bz|*.tar.bz2|*.tbz|*.tbz2) tar xjvf $fx;;
+		*.tar.gz|*.tgz) tar xzvf $fx;;
+		*.tar.xz|*.txz) tar xJvf $fx;;
+		*.zip) unzip $fx;;
+		*.rar) unrar x $fx;;
+		*.7z) 7z x $fx;;
+		esac
+		clear
+	fi
 }}
 
-cmd moveto ${{
-    set -f
-    dest=$(sed 's/\s*#.*// ; /^$/d ; s/^\S*\s*//' ${XDG_CONFIG_HOME?}/shell/bm-dirs | dmenu -l 20 -i -p "Move" | sed 's|~|$HOME|')
-    [ -z "$dest" ] && exit; dest=$(eval echo \"$dest\"); [ ! -d "$dest" ] && notify-send "$dest is not a directory" && exit
-    safe mv $fx "$dest" && notify-send "🚚 Done" "File(s) moved to $dest"
+cmd moveto %{{
+	set -f
+	dest=`sed 's/\s*#.*// ; /^$/d ; s/^\S*\s*//' ${XDG_CONFIG_HOME?}/shell/bm-dirs | dmenu -l 20 -i -p Move | sed 's|~|$HOME|'`
+	test -z "$dest" && exit; dest=`eval echo \"$dest\"`; test ! -d "$dest" && notify-send "$dest is not a directory" && exit
+	safe mv $fx "$dest" && notify-send Done "File(s) moved to $dest"
 }}
 
-cmd copyto ${{
-    set -f
-    dest=$(sed 's/\s*#.*// ; /^$/d ; s/^\S*\s*//' ${XDG_CONFIG_HOME?}/shell/bm-dirs | dmenu -l 20 -i -p "Copy" | sed 's|~|$HOME|')
-    [ -z "$dest" ] && exit; dest=$(eval echo \"$dest\"); [ ! -d "$dest" ] && notify-send "$dest is not a directory" && exit
-    safe cp $fx "$dest" && notify-send "📋 Done" "File(s) copied to $dest"
+cmd copyto %{{
+	set -f
+	dest=`sed 's/\s*#.*// ; /^$/d ; s/^\S*\s*//' ${XDG_CONFIG_HOME?}/shell/bm-dirs | dmenu -l 20 -i -p Copy | sed 's|~|$HOME|'`
+	test -z "$dest" && exit; dest=`eval echo \"$dest\"`; test ! -d "$dest" && notify-send "$dest is not a directory" && exit
+	safe cp $fx "$dest" && notify-send Done "File(s) copied to $dest"
 }}
 
 cmd zip ${{
-    set -f
-    zipname="${1:-new_archive}"
-    zip -r "$zipname.zip" $(basename -a $fx)
-    lf -remote "send $id unselect"
+	set -f
+	zip -r "${1:-archive_`date '+%Y%m%d_%H%M%S'`}".zip `basename -a $fx`
+	lf -remote "send $id unselect"
 }}
 
-cmd setbg "$1"
-
-cmd bulkrename ${{
-    tmpfile_old="$(mktemp)"
-    tmpfile_new="$(mktemp)"
-    [ -n "$fs" ] && fs=$(basename -a $fs) || fs=$(ls)
-    echo "$fs" > "$tmpfile_old"
-    echo "$fs" > "$tmpfile_new"
-    $EDITOR "$tmpfile_new"
-    [ "$(wc -l < "$tmpfile_old")" -eq "$(wc -l < "$tmpfile_new")" ] || { rm -f "$tmpfile_old" "$tmpfile_new"; exit 1; }
-    paste "$tmpfile_old" "$tmpfile_new" | while IFS="$(printf '\t')" read -r src dst
-    do
-        [ "$src" = "$dst" ] || [ -e "$dst" ] || mv -- "$src" "$dst"
-    done
-    rm -f "$tmpfile_old" "$tmpfile_new"
-    lf -remote "send $id unselect"
+cmd bulk-rename ${{
+	old=`mktemp`
+	new=`mktemp`
+	if [ -n "$fs" ]
+	then	fs="`basename -a -- $fs`"
+	else	fs="`ls`"
+	fi
+	printf '%s\n' "$fs" > "$old"
+	printf '%s\n' "$fs" > "$new"
+	$EDITOR "$new"
+	test "`wc -l < "$new"`" -ne "`wc -l < "$old"`" && exit
+	paste "$old" "$new" \
+	| while IFS= read -r names; do
+		src="`printf '%s' "$names" | cut -f1`"
+		dst="`printf '%s' "$names" | cut -f2`"
+		if [ "$src" = "$dst" ] || [ -e "$dst" ]; then
+			continue
+		fi
+		mv -- "$src" "$dst"
+	done
+	rm -- "$old" "$new"
+	lf -remote "send $id unselect"
 }}
+
+cmd mkdir %mkdir -p "$@"
 
 # Bindings
+map a push :mkdir<space>''<left>
+map R bulk-rename
 map h cd ~
 map g top
 map D delete
@@ -90,23 +104,15 @@ map E extract
 map Z zip
 map C copyto
 map M moveto
-map <c-n> push :mkdir<space>""<left>
 map <c-s> set hidden!
-map <enter> shell
 map ` !true
 map x $$f
 map X !$f
-map o &mimeopen "$f"
-map O $mimeopen --ask "$f"
-map A :rename; cmd-end # at the very end
-map I :rename; cmd-home # at the very beginning
 map i invert-below
-map B bulkrename
-map b $setbg $f
-map f # Intentionally empty so zsh shortcuts apply
-map F # Intentionally empty so zsh shortcuts apply
-map V push :!nvim<space>
+map b %setbg $f
+map f
+map F
 map W $setsid -f $TERMINAL >/dev/null 2>&1
-map Y $printf "%s" "$fx" | xclip -selection clipboard
-map t $nsxiv -t "$(pwd)" # opens thumbnail mode
+map Y $printf "'%s' " $fx | xclip -sel c
+map t $nsxiv -t "`pwd`" # opens thumbnail mode
 map <esc> cd /srv/media/tv

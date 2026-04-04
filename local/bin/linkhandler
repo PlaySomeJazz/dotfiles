@@ -3,13 +3,15 @@
 url=${1:-`xclip -o`}
 
 case $url in
-	*youtube.com*|*youtu.be*|*mkv|*webm|*mp4)
+	*youtube.com*|*youtu.be*|*.mkv|*.webm|*.mp4)
 		setsid -f mpv --terminal=no $url ;;
-	*png|*jpg|*jpeg|*gif|*webp)
-		curl -sL -o /tmp/${url##*/} $url && nsxiv -afq /tmp/${url##*/} >/dev/null 2>&1 & ;;
-	*pdf|*cbz|*cbr)
-		curl -sL -o /tmp/${url##*/} $url && zathura --mode fullscreen /tmp/${url##*/} >/dev/null 2>&1 & ;;
-	*mp3|*flac|*opus|*mp3?source*)
+	*.png|*.jpg|*.jpeg|*.gif|*.webp)
+		f=`basename $url`
+		curl -sL -o /tmp/$f $url && nsxiv -afq /tmp/$f >/dev/null 2>&1 & ;;
+	*.pdf|*.cbz|*.cbr)
+		f=`basename $url`
+		curl -sL -o /tmp/$f $url && zathura --mode fullscreen /tmp/$f >/dev/null 2>&1 & ;;
+	*.mp3|*.flac|*.opus|*.mp3?source*)
 		dl -c 'aria2c' $url >/dev/null 2>&1 ;;
 	magnet:\?*|*.torrent)
 		transadd $url >/dev/null 2>&1 & ;;

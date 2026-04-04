@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/dash
 LC_ALL=C export LC_ALL
 T=/tmp/p$$
 trap 'rm -f $T; xsetroot -name ""; exit' 0 1 2 3 15

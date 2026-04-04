@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/dash
 
 test $# -ne 1 && exit
 

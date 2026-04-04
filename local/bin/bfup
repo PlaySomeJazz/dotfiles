@@ -1,6 +1,6 @@
-#!/bin/sh
+#! /bin/sh
 t=/tmp/f$$
-trap 'rm -f $t' EXIT
+trap 'rm -f $t' 0
 
 f=https://raw.githubusercontent.com/yokoffing/Betterfox/refs/heads/main/user.js
 

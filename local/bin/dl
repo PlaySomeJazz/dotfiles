@@ -1,26 +1,33 @@
-#!/bin/sh
-while getopts vatidc: opt; do case $opt in
-    v) cmd="yt-dlp -i \
-	    -o ${XDG_VIDEOS_DIR:-$HOME/videos}/W/%(title)s-$(date +%s).%(ext)s" ;;
-    a) cmd="yt-dlp --embed-metadata -x -f bestaudio \
-	    -o ${XDG_MUSIC_DIR:-$HOME/music}/%(title)s.%(ext)s" ;;
-    t) cmd="yt-dlp --skip-download --write-thumbnail \
-	    -o ${XDG_PICTURES_DIR:-$HOME/pictures}/%(title)s.%(ext)s" ;;
-    i) cmd="gallery-dl --cookies-from-browser firefox \
-	    -d ${XDG_PICTURES_DIR:-$HOME/pictures}" ;;
-    d) cmd="aria2c \
-	    --dir=${WL:-$HOME/videos/Watchlist}"
-	    o=$opt ;;
-    c) cmd=$OPTARG; o=$opt ;;
-    *) exit ;;
-esac done
-shift $((OPTIND - 1))
-url=${1:-$(xclip -o)}
-name="${url##*/}"
-case "$o" in [cd]) name="${name%%\?*}"; esac
-notify-send -i "$PIX/dlpending.svg" "Queuing download" "$name"
-id="$(tsp $cmd "$url")"
+#! /bin/sh
+while getopts vatidc: opt
+do
+	case $opt in
+	v) cmd="yt-dlp -i \
+		-o ${XDG_VIDEOS_DIR?}/W/%(title)s-$(date +%s).%(ext)s" ;;
+	a) cmd="yt-dlp --embed-metadata -x -f bestaudio \
+		-o ${XDG_MUSIC_DIR?}/%(title)s.%(ext)s" ;;
+	t) cmd="yt-dlp --skip-download --write-thumbnail \
+		-o ${XDG_PICTURES_DIR?}/%(title)s.%(ext)s" ;;
+	i) cmd="gallery-dl --cookies-from-browser firefox \
+		-d ${XDG_PICTURES_DIR?}" ;;
+	d) cmd="aria2c --dir=${WL?}"; o=$opt ;;
+	c) cmd=$OPTARG; o=$opt ;;
+	\?) exit ;;
+	esac
+done
+shift `expr $OPTIND - 1`
+
+url=${1:-`xclip -o`}
+name=`basename $url`
+case $o in
+[cd])	name=`expr $name : '\([^?]*\)'`
+esac
+
+notify-send -i $PIX/dlpending.svg 'Queuing download' $name
+id=`tsp $cmd $url`
 pkill -10 status
-( tsp -w "$id" && notify-send -i "$PIX/dlcomplete.svg" "Download complete" "$name" ||
-	notify-send -u critical "❗ Download failed" "$name"; pkill -10 status
+
+( tsp -w $id && notify-send -i $PIX/dlcomplete.svg 'Download complete' $name ||
+	notify-send -u critical 'Download failed' $name
+pkill -10 status
 ) &

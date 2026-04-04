@@ -1,7 +1,7 @@
-#!/bin/sh
+#! /bin/sh
 
 bmdirs=${XDG_CONFIG_HOME?}/shell/bm-dirs
-bmfiles=${XDG_CONFIG_HOME?}/shell/bm-files
+bmfiles=$XDG_CONFIG_HOME/shell/bm-files
 
 # Output locations. Unactivated progs should go to /dev/null.
 shell_shortcuts=$XDG_CONFIG_HOME/shell/shortcutrc
@@ -14,14 +14,14 @@ printf "# vim: filetype=sh\\nalias " > "$shell_shortcuts"
 printf "# vim: filetype=sh\\nexport " > "$zsh_named_dirs"
 
 # Format the `directories` file in the correct syntax and sent it to all three configs.
-eval "printf '%s\n' \"$(cat "$bmdirs")\"" |
+eval "printf '%s\n' \"`cat "$bmdirs"`\"" |
 awk "!/^\s*#/ && !/^\s*\$/ {gsub(\"\\\s*#.*$\",\"\");
 	printf(\"%s='cd %s && ls -A' \\\\\n\",\$1,\$2)	>> \"$shell_shortcuts\" ;
 	printf(\"%s=%s \\\\\n\",\$1,\$2)		>> \"$zsh_named_dirs\"  ;
 	printf(\"map f%s cd \42%s\42\n\",\$1,\$2)	>> \"$lf_shortcuts\" }"
 
 # Format the `files` file in the correct syntax and sent it to both configs.
-eval "printf '%s\n' \"$(cat "$bmfiles")\"" |
+eval "printf '%s\n' \"`cat "$bmfiles"`\"" |
 awk "!/^\s*#/ && !/^\s*\$/ {gsub(\"\\\s*#.*$\",\"\");
 	printf(\"%s='\$EDITOR %s' \\\\\n\",\$1,\$2)		>> \"$shell_shortcuts\" ;
 	printf(\"map F%s \$\$EDITOR \42%s\42\n\",\$1,\$2)	>> \"$lf_shortcuts\" }"

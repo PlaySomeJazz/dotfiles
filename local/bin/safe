@@ -23,13 +23,13 @@ set -f
 for dest do :; done
 
 if test $# -gt 2 -a ! -d "$dest"; then
-	echo \'$dest\' is a file 1>&2
+	echo \'"$dest"\' is a file 1>&2
 	exit 1
 fi
 
 while test $# -gt 1; do
 	if test -d "$dest"
-	then	target="$dest/${1##*/}"
+	then	target="$dest/`basename $1`"
 	else	target="$dest"
 	fi
 
@@ -43,7 +43,7 @@ while test $# -gt 1; do
 						break
 					esac
 				done
-				name="${target%"$ext"}" ;;
+				name=`expr "x$target" : "x\(.*\)$ext$"` ;;
 			*)	name="$target"
 			esac
 		else
@@ -51,8 +51,8 @@ while test $# -gt 1; do
 		fi
 		c=1
 		while test -e "$target" || test -h "$target"; do
-			target="${name}_COPY${c}${ext}"
-			c=$((c+1))
+			target="${name}_RENAMED${c}${ext}"
+			c=`expr $c + 1`
 		done
 	fi
 	$cmd $o -- "$1" "$target"
