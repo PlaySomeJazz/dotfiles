@@ -34,7 +34,7 @@ cmd open &{{
 
 cmd extract %{{
 	set -f
-	if test `printf 'No\nYes\n' | dmenu -i -p 'Extract files?'` = Yes; then
+	if test "`printf 'No\nYes\n' | dmenu -i -p 'Extract files?'`" = Yes; then
 		case $fx in
 		*.tar) tar xvf $fx;;
 		*.tar.bz|*.tar.bz2|*.tbz|*.tbz2) tar xjvf $fx;;

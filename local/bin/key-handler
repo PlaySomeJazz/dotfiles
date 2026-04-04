@@ -16,7 +16,7 @@ rotate() {
 case "$1" in
 w) read -r file; setbg "$file" & ;;
 s) while read -r file; do xclip -sel c -target image/png "$file"; done && notify-send Done 'Image(s) copied to clipboard' ;;
-d) test `printf 'Yes\nNo\n' | dmenu -i -p 'Delete selection?'` = Yes && while read -r file; do rm -f "$file"; done && notify-send Done 'Image(s) deleted' ;;
+d) test "`printf 'Yes\nNo\n' | dmenu -i -p 'Delete selection?'`" = Yes && while read -r file; do rm -f "$file"; done && notify-send Done 'Image(s) deleted' ;;
 y) xclip -in -filter | while read -r file; do escape "`realpath "$file"`"; done | xclip -in -selection clipboard && notify-send Copied Filename\(s\) ;;
 g) tr '\n' '\0' | xargs -0 gimp & ;;
 l) rotate 270 ;;
