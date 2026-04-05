@@ -29,7 +29,7 @@ fi
 
 while test $# -gt 1; do
 	if test -d "$dest"
-	then	target="$dest/`basename $1`"
+	then	target="$dest/`basename "$1"`"
 	else	target="$dest"
 	fi
 
