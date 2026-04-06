@@ -1,6 +1,6 @@
 #! /bin/sh
 
-foundfiles() { for f in * .[!.]* ..?*; do [ -e "$f" ] && return; done; }
+foundfiles() { for f in * .[!.]* ..?*; do [ -f "$f" -o -d "$f" ] && return; done; }
 
 if foundfiles; then
 	:

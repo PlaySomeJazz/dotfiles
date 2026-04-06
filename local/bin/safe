@@ -33,7 +33,7 @@ while test $# -gt 1; do
 	else	target="$dest"
 	fi
 
-	if test -e "$target" || test -h "$target"
+	if test -f "$target" -o -d "$target" || test -h "$target"
 	then	ext=
 		if test -f "$target"
 		then	case "$target" in
@@ -50,7 +50,7 @@ while test $# -gt 1; do
 			name="$target"
 		fi
 		c=1
-		while test -e "$target" || test -h "$target"; do
+		while test -f "$target" -o -d "$target" || test -h "$target"; do
 			target="${name}_RENAMED${c}${ext}"
 			c=`expr $c + 1`
 		done
