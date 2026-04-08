@@ -1,23 +1,24 @@
 #! /bin/sh
 
-b=${XDG_DATA_HOME?}/bg s=no
+n=yes f= b=${XDG_DATA_HOME?}/bg
 
-while getopts s o; do case $o in s) s=yes; esac done
-shift `expr $OPTIND - 1`
-
-test "$1" &&
-case `file --mime-type -Lb "$1"` in
-image/*)
-	ln -sf "$1" "$b" &&
-	test "$s" = no && notify-send -i "$b" 'Changing wallpaper...'
-	;;
-inode/directory)
-	ln -sf "`find "$1" -iregex '.*\(jpe?g\|png\)$' -type f | shuf -n 1`" "$b" &&
-	test "$s" = no && notify-send -i "$b" 'Random Wallpaper chosen'
-	;;
-*)
-	notify-send Error 'Not a valid image or directory'
-	exit 1
+case $1 in
+-s)	n=no
+	shift
+esac
+case $1 in
+/*)	f=$1 ;;
+?*)	f=`pwd`/$1
 esac
 
-xwallpaper --zoom "$b"
+test "$f" &&
+case `file -iL "$f"` in
+*image/*)	ln -sf "$f" "$b" ;;
+*inode/dir*)	ln -sf "`find "$f" -iregex '.*\(jpe?g\|png\)$' -type f -print0 | shuf -z -n 1`" "$b" ;;
+*)		notify-send Error 'Not a valid image or directory'
+		exit 1
+esac
+
+xwallpaper --zoom "$b" &&
+test "$f" -a $n = yes &&
+notify-send -i "$b" 'Wallpaper changed'
