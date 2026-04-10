@@ -1,82 +1,68 @@
 #!/bin/sh
-# shellcheck disable=SC2155
+#shellcheck disable=1091,2034
 
-# Profile file, runs on login. Environmental variables are set here.
-export DOTS="$HOME/local" # Might save some headaches
+set -a
 
-# Add all directories in $DOTS to $PATH
-export PATH="$PATH:$(find "$DOTS/bin" -type d | paste -sd ':' -)"
+DOTS=$HOME/local # Might save some headaches
+PATH=$PATH:$(find "$DOTS/bin" -type d | paste -sd ':' -)
+EDITOR=nvim
+TERMINAL=st
+TERMINAL_PROG=st
+BROWSER=firefox
 
-unsetopt PROMPT_SP 2>/dev/null
+: XDG
+XDG_CONFIG_HOME=$DOTS/etc
+XDG_DATA_HOME=$DOTS/share
+XDG_CACHE_HOME=$DOTS/var/cache
+XDG_STATE_HOME=$DOTS/var/state
 
-# Default programs:
-export EDITOR="nvim"
-export TERMINAL="st"
-export TERMINAL_PROG="st"
-export BROWSER="firefox"
+test -f "$XDG_CONFIG_HOME/user-dirs.dirs" && . "$XDG_CONFIG_HOME/user-dirs.dirs"
 
-# Change the default crypto/weather monitor sites.
-# export CRYPTOURL="rate.sx"
-# export WTTRURL="wttr.in"
+: Clean-up:
+XINITRC=$XDG_CONFIG_HOME/x11/xinitrc
+XAUTHORITY=$XDG_RUNTIME_DIR/Xauthority # This line will break some DMs.
+NOTMUCH_CONFIG=$XDG_CONFIG_HOME/notmuch-config
+GTK2_RC_FILES=$XDG_CONFIG_HOME/gtk-2.0/gtkrc-2.0
+WGETRC=$XDG_CONFIG_HOME/wget/wgetrc
+INPUTRC=$XDG_CONFIG_HOME/shell/inputrc
+ZDOTDIR=$XDG_CONFIG_HOME/zsh
+GNUPGHOME=$XDG_DATA_HOME/gnupg
+WINEPREFIX=$XDG_DATA_HOME/wineprefixes/default
+KODI_DATA=$XDG_DATA_HOME/kodi
+WL=${XDG_VIDEOS_DIR:-$HOME/videos}/Watchlist
+PIX=$XDG_DATA_HOME/icons
+NOTES_DIR=$XDG_DATA_HOME/notes
+NOTES_FILE=$XDG_DATA_HOME/capture
+PASSWORD_STORE_DIR=$XDG_DATA_HOME/password-store
+TMUX_TMPDIR=$XDG_RUNTIME_DIR
+ANDROID_SDK_HOME=$XDG_CONFIG_HOME/android
+CARGO_HOME=$XDG_DATA_HOME/cargo
+GOPATH=$XDG_DATA_HOME/go
+GOMODCACHE=$XDG_CACHE_HOME/go/mod
+ANSIBLE_CONFIG=$XDG_CONFIG_HOME/ansible/ansible.cfg
+UNISON=$XDG_DATA_HOME/unison
+HISTFILE=$XDG_DATA_HOME/history
+MBSYNCRC=$XDG_CONFIG_HOME/mbsync/config
+ELECTRUMDIR=$XDG_DATA_HOME/electrum
+PYTHONSTARTUP=$XDG_CONFIG_HOME/python/pythonrc
+SQLITE_HISTORY=$XDG_DATA_HOME/sqlite_history
+_JAVA_OPTIONS=-Djava.util.prefs.userRoot=$XDG_CONFIG_HOME/java
 
-# XDG
-export XDG_CONFIG_HOME="$DOTS/etc"
-export XDG_DATA_HOME="$DOTS/share"
-export XDG_CACHE_HOME="$DOTS/var/cache"
-export XDG_STATE_HOME="$DOTS/var/state"
+: Other program settings:
+TS_SLOTS=3
+DICS=/usr/share/stardict/dic/
+SUDO_ASKPASS=$DOTS/bin/dmenupass
+FZF_DEFAULT_OPTS='--layout=reverse --height 40%'
+QT_QPA_PLATFORMTHEME=gtk2		# Have QT use gtk2 theme.
+MOZ_USE_XINPUT2=1			# Mozilla smooth scrolling/touchpads.
+AWT_TOOLKIT='MToolkit wmname LG3D'	# May have to install wmname
+_JAVA_AWT_WM_NONREPARENTING=1		# Fix for Java applications in dwm
 
-if [ -f "$XDG_CONFIG_HOME/user-dirs.dirs" ]; then
-    set -a
-    . "$XDG_CONFIG_HOME/user-dirs.dirs"
-    set +a
-fi
+setsid -f shortcuts >/dev/null 2>&1
 
-# ~/ Clean-up:
-export XINITRC="$XDG_CONFIG_HOME/x11/xinitrc"
-export XAUTHORITY="$XDG_RUNTIME_DIR/Xauthority" # This line will break some DMs.
-export NOTMUCH_CONFIG="$XDG_CONFIG_HOME/notmuch-config"
-export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc-2.0"
-export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
-export INPUTRC="$XDG_CONFIG_HOME/shell/inputrc"
-export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
-export GNUPGHOME="$XDG_DATA_HOME/gnupg"
-export WINEPREFIX="$XDG_DATA_HOME/wineprefixes/default"
-export KODI_DATA="$XDG_DATA_HOME/kodi"
-export WL="${XDG_VIDEOS_DIR:-$HOME/videos}/Watchlist"
-export PIX="$XDG_DATA_HOME/icons"
-export NOTES_DIR="$XDG_DATA_HOME/notes"
-export NOTES_FILE="$XDG_DATA_HOME/capture"
-export PASSWORD_STORE_DIR="$XDG_DATA_HOME/password-store"
-export TMUX_TMPDIR="$XDG_RUNTIME_DIR"
-export ANDROID_SDK_HOME="$XDG_CONFIG_HOME/android"
-export CARGO_HOME="$XDG_DATA_HOME/cargo"
-export GOPATH="$XDG_DATA_HOME/go"
-export GOMODCACHE="$XDG_CACHE_HOME/go/mod"
-export ANSIBLE_CONFIG="$XDG_CONFIG_HOME/ansible/ansible.cfg"
-export UNISON="$XDG_DATA_HOME/unison"
-export HISTFILE="$XDG_DATA_HOME/history"
-export MBSYNCRC="$XDG_CONFIG_HOME/mbsync/config"
-export ELECTRUMDIR="$XDG_DATA_HOME/electrum"
-export PYTHONSTARTUP="$XDG_CONFIG_HOME/python/pythonrc"
-export SQLITE_HISTORY="$XDG_DATA_HOME/sqlite_history"
-export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
+: Hardware acceleration
+MOZ_X11_EGL=1
+MOZ_DISABLE_RDD_SANDBOX=1
 
-# Other program settings:
-#export OPENSSL_CONF=/dev/null
-export TS_SLOTS="3"
-export DICS="/usr/share/stardict/dic/"
-export SUDO_ASKPASS="$DOTS/bin/dmenupass"
-export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
-export QT_QPA_PLATFORMTHEME="gtk2"        # Have QT use gtk2 theme.
-export MOZ_USE_XINPUT2=1                  # Mozilla smooth scrolling/touchpads.
-export AWT_TOOLKIT="MToolkit wmname LG3D" # May have to install wmname
-export _JAVA_AWT_WM_NONREPARENTING=1      # Fix for Java applications in dwm
-
-[ ! -f "$XDG_CONFIG_HOME/shell/shortcutrc" ] && setsid -f shortcuts >/dev/null 2>&1
-
-# Hardware acceleration
-export MOZ_X11_EGL=1
-export MOZ_DISABLE_RDD_SANDBOX=1
-
-# Start Xorg after login
-[ -z "$DISPLAY" ] && [ "$XDG_VTNR" -eq 1 ] && exec startx "$XINITRC" >/dev/null 2>&1
+: Start Xorg after login
+test -z "$DISPLAY" -a "$XDG_VTNR" -eq 1 && exec startx "$XINITRC" >/dev/null 2>&1

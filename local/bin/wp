@@ -28,7 +28,7 @@ S=${S% *}
 R=${S%/*}
 d=${XDG_PICTURES_DIR:-$HOME/pictures}/scrape/$1/${R#*://}
 
-if test ! "$A"; then echo $p pages; read p; case $p in ''|*[!0-9]*) exit; esac; fi
+if test ! "$A"; then echo $p pages; read p; case $p in ''|*[!0-9]*) exit; esac fi
 
 case $S in
 	*1*) f(){ grep -oP 'wp\S+(?= \d+w")';};;

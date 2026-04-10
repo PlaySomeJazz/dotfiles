@@ -1,6 +1,6 @@
 let mapleader =","
 
-call plug#begin(system('echo -n "${XDG_CONFIG_HOME:-$HOME/local/etc}/nvim/plugged"'))
+call plug#begin((empty($XDG_CONFIG_HOME) ? $HOME . '/local/etc' : $XDG_CONFIG_HOME) . '/nvim/plugged')
 Plug 'junegunn/goyo.vim'
 Plug 'vimwiki/vimwiki'
 Plug 'vim-airline/vim-airline'
