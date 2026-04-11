@@ -1,10 +1,7 @@
-#!/bin/sh
-#shellcheck disable=1091,2034
-
 set -a
 
-DOTS=$HOME/local # Might save some headaches
-PATH=$PATH:$(find "$DOTS/bin" -type d | paste -sd ':' -)
+PATH=$PATH:`find "$DOTS/bin" -type d | paste -sd ':' -`
+DOTS=$HOME/local
 EDITOR=nvim
 TERMINAL=st
 TERMINAL_PROG=st
@@ -58,11 +55,11 @@ MOZ_USE_XINPUT2=1			# Mozilla smooth scrolling/touchpads.
 AWT_TOOLKIT='MToolkit wmname LG3D'	# May have to install wmname
 _JAVA_AWT_WM_NONREPARENTING=1		# Fix for Java applications in dwm
 
-setsid -f shortcuts >/dev/null 2>&1
+shortcuts >/dev/null 2>&1
 
 : Hardware acceleration
 MOZ_X11_EGL=1
 MOZ_DISABLE_RDD_SANDBOX=1
 
 : Start Xorg after login
-test -z "$DISPLAY" -a "$XDG_VTNR" -eq 1 && exec startx "$XINITRC" >/dev/null 2>&1
+test "x$DISPLAY" = x -a "$XDG_VTNR" -eq 1 && exec startx "$XINITRC" >/dev/null 2>&1

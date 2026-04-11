@@ -10,18 +10,15 @@ do
 		-o ${XDG_PICTURES_DIR?}/%(title)s.%(ext)s" ;;
 	i) cmd="gallery-dl --cookies-from-browser firefox \
 		-d ${XDG_PICTURES_DIR?}" ;;
-	d) cmd="aria2c --dir=${WL?}"; o=$opt ;;
-	c) cmd=$OPTARG; o=$opt ;;
+	d) cmd="aria2c --dir=${WL?}" ;;
+	c) cmd=$OPTARG ;;
 	\?) exit ;;
 	esac
 done
 shift `expr $OPTIND - 1`
 
 url=${1:-`xclip -o`}
-name=`basename $url`
-case $o in
-[cd])	name=`expr $name : '\([^?]*\)'`
-esac
+name=`expr $url : '.*/\([^?]*\)'`
 
 notify-send -i $PIX/dlpending.svg 'Queuing download' $name
 id=`tsp $cmd $url`
