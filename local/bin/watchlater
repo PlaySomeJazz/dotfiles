@@ -3,7 +3,7 @@
 f() { for f in * .[!.]* ..?*; do [ -f "$f" -o -d "$f" ] && return; done; }
 
 chdir "${1:-/srv/media/torrents}" || exit
-f || notify-send Empty && exit
+f || exit
 
 export watch music
 watch=${WL?}
@@ -17,4 +17,4 @@ find . ! -name . -prune -type d -exec sh -c 'for dir do [ -n "`find "$dir" -type
 
 find . -depth ! -name . -prune -type d -exec sh -c 'for dir do [ -z "`find "$dir" -type f \( -iname "*.pdf" -o -iname "*.djvu" -o -iname "*.epub" -o -iname "*.mobi" -o -iname "*.zip" -o -iname "*.rar" \) -print -quit`" ] && rm -rf "$dir"; done' sh {} +
 
-notify-send 'Your files are sorted'
+if f; then notify-send leftovers; else notify-send sorted; fi
