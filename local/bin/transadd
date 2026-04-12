@@ -1,10 +1,12 @@
-#!/bin/dash
+#! /bin/sh
 T=$XDG_DATA_HOME/trackers
 I=$PIX/transmission.svg
 D=https://nyaa.si
 S=https://example.com/search
 
-if ! pidof transmission-daemon >/dev/null; then
+if pidof transmission-daemon >/dev/null; then
+	:
+else
 	transmission-daemon
 	notify-send -i $I Transmission Starting...
 	sleep 2
@@ -13,7 +15,7 @@ fi
 
 find "$T" -mtime +0 -exec rm {} \; 2>/dev/null
 
-if ! test -s $T; then
+if test ! -s $T; then
 	curl -sLZ https://cf.trackerslist.com/best.txt \
 	| awk 'NF && !seen[$0]++' >$T
 fi
@@ -50,7 +52,7 @@ for i do
 	esac
 	if test "$i"; then
 		n=`transmission-remote -a "$i"`
-		n=${n#*\"name\":\"} n=${n%\"*}
+		n=`expr "$n" : '.*"name":"\([^"]*\)'`
 		notify-send -i $I 'Torrent added' "$n"
 		pkill -12 status
 	else

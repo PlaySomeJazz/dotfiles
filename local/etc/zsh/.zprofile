@@ -1,6 +1,6 @@
 set -a
 
-PATH=$PATH:`find "$DOTS/bin" -type d | paste -sd ':' -`
+PATH=$PATH:`find "$DOTS/bin" -type d -print | paste -sd ':' -`
 DOTS=$HOME/local
 EDITOR=nvim
 TERMINAL=st
@@ -62,4 +62,4 @@ MOZ_X11_EGL=1
 MOZ_DISABLE_RDD_SANDBOX=1
 
 : Start Xorg after login
-test "x$DISPLAY" = x -a "$XDG_VTNR" -eq 1 && exec startx "$XINITRC" >/dev/null 2>&1
+test -z "$DISPLAY" -a "$XDG_VTNR" -eq 1 && exec startx "$XINITRC" >/dev/null 2>&1

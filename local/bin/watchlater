@@ -1,15 +1,9 @@
 #! /bin/sh
 
-foundfiles() { for f in * .[!.]* ..?*; do [ -f "$f" -o -d "$f" ] && return; done; }
+f() { for f in * .[!.]* ..?*; do [ -f "$f" -o -d "$f" ] && return; done; }
 
 chdir "${1:-/srv/media/torrents}" || exit
-
-if foundfiles; then
-	:
-else
-	notify-send 'Nothing to sort'
-	exit
-fi
+f || notify-send Empty && exit
 
 export watch music
 watch=${WL?}
