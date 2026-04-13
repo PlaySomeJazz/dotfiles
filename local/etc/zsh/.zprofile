@@ -1,7 +1,7 @@
 set -a
 
-PATH=$PATH:`find "$DOTS/bin" -type d -print | paste -sd ':' -`
 DOTS=$HOME/local
+PATH=$PATH:`find "$DOTS/bin" -type d -print | paste -sd ':' -`
 EDITOR=nvim
 TERMINAL=st
 TERMINAL_PROG=st
