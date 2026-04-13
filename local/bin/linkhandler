@@ -4,7 +4,7 @@ url=${1:-`xclip -o`}
 
 case $url in
 	*youtube.com*|*youtu.be*|*.mkv|*.webm|*.mp4)
-		setsid -f mpv --terminal=no $url ;;
+		setsid -f mpv --terminal=no $url >/dev/null 2>&1 ;;
 	*.png|*.jpg|*.jpeg|*.gif|*.webp)
 		f=`basename $url`
 		curl -sL -o /tmp/$f $url && nsxiv -afq /tmp/$f >/dev/null 2>&1 & ;;

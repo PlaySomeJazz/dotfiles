@@ -4,7 +4,6 @@ DOTS=$HOME/local
 PATH=$PATH:`find "$DOTS/bin" -type d -print | paste -sd ':' -`
 EDITOR=nvim
 TERMINAL=st
-TERMINAL_PROG=st
 BROWSER=firefox
 
 : XDG
@@ -52,8 +51,9 @@ SUDO_ASKPASS=$DOTS/bin/dmenupass
 FZF_DEFAULT_OPTS='--layout=reverse --height 40%'
 QT_QPA_PLATFORMTHEME=gtk2		# Have QT use gtk2 theme.
 MOZ_USE_XINPUT2=1			# Mozilla smooth scrolling/touchpads.
-AWT_TOOLKIT='MToolkit wmname LG3D'	# May have to install wmname
 _JAVA_AWT_WM_NONREPARENTING=1		# Fix for Java applications in dwm
+AWT_TOOLKIT=MToolkit
+#wmname LG3D
 
 shortcuts >/dev/null 2>&1
 
