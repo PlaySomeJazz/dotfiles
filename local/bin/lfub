@@ -4,6 +4,7 @@ set -euf
 p=${XDG_CONFIG_HOME?}/lf
 
 if test -n "${DISPLAY-}" -a -z "${FIFO_UEBERZUG-}"; then
+	mkdir -p ${XDG_CACHE_HOME?}/lf
 	FIFO_UEBERZUG=/tmp/lf$$ export FIFO_UEBERZUG
 	mkfifo $FIFO_UEBERZUG
 	until test ! -p $FIFO_UEBERZUG || ueberzug layer -s <$FIFO_UEBERZUG; do :; done &
