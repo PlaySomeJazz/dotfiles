@@ -1,11 +1,10 @@
 #!/bin/dash
 
-set -Cf
-IFS='
-'
+set -f
 filepath=$1
 w=$2 h=$3 x=$4 y=$5
-CACHE="$XDG_CACHE_HOME/lf/thumb.$(IFS=/; set -- $1; IFS=_; printf '%s' "$*")"
+
+c() { CACHE=$XDG_CACHE_HOME/lf/thumb$(IFS=/; set -- $filepath; IFS=_; printf '%s' "$*") ;}
 
 needs_update() { test ! -f "$1" || test "$filepath" -nt "$1" ; }
 
@@ -13,29 +12,27 @@ draw() { printf '{"action": "add", "identifier": "PREVIEW", "x": "%s", "y": "%s"
 
 case "$(file --dereference --brief --mime-type -- "$1")" in
 	image/avif|image/x-xcf)
-		needs_update "$CACHE.jpg" && magick "$1[0]" "$CACHE.jpg"
+		c && needs_update "$CACHE.jpg" && magick "$1[0]" "$CACHE.jpg"
 		draw "$CACHE.jpg" ;;
 	image/vnd.djvu)
-		needs_update "$CACHE.jpg" && djvused "$1" -e 'select 1; save-page-with /dev/stdout' | magick -density 200 - "$CACHE.jpg" > /dev/null 2>&1
+		c && needs_update "$CACHE.jpg" && djvused "$1" -e 'select 1; save-page-with /dev/stdout' | magick -density 200 - "$CACHE.jpg" > /dev/null 2>&1
 		draw "$CACHE.jpg" ;;
 	image/svg+xml)
-		needs_update "$CACHE.png" && inkscape --convert-dpi-method=none -o "$CACHE.png" --export-overwrite -D --export-png-color-mode=RGBA_16 "$1"
+		c && needs_update "$CACHE.png" && inkscape --convert-dpi-method=none -o "$CACHE.png" --export-overwrite -D --export-png-color-mode=RGBA_16 "$1"
 		draw "$CACHE.png" ;;
 	image/*) draw "$1" ;;
 	text/troff) man ./ "$1" | col -b ;;
 	text/* | */xml | application/json | application/x-ndjson) exec cat "$1" ;;
-	audio/* | application/octet-stream) mediainfo "$1" ;;
+	audio/* | application/octet-stream) exec mediainfo "$1" ;;
 	video/*)
-		needs_update "$CACHE.jpg" && ffmpegthumbnailer -i "$1" -o "$CACHE.jpg" -s 0
+		c && needs_update "$CACHE.jpg" && ffmpegthumbnailer -i "$1" -o "$CACHE.jpg" -s 0
 		draw "$CACHE.jpg" ;;
 	*/pdf)
-		needs_update "$CACHE.jpg" && pdftoppm -jpeg -f 1 -singlefile "$1" "$CACHE"
+		c && needs_update "$CACHE.jpg" && pdftoppm -jpeg -f 1 -singlefile "$1" "$CACHE"
 		draw "$CACHE.jpg" ;;
 	*/epub+zip|*/mobi*)
-		needs_update "$CACHE.jpg" && gnome-epub-thumbnailer "$1" "$CACHE.jpg"
+		c && needs_update "$CACHE.jpg" && gnome-epub-thumbnailer "$1" "$CACHE.jpg"
 		draw "$CACHE.jpg" ;;
 	application/*zip) atool --list -- "$1" ;;
-	*opendocument*) odt2txt "$1" ;;
-	application/pgp-encrypted) gpg -d -- "$1" ;;
 	*) file -Lb -- "$1" | fold -s -w "$w"
 esac
