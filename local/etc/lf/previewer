@@ -1,38 +1,31 @@
-#!/bin/dash
+#!/bin/sh
 
 set -f
-filepath=$1
+exec 2>/dev/null
+
 w=$2 h=$3 x=$4 y=$5
 
-c() { CACHE=$XDG_CACHE_HOME/lf/thumb$(IFS=/; set -- $filepath; IFS=_; printf '%s' "$*") ;}
+draw() { printf '{"action": "add", "identifier": "PREVIEW", "x": "%s", "y": "%s", "width": "%s", "height": "%s", "scaler": "contain", "path": "%s"}\n' "$x" "$y" "$w" "$h" "$1" >"$FIFO_UEBERZUG"; exit 1 ; }
 
-needs_update() { test ! -f "$1" || test "$filepath" -nt "$1" ; }
-
-draw() { printf '{"action": "add", "identifier": "PREVIEW", "x": "%s", "y": "%s", "width": "%s", "height": "%s", "scaler": "contain", "path": "%s"}\n' "$x" "$y" "$w" "$h" "$1" > "$FIFO_UEBERZUG"; exit 1 ; }
-
-case "$(file --dereference --brief --mime-type -- "$1")" in
-	image/avif|image/x-xcf)
-		c && needs_update "$CACHE.jpg" && magick "$1[0]" "$CACHE.jpg"
-		draw "$CACHE.jpg" ;;
-	image/vnd.djvu)
-		c && needs_update "$CACHE.jpg" && djvused "$1" -e 'select 1; save-page-with /dev/stdout' | magick -density 200 - "$CACHE.jpg" > /dev/null 2>&1
-		draw "$CACHE.jpg" ;;
-	image/svg+xml)
-		c && needs_update "$CACHE.png" && inkscape --convert-dpi-method=none -o "$CACHE.png" --export-overwrite -D --export-png-color-mode=RGBA_16 "$1"
-		draw "$CACHE.png" ;;
-	image/*) draw "$1" ;;
-	text/troff) man ./ "$1" | col -b ;;
-	text/* | */xml | application/json | application/x-ndjson) exec cat "$1" ;;
-	audio/* | application/octet-stream) exec mediainfo "$1" ;;
-	video/*)
-		c && needs_update "$CACHE.jpg" && ffmpegthumbnailer -i "$1" -o "$CACHE.jpg" -s 0
-		draw "$CACHE.jpg" ;;
-	*/pdf)
-		c && needs_update "$CACHE.jpg" && pdftoppm -jpeg -f 1 -singlefile "$1" "$CACHE"
-		draw "$CACHE.jpg" ;;
-	*/epub+zip|*/mobi*)
-		c && needs_update "$CACHE.jpg" && gnome-epub-thumbnailer "$1" "$CACHE.jpg"
-		draw "$CACHE.jpg" ;;
-	application/*zip) atool --list -- "$1" ;;
-	*) file -Lb -- "$1" | fold -s -w "$w"
+case $1 in
+	*.jpg|*.jpeg|*.png|*.bmp|*.webp|*.gif|\
+	*.JPG|*.JPEG|*.PNG|*.BMP|*.WEBP|*.GIF)
+	draw "$1"
 esac
+
+file=$1
+
+needs_update() { test ! -f "$1" || test "$file" -nt "$1" ; }
+c() { CACHE=$XDG_CACHE_HOME/lf/`IFS=/; set $file; IFS=_; printf %s "$*"` ;}
+
+case `file -Lb --mime-type -- "$1"` in
+	image/avif|image/x-xcf|image/svg+xml) c;needs_update "$CACHE.jpg" && magick "$1[0]" "$CACHE.jpg"; draw "$CACHE.jpg" ;;
+	image/*) draw "$1" ;;
+	text/troff) COLUMNS="$w" man "$1" | col -b; exit ;;
+	text/*|*/xml|application/*json) exec cat "$1" ;;
+	audio/*|application/octet-stream) mediainfo "$1" && exit ;;
+	video/*) c;needs_update "$CACHE.jpg" && ffmpegthumbnailer -i "$1" -o "$CACHE.jpg" -s 0; draw "$CACHE.jpg" ;;
+	*/pdf) c;needs_update "$CACHE.jpg" && pdftoppm -f 1 -singlefile -jpeg "$1" "$CACHE"; draw "$CACHE.jpg" ;;
+	application/*zip|application/*tar|application/x-bzip2|application/x-xz) exec bsdtar -tf "$1"
+esac
+file -Lb -- "$1" | fold -s -w "$w"
