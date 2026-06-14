@@ -1,93 +1,79 @@
 #!/bin/dash
-# For convenience, the unmounter functionality is placed here as well.
-unmounter(){
-	mounteddroids="$(grep simple-mtpfs /etc/mtab | awk '{print "📱" $2}')"
-	mounteddrives="$(lsblk -nrpo "name,type,size,mountpoint" | awk '($2=="part"||$2="crypt")&&$4!~/\/boot|\/home$|SWAP/&&length($4)>1{printf "💾%s (%s)\n",$4,$3}')"
-	allunmountable="$(printf "%s\n%s" "$mounteddroids" "$mounteddrives" | sed "/^$/d;s/ *$//")"
-	[ -z "$allunmountable" ] && exit
-	selected="$(echo "$allunmountable" | dmenu -i -p "Unmount which drive?")"
-	selected="${selected%% *}"
-	[ -n "$selected" ] && sudo umount -l "/${selected#*/}" || exit
-	notify-send "Device unmounted." "$selected has been unmounted."
-}
 
-case $1 in
-unmount) unmounter; exit
-esac
-
-IFS='
-'
-
-# Function for escaping cell-phone names.
-escape(){ echo "$@" | iconv -cf UTF-8 -t ASCII//TRANSLIT | tr -d '[:punct:]' | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | sed "s/-\+/-/g;s/\(^-\|-\$\)//g" ;}
-
-# Check for phones.
-phones="$(simple-mtpfs -l 2>/dev/null | sed "s/^/📱/")"
-mountedphones="$(grep "simple-mtpfs" /etc/mtab)"
-# If there are already mounted phones, remove them from the list of mountables.
-[ -n "$mountedphones" ] && phones="$(for phone in $phones; do
-	for mounted in $mountedphones; do
-		escphone="$(escape "$phone")"
-		case "$mounted" in *"$escphone"*) break 1 ;; esac
-	done && continue 1
-	echo "$phone"
-done)"
-
-# Check for drives.
-lsblkoutput="$(lsblk -rpo "uuid,name,type,size,label,mountpoint,fstype")"
-# Functioning for formatting drives correctly for dmenu:
-filter() { sed "s/ /:/g" | awk -F':' '$7==""{printf "%s%s (%s) %s\n",$1,$3,$5,$6}' ; }
-
-# Get all normal, non-encrypted or decrypted partitions that are not mounted.
-normalparts="$(echo "$lsblkoutput"| grep -v crypto_LUKS | grep 'part\|rom\|crypt' | sed "s/^/💾 /" | filter )"
-
-# Add all to one variable. If no mountable drives found, exit.
-alldrives="$(echo "$phones
-$normalparts" | sed "/^$/d;s/ *$//")"
-
-# Quit the script if a sequential command fails.
 set -e
 
-test -n "$alldrives"
+case $1 in
+unmount)
+	mounteddroids=$(grep simple-mtpfs /etc/mtab | awk '{print "📱" $2}')
+	mounteddrives=$(lsblk -nrpo NAME,TYPE,SIZE,MOUNTPOINT \
+		| awk '$2=="part"&&$4!~/\/boot|\/home$|SWAP/&&length($4)>1{printf "💾%s (%s)\n",$4,$3}')
+	allunmountable=$(printf "%s\n%s" "$mounteddroids" "$mounteddrives" | sed "/^$/d")
+	test "$allunmountable"
+	selected=$(printf '%s\n' "$allunmountable" | dmenu -i -p 'Unmount which drive?')
+	selected=${selected%% *}
+	test "$selected"
+	sudo umount -l "/${selected#*/}"
+	notify-send "Device unmounted." "$selected has been unmounted."
+	exit
+esac
 
-# Feed all found drives to dmenu and get user choice.
-chosen="$(echo "$alldrives" | dmenu -p "Mount which drive?" -i)"
+phones=
+phones_raw=$(simple-mtpfs -l 2>/dev/null||:)
+if [ -n "$phones_raw" ]; then
+	mountedphones=$(grep simple-mtpfs /etc/mtab||:)
+	phones=$(printf '%s\n' "$phones_raw" \
+		| while IFS= read -r line; do
+			num=${line%%:*}
+			case $mountedphones in
+			*"simple-mtpfs-$num "*) ;;
+			*) printf '📱%s\n' "$line"
+			esac
+		done
+	)
+fi
 
-# Function for prompting user for a mountpoint.
+normalparts=$(lsblk -nrpo NAME,TYPE,SIZE,LABEL,FSTYPE,MOUNTPOINT | sed 's/ /:/g' | awk -F: \
+	'($2=="part"||$2=="rom")&&$5!="crypto_LUKS"&&$6==""{printf "💾%s (%s)%s%s\n",$1,$3,$4?" "$4:"",$5?" "$5:""}'
+)
+
+alldrives=$(printf "%s\n%s" "$phones" "$normalparts" | sed "/^$/d")
+
+test "$alldrives"
+chosen=$(printf '%s\n' "$alldrives" | dmenu -i -p 'Mount which drive?')
+
 getmount(){
-	mp="$(find /mnt /media /mount /home -maxdepth 1 -type d 2>/dev/null | dmenu -i -p "Mount this drive where?")"
+	mp=$(find /mnt /media /home -maxdepth 1 -type d 2>/dev/null | dmenu -i -p 'Mount this drive where?')
 	test -n "$mp"
 	if [ ! -d "$mp" ]; then
 		mkdiryn=$(printf "No\\nYes" | dmenu -i -p "$mp does not exist. Create it?")
-		[ "$mkdiryn" = "Yes" ] && (mkdir -p "$mp" || sudo mkdir -p "$mp")
+		[ "$mkdiryn" = Yes ] && { mkdir -p "$mp" || sudo mkdir -p "$mp"; }
 	fi
 }
 
-attemptmount(){
-		# Attempt to mount without a mountpoint, to see if drive is in fstab.
-		sudo mount "$chosen" || return 1
+case $chosen in
+💾*)
+	chosen=${chosen#💾}
+	chosen=${chosen%% *}
+	if sudo mount "$chosen"; then
 		notify-send "💾Drive Mounted." "$chosen mounted."
 		exit
-}
-
-case "$chosen" in
-	💾*)
-		chosen=$(printf '%s' "${chosen%% *}" | awk '{print substr($0, 2)}')
-		parttype="$(echo "$lsblkoutput" | grep "$chosen")"
-		attemptmount || getmount
-		case "${parttype##* }" in
-			vfat) sudo mount -t vfat "$chosen" "$mp" -o rw,umask=0000 ;;
-			btrfs) sudo mount "$chosen" "$mp" ;;
-			*) sudo mount "$chosen" "$mp" -o uid="$(id -u)",gid="$(id -g)" ;;
-		esac
-		notify-send "💾Drive Mounted." "$chosen mounted to $mp."
-		;;
-
-	📱*)
-		notify-send "❗Note" "Remember to allow file access on your phone now."
+	else
 		getmount
-		number=$(printf '%s' "${chosen%%:*}" | awk '{print substr($0, 2)}')
-		sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$chosen")" --device "$number" "$mp" || { sleep 5 && sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$chosen")" --device "$number" "$mp"; }
-		notify-send "🤖 Android Mounted." "Android device mounted to $mp."
-		;;
+	fi
+	parttype=$(lsblk -nro FSTYPE "$chosen")
+	case $parttype in
+		vfat) sudo mount -t vfat "$chosen" "$mp" -o rw,umask=0000 ;;
+		btrfs) sudo mount "$chosen" "$mp" ;;
+		*) sudo mount "$chosen" "$mp" -o uid="$(id -u)",gid="$(id -g)" ;;
+	esac
+	notify-send "💾Drive Mounted." "$chosen mounted to $mp."
+	;;
+📱*)
+	number=${chosen#📱}
+	number=${number%%:*}
+	mphone() { sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$number" --device "$number" "$mp"; }
+	notify-send '❗Note' 'Remember to allow file access on your phone now.'
+	getmount
+	mphone || { sleep 5; mphone; }
+	notify-send "🤖 Android Mounted." "Android device mounted to $mp."
 esac
