@@ -1,0 +1,19 @@
+#!/bin/dash
+
+case $1 in
+vol)	case $2 in
+	mute)	wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle;;
+	*)	wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ $2%$3
+	esac
+	v=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
+	case $v in
+	*MUTED*) notify-send -a volume -u low -t 2000 -r 9993 -i $PIX/volume-mute.svg Volume Muted;;
+	*)	v=${v#Volume: }
+		v=${v%.*}${v#*.}
+		v=${v#0} v=${v#0}
+		notify-send -a volume -u low -t 2000 -r 9993 -h int:value:$v -i $PIX/volume-on.svg Volume $v%
+	esac;;
+br)	b=$(brightnessctl -e4 set $2%$3 -m)
+	b=${b#*,*,*,}
+	notify-send -a backlight -u low -t 1000 -r 9994 -h int:value:${b%%%*} -i $PIX/brightness.svg Brightness ${b%%,*}
+esac
