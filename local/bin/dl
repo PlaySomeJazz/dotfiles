@@ -1,30 +1,91 @@
 #! /bin/sh
-while getopts vatidc: opt
+set -f
+vids=$XDG_VIDEOS_DIR mus=$XDG_MUSIC_DIR pics=$XDG_PICTURES_DIR
+
+while getopts o:c:vatid opt
 do
 	case $opt in
-	v) cmd="yt-dlp -i \
-		-o ${XDG_VIDEOS_DIR?}/W/%(title)s-`date +%s`.%(ext)s" ;;
-	a) cmd="yt-dlp --embed-metadata -x -f bestaudio \
-		-o ${XDG_MUSIC_DIR?}/%(title)s.%(ext)s" ;;
-	t) cmd="yt-dlp --skip-download --write-thumbnail \
-		-o ${XDG_PICTURES_DIR?}/%(title)s.%(ext)s" ;;
-	i) cmd="gallery-dl --cookies-from-browser firefox \
-		-d ${XDG_PICTURES_DIR?}" ;;
-	d) cmd="aria2c --dir=${WL?}" ;;
-	c) cmd=$OPTARG ;;
-	\?) exit ;;
+	o)	oarg=$OPTARG;;
+	c)	case $flag in
+		$opt) ;;
+		?*)	notify-send 'conflicting options'
+			exit 1
+		esac
+		flag=c
+		carg=$OPTARG;;
+	i|d)	case $flag in
+		$opt) ;;
+		?*)	notify-send 'conflicting options'
+			exit 1
+		esac
+		flag=$opt;;
+	[vat])	case $flag in
+		[cid])	notify-send 'conflicting options'
+			exit 1;;
+		*$opt*)	;;
+		*)	flag="$flag $opt"
+		esac;;
+	\?)	exit 1
 	esac
 done
 shift `expr $OPTIND - 1`
 
-url=${1:-`xclip -o`}
-name=`expr $url : '.*/\([^?]*\)'`
+case $# in
+0)	set - `xclip -o`
+	case $# in
+	0)	notify-send 'no urls provided'
+		exit 1
+	esac
+esac
 
-notify-send -i $PIX/dlpending.svg 'Queuing download' $name
-id=`tsp $cmd $url`
-pkill -10 status
-
-( tsp -w $id && notify-send -i $PIX/dlcomplete.svg 'Download complete' $name ||
-	notify-send -u critical 'Download failed' $name
-pkill -10 status
-) &
+for url do case $url in http://*|https://*)
+	case $url in
+	*m3u8*)	name=`expr $url : '.*/\([^?]*\)'`;;
+	*)	name=$url
+	esac
+	for o in $flag
+	do
+		case $o in
+		c)	id=`tsp $carg $url`;;
+		v)	id=`tsp yt-dlp \
+				--progress --print after_move:title \
+				-i \
+				-o ${oarg:-$vids/W}/%(title)s-\`date +%s\`.%(ext)s \
+				$url`;;
+		a)	id=`tsp yt-dlp \
+				--progress --print after_move:title \
+				--embed-metadata \
+				-x -f bestaudio \
+				-o ${oarg:-$mus}/%(title)s.%(ext)s \
+				$url`;;
+		t)	id=`tsp yt-dlp \
+				--progress --print after_move:title \
+				--skip-download --write-thumbnail \
+				-o ${oarg:-$pics}/%(title)s.%(ext)s \
+				$url`;;
+		i)	id=`tsp gallery-dl \
+				--cookies-from-browser firefox \
+				-d ${oarg:-$pics} \
+				$url`;;
+		d)	id=`tsp aria2c \
+				-d ${oarg:-$WL} \
+				$url`
+		esac
+		notify-send -i $PIX/dlpending.svg 'Queuing download' "[$o] $name"
+		pkill -10 status
+		{
+			if tsp -w $id
+			then	case $o in
+				[vat])	case $name in
+					*m3u8*)	;;
+					*)	name=`tsp -c $id | tail -1`
+					esac
+				esac
+				notify-send -i $PIX/dlcomplete.svg 'Download complete' "[$o] $name"
+			else	msg=`tsp -c $id | tail -3`
+				notify-send -u critical "[$o] $name" "${msg:-Download failed}"
+			fi
+			pkill -10 status
+		} &
+	done
+esac done
