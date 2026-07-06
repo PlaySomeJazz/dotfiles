@@ -1,29 +1,21 @@
 #! /bin/sh
-set -f
-vids=$XDG_VIDEOS_DIR mus=$XDG_MUSIC_DIR pics=$XDG_PICTURES_DIR
 
-while getopts o:c:vatid opt
+conflict="eval notify-send 'conflicting options'; exit 1"
+
+while getopts o:c:pvatid opt
 do
 	case $opt in
 	o)	oarg=$OPTARG;;
-	c)	case $flag in
-		$opt) ;;
-		?*)	notify-send 'conflicting options'
-			exit 1
-		esac
-		flag=c
+	c)	test "$flag$yt" && $conflict
+		flag=$opt
 		carg=$OPTARG;;
-	i|d)	case $flag in
-		$opt) ;;
-		?*)	notify-send 'conflicting options'
-			exit 1
-		esac
+	p)	playlist=--yes-playlist;;
+	i|d)	test "$flag$yt" && $conflict
 		flag=$opt;;
-	[vat])	case $flag in
-		[cid])	notify-send 'conflicting options'
-			exit 1;;
-		*$opt*)	;;
-		*)	flag="$flag $opt"
+	[vat])	test $flag && $conflict
+		case $yt in
+		*$opt*)	: skip duplicates ;;
+		*)	yt="$opt $yt"
 		esac;;
 	\?)	exit 1
 	esac
@@ -38,38 +30,42 @@ case $# in
 	esac
 esac
 
-for url do case $url in http://*|https://*)
+for url do case $url in
+http://*|https://*)
 	case $url in
 	*m3u8*)	name=`expr $url : '.*/\([^?]*\)'`;;
 	*)	name=$url
 	esac
-	for o in $flag
+	for o in $flag $yt
 	do
 		case $o in
 		c)	id=`tsp $carg $url`;;
 		v)	id=`tsp yt-dlp \
+				${playlist:---no-playlist} \
 				--progress --print after_move:title \
 				-i \
-				-o ${oarg:-$vids/W}/%(title)s-\`date +%s\`.%(ext)s \
-				$url`;;
+				-o "${oarg:-$XDG_VIDEOS_DIR/W}/%(title)s-\`date +%s\`.%(ext)s" \
+				"$url"`;;
 		a)	id=`tsp yt-dlp \
+				${playlist:---no-playlist} \
 				--progress --print after_move:title \
 				--embed-metadata \
 				-x -f bestaudio \
-				-o ${oarg:-$mus}/%(title)s.%(ext)s \
-				$url`;;
+				-o "${oarg:-$XDG_MUSIC_DIR}/%(title)s.%(ext)s" \
+				"$url"`;;
 		t)	id=`tsp yt-dlp \
+				${playlist:---no-playlist} \
 				--progress --print after_move:title \
 				--skip-download --write-thumbnail \
-				-o ${oarg:-$pics}/%(title)s.%(ext)s \
-				$url`;;
+				-o "${oarg:-$XDG_PICTURES_DIR}/%(title)s.%(ext)s" \
+				"$url"`;;
 		i)	id=`tsp gallery-dl \
 				--cookies-from-browser firefox \
-				-d ${oarg:-$pics} \
-				$url`;;
+				-d "${oarg:-$XDG_PICTURES_DIR}" \
+				"$url"`;;
 		d)	id=`tsp aria2c \
-				-d ${oarg:-$WL} \
-				$url`
+				-d "${oarg:-$WL}" \
+				"$url"`
 		esac
 		notify-send -i $PIX/dlpending.svg 'Queuing download' "[$o] $name"
 		pkill -10 status
