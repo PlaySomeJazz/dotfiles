@@ -2,20 +2,20 @@
 
 conflict="eval notify-send 'conflicting options'; exit 1"
 
-while getopts o:c:pvatid opt
+while getopts o:c:pgvatid opt
 do
 	case $opt in
 	o)	oarg=$OPTARG;;
-	c)	test "$flag$yt" && $conflict
+	c)	test "$flag" && $conflict
 		flag=$opt
 		carg=$OPTARG;;
 	p)	playlist=--yes-playlist;;
-	i|d)	test "$flag$yt" && $conflict
+	i|d|g)	test "$flag" && $conflict
 		flag=$opt;;
-	[vat])	test $flag && $conflict
-		case $yt in
+	v|a|t)	case $flag in
+		*[!vat\ ]*) $conflict;;
 		*$opt*)	: skip duplicates ;;
-		*)	yt="$opt $yt"
+		*)	flag="$flag $opt"
 		esac;;
 	\?)	exit 1
 	esac
@@ -36,10 +36,11 @@ http://*|https://*)
 	*m3u8*)	name=`expr $url : '.*/\([^?]*\)'`;;
 	*)	name=$url
 	esac
-	for o in $flag $yt
+	for o in $flag
 	do
 		case $o in
-		c)	id=`tsp $carg $url`;;
+		c)	id=`tsp $carg "$url"`;;
+		g)	id=`tsp git clone "$url" "${oarg:-$HOME}"`;;
 		v)	id=`tsp yt-dlp \
 				${playlist:---no-playlist} \
 				--progress --print after_move:title \
