@@ -40,7 +40,7 @@ http://*|https://*)
 	do
 		case $o in
 		c)	id=`tsp $carg "$url"`;;
-		g)	id=`tsp git clone "$url" "${oarg:-$HOME}"`;;
+		g)	id=`tsp git clone "$url" "${oarg:-$HOME}/\`basename "$url" .git\`"`;;
 		v)	id=`tsp yt-dlp \
 				${playlist:---no-playlist} \
 				--progress --print after_move:title \
