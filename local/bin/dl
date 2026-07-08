@@ -2,7 +2,7 @@
 
 conflict="eval notify-send 'conflicting options'; exit 1"
 
-while getopts o:c:pgvatid opt
+while getopts o:c:pvatid opt
 do
 	case $opt in
 	o)	oarg=$OPTARG;;
