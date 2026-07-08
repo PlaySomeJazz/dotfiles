@@ -10,7 +10,7 @@ do
 		flag=$opt
 		carg=$OPTARG;;
 	p)	playlist=--yes-playlist;;
-	i|d|g)	test "$flag" && $conflict
+	i|d)	test "$flag" && $conflict
 		flag=$opt;;
 	v|a|t)	case $flag in
 		*[!vat\ ]*) $conflict;;
@@ -40,7 +40,6 @@ http://*|https://*)
 	do
 		case $o in
 		c)	id=`tsp $carg "$url"`;;
-		g)	id=`tsp git clone "$url" "${oarg:-$HOME}/\`basename "$url" .git\`"`;;
 		v)	id=`tsp yt-dlp \
 				${playlist:---no-playlist} \
 				--progress --print after_move:title \
