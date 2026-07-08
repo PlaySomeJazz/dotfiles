@@ -79,7 +79,8 @@ http://*|https://*)
 				esac
 				notify-send -i $PIX/dlcomplete.svg 'Download complete' "[$o] $name"
 			else	msg=`tsp -c $id | tail -3`
-				notify-send -u critical "[$o] $name" "${msg:-Download failed}"
+				N=`notify-send -u critical -A copy "[$o] $name" "${msg:-Download failed}"`
+				test $N && echo "$url" | xclip -sel c
 			fi
 			pkill -10 status
 		} &
