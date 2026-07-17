@@ -1,6 +1,6 @@
 #! /bin/sh
 
-f() { for f in * .[!.]* ..?*; do [ -f "$f" -o -d "$f" ] && return; done; }
+f() for f in * .[!.]* ..?*; do [ -f "$f" -o -d "$f" ] && return; done
 
 chdir "${1:-/srv/media/torrents}" || exit
 f || exit

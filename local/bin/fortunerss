@@ -1,0 +1,25 @@
+#! /bin/sh
+
+file=${1:-$XDG_DATA_HOME/fortunes}
+test ! -s "$file" && exit 1
+
+fortune=`shuf -n 1 "$file" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g'`
+guid=`date +%s`-$$
+pubdate=`date -R`
+
+cat <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+  <title>Fortune</title>
+  <link>https://example.invalid/fortune</link>
+  <description>A random line from $file</description>
+  <item>
+    <title>${fortune}</title>
+    <description>${fortune}</description>
+    <guid isPermaLink="false">${guid}</guid>
+    <pubDate>${pubdate}</pubDate>
+  </item>
+</channel>
+</rss>
+EOF

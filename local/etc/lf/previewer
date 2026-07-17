@@ -5,7 +5,11 @@ exec 2>/dev/null
 
 w=$2 h=$3 x=$4 y=$5
 
-draw() { printf '{"action": "add", "identifier": "PREVIEW", "x": "%s", "y": "%s", "width": "%s", "height": "%s", "scaler": "contain", "path": "%s"}\n' "$x" "$y" "$w" "$h" "$1" >"$FIFO_UEBERZUG"; exit 1 ; }
+draw() {
+	printf '{"action":"add","identifier":"preview","x":%d,"y":%d,"width":%d,"height":%d,"scaler":"contain","path":"%s"}\n' \
+		"$x" "$y" "$w" "$h" "$1" >"$FIFO_UEBERZUG"
+	exit 1
+}
 
 case $1 in
 	*.jpg|*.jpeg|*.png|*.bmp|*.webp|*.gif|\
@@ -26,6 +30,6 @@ case `file -Lb --mime-type -- "$1"` in
 	audio/*|application/octet-stream) mediainfo "$1" && exit ;;
 	video/*) c;needs_update "$CACHE.jpg" && ffmpegthumbnailer -i "$1" -o "$CACHE.jpg" -s 0; draw "$CACHE.jpg" ;;
 	*/pdf) c;needs_update "$CACHE.jpg" && pdftoppm -f 1 -singlefile -jpeg "$1" "$CACHE"; draw "$CACHE.jpg" ;;
-	application/*zip|application/*tar|application/x-bzip2|application/x-xz) exec bsdtar -tf "$1"
+	application/*zip*|application/*tar|application/x-xz|application/x-7z-compressed|application/x-rar) exec bsdtar -tf "$1"
 esac
 file -Lb -- "$1" | fold -s -w "$w"
