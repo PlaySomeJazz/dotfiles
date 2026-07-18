@@ -1,23 +1,22 @@
-inbox=${1:-$NOTES_FILE} t=/tmp/$$ def=Chores mkc='<Add category>' rmn='<Delete>'
-trap 'rm -f $t' 0 1 2 3 15
-case $inbox in [!/]*) inbox=`pwd`/$inbox; esac
+PATH=/bin:/usr/bin t=/tmp/$$ mkc='<Add category>' rmn='<Delete>' N=${1:-$NOTES_FILE}
+case $N in [!/]*) N=`pwd`/$N; esac
 
 log() { printf "\033[2K\r\033[1;${2:-33}m${1}\033[0m"; }
 add() { printf '%s\n' "$*" >>$c && del; }
-del() { ed - $inbox <<-\#
+del() { ed - $N <<-\#
 	1d
 	w
 	#
 }
 
-test ! -f "$inbox" && log 'Missing file\n' 31 && exit
+test ! -f "$N" && log 'Missing file\n' 31 && exit
 test ! -d "${NOTES_DIR?}" && mkdir -p $NOTES_DIR
 
 chdir $NOTES_DIR
->>$def
-while test -s $inbox; do
-	tput clear
-	read -r note <$inbox; test "x$note" = x && del && continue
+>>Chores
+while	test -s $N
+do	tput clear
+	read -r note <$N; test "x$note" = x && del && continue
 	log "$note\n\n"
 	c=`printf '%s\n' * "$mkc" "$rmn" ^ fzf`
 	case $c in
@@ -31,6 +30,7 @@ while test -s $inbox; do
 	esac
 done
 tput clear
-trap '' 1 2 3 15
+trap "" 1 2 3 15
 cat * >$t; test -s $t && <$t mail $USER && for i in *; do  >$i; done
+rm -f $t
 log 'All done!\n' 34

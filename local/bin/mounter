@@ -4,15 +4,19 @@ set -e
 
 case $1 in
 unmount)
-	mounteddroids=$(grep simple-mtpfs /etc/mtab | awk '{print "📱" $2}')
+	mounteddroids=$(grep simple-mtpfs /etc/mtab | awk '{print "📱" $2}' | sed 's/\\040/ /g')
 	mounteddrives=$(lsblk -nrpo NAME,TYPE,SIZE,MOUNTPOINT \
-		| awk '$2=="part"&&$4!~/\/boot|\/home$|SWAP/&&length($4)>1{printf "💾%s (%s)\n",$4,$3}')
+		| awk '($2=="part"||$2=="rom")&&$4!~/\/boot|\/home$|SWAP/&&length($4)>1{printf "💾%s (%s)\n",$4,$3}' \
+		| sed 's/\\x20/ /g')
 	allunmountable=$(printf "%s\n%s" "$mounteddroids" "$mounteddrives" | sed "/^$/d")
 	test "$allunmountable"
 	selected=$(printf '%s\n' "$allunmountable" | dmenu -i -p 'Unmount which drive?')
-	selected=${selected%% *}
 	test "$selected"
-	sudo umount -l "/${selected#*/}"
+	case $selected in
+		💾*) target=${selected%% (*} ;;
+		📱*) target=$selected
+	esac
+	sudo umount -l "/${target#*/}"
 	notify-send "Device unmounted." "$selected has been unmounted."
 	exit
 esac
@@ -37,8 +41,8 @@ normalparts=$(lsblk -nrpo NAME,TYPE,SIZE,LABEL,FSTYPE,MOUNTPOINT | sed 's/ /:/g'
 )
 
 alldrives=$(printf "%s\n%s" "$phones" "$normalparts" | sed "/^$/d")
-
 test "$alldrives"
+
 chosen=$(printf '%s\n' "$alldrives" | dmenu -i -p 'Mount which drive?')
 
 getmount(){
@@ -57,14 +61,13 @@ case $chosen in
 	if sudo mount "$chosen"; then
 		notify-send "💾Drive Mounted." "$chosen mounted."
 		exit
-	else
-		getmount
 	fi
+	getmount
 	parttype=$(lsblk -nro FSTYPE "$chosen")
 	case $parttype in
 		vfat) sudo mount -t vfat "$chosen" "$mp" -o rw,umask=0000 ;;
-		btrfs) sudo mount "$chosen" "$mp" ;;
-		*) sudo mount "$chosen" "$mp" -o uid="$(id -u)",gid="$(id -g)" ;;
+		exfat|ntfs|ntfs3) sudo mount "$chosen" "$mp" -o uid="$(id -u)",gid="$(id -g)" ;;
+		*) sudo mount "$chosen" "$mp"
 	esac
 	notify-send "💾Drive Mounted." "$chosen mounted to $mp."
 	;;
