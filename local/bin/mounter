@@ -4,25 +4,23 @@ set -e
 
 case $1 in
 unmount)
-	LIST=`
-		: MOUNTED PHONES
-		findmnt -t fuse -Pno SOURCE,TARGET | while IFS= read -r line; do
+	list=`
+		: MOUNTED DROIDS
+		findmnt -t fuse -Pno SOURCE,TARGET | while read -r line; do
 			eval "$line"
-			case $SOURCE in
-			simple-mtpfs-*) printf '📱%s (%s)\n' "$TARGET" "$SOURCE"
+			case $SOURCE in simple-mtpfs-*)
+				printf '📱%s (%s)\n' "$TARGET" "$SOURCE"
 			esac
 		done
-		: MOUNTED DRIVES
-		findmnt --real -Pno SOURCE,TARGET,SIZE | while IFS= read -r line; do
+		: MOUNTED VOLUMES
+		findmnt --real -Pno SOURCE,TARGET,SIZE | while read -r line; do
 			eval "$line"
-			case $TARGET in
-			""|/|*/boot*|*/home) continue
-			esac
+			case $TARGET in /boot*|/) continue; esac
 			printf '💾%s (%s, %s)\n' "$TARGET" "$SOURCE" "$SIZE"
 		done
 	`
-	test "$LIST"
-	chosen=`printf '%s\n' "$LIST" | dmenu -i -p 'Unmount which drive?'`
+	test "$list"
+	chosen=`printf '%s\n' "$list" | dmenu -i -p 'Unmount which device?'`
 	test "$chosen"
 	target=${chosen#?}
 	target=${target%% (*}
@@ -31,34 +29,30 @@ unmount)
 	exit
 esac
 
-LIST=`
-	: MOUNTABLE PHONES
-	simple-mtpfs -l 2>/dev/null | while IFS= read -r line; do
+list=`
+	: MOUNTABLE DROIDS
+	simple-mtpfs -l 2>/dev/null | while read -r line; do
 		mtpnum=${line%%:*}
 		findmnt -nS simple-mtpfs-$mtpnum >/dev/null 2>&1 ||
 		printf '📱%s\n' "$line"
 	done
-	: MOUNTABLE DRIVES
-	lsblk -Ppo NAME,TYPE,SIZE,LABEL,FSTYPE,MOUNTPOINT | while IFS= read -r line; do
+	: MOUNTABLE VOLUMES
+	lsblk -Ppo NAME,TYPE,SIZE,LABEL,FSTYPE,MOUNTPOINT | while read -r line; do
 		eval "$line"
-		if test \( "$TYPE" != part -a "$TYPE" != rom \) -o -n "$MOUNTPOINT"
-		then	continue
-		fi
+		test -n "$MOUNTPOINT" -o \( "$TYPE" != part -a "$TYPE" != rom \) && continue
 		printf '💾%s (%s%s%s)\n' "$NAME" "$SIZE" "${LABEL:+, $LABEL}" "${FSTYPE:+, $FSTYPE}"
 	done
 `
 
-test "$LIST"
-chosen=`printf '%s\n' "$LIST" | dmenu -i -p 'Mount which drive?'`
+test "$list"
+chosen=`printf '%s\n' "$list" | dmenu -i -p 'Mount which device?'`
 
-getmount() {
+askmp() {
 	mountpoint=`find /mnt /usr/$USER -maxdepth 1 -type d -empty 2>/dev/null | dmenu -i -p 'Mount this drive where?'`
 	test "$mountpoint"
 	if [ ! -d "$mountpoint" ]; then
 		a=`printf 'No\nYes' | dmenu -i -p "$mountpoint does not exist. Create it?"`
-		case $a in
-		Yes)	mkdir -p "$mountpoint" || sudo mkdir -p "$mountpoint"
-		esac
+		case $a in Yes) mkdir -p "$mountpoint" || sudo mkdir -p "$mountpoint"; esac
 	fi
 }
 
@@ -66,22 +60,22 @@ case $chosen in
 💾*)	device=${chosen#💾}
 	device=${device%% (*}
 	if sudo mount "$device"; then
-		notify-send "💾 Drive Mounted" "$device mounted"
+		notify-send "💾 Device Mounted" "$device mounted"
 		exit
 	fi
-	getmount
-	case `lsblk -nro FSTYPE "$device"` in
+	askmp
+	case `lsblk -no FSTYPE "$device"` in
 		vfat) sudo mount -t vfat "$device" "$mountpoint" -o rw,umask=0000 ;;
 		exfat|ntfs*) sudo mount "$device" "$mountpoint" -o uid="$(id -u)",gid="$(id -g)" ;;
 		*) sudo mount "$device" "$mountpoint"
 	esac
-	notify-send "💾 Drive Mounted" "$device mounted to $mountpoint"
+	notify-send "💾 Device Mounted" "$device mounted to $mountpoint"
 	;;
 📱*)	mtpnum=${chosen#📱}
 	mtpnum=${mtpnum%%:*}
-	mphone() { sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$mtpnum" --device "$mtpnum" "$mountpoint"; }
+	mountphone() { sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$mtpnum" --device "$mtpnum" "$mountpoint"; }
 	notify-send '❗ Note' 'Remember to allow file access on your phone now.'
-	getmount
-	mphone || { sleep 5; mphone; }
+	askmp
+	mountphone || { sleep 5; mountphone; }
 	notify-send "🤖 Android Mounted" "Android device mounted to $mountpoint"
 esac
