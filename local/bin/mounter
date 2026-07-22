@@ -59,7 +59,7 @@ askmp() {
 case $chosen in
 💾*)	device=${chosen#💾}
 	device=${device%% (*}
-	sudo mount "$device" && notify-send "💾 Device Mounted" "$device mounted" || exit
+	sudo mount "$device" && notify-send "💾 Device Mounted" "$device mounted" && exit
 	askmp
 	case `lsblk -no FSTYPE "$device"` in
 		vfat) sudo mount -t vfat "$device" "$mountpoint" -o rw,umask=0000 ;;
