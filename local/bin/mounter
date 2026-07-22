@@ -48,7 +48,7 @@ test "$list"
 chosen=`printf '%s\n' "$list" | dmenu -i -p 'Mount which device?'`
 
 askmp() {
-	mountpoint=`find /mnt /usr/$USER -maxdepth 1 -type d -empty 2>/dev/null | dmenu -i -p 'Mount this drive where?'`
+	mountpoint=`find /mnt /usr/$USER -maxdepth 1 -type d -empty 2>/dev/null | dmenu -i -p 'Mount this device where?'`
 	test "$mountpoint"
 	if [ ! -d "$mountpoint" ]; then
 		a=`printf 'No\nYes' | dmenu -i -p "$mountpoint does not exist. Create it?"`
@@ -59,10 +59,7 @@ askmp() {
 case $chosen in
 💾*)	device=${chosen#💾}
 	device=${device%% (*}
-	if sudo mount "$device"; then
-		notify-send "💾 Device Mounted" "$device mounted"
-		exit
-	fi
+	sudo mount "$device" && notify-send "💾 Device Mounted" "$device mounted" || exit
 	askmp
 	case `lsblk -no FSTYPE "$device"` in
 		vfat) sudo mount -t vfat "$device" "$mountpoint" -o rw,umask=0000 ;;
@@ -73,9 +70,9 @@ case $chosen in
 	;;
 📱*)	mtpnum=${chosen#📱}
 	mtpnum=${mtpnum%%:*}
-	mountphone() { sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$mtpnum" --device "$mtpnum" "$mountpoint"; }
-	notify-send '❗ Note' 'Remember to allow file access on your phone now.'
+	mountdroid() { sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$mtpnum" --device "$mtpnum" "$mountpoint"; }
+	notify-send '❗ Note' 'Remember to allow file access on your Android now.'
 	askmp
-	mountphone || { sleep 5; mountphone; }
+	mountdroid || { sleep 5; mountdroid; }
 	notify-send "🤖 Android Mounted" "Android device mounted to $mountpoint"
 esac
