@@ -55,7 +55,7 @@ http://*|https://*)
 				"$url"`;;
 		t)	id=`tsp yt-dlp \
 				${playlist:---no-playlist} \
-				--progress --print after_move:title \
+				--print title \
 				--skip-download --write-thumbnail \
 				-o "${oarg:-$XDG_PICTURES_DIR}/%(title)s.%(ext)s" \
 				"$url"`;;
@@ -74,7 +74,7 @@ http://*|https://*)
 			then	case $o in
 				[vat])	case $name in
 					*m3u8*)	;;
-					*)	name=`tsp -c $id | tr '\r' '\n' | tail -1`
+					*)	name=`tsp -c $id | tr '\015' '\012' | tail -1`
 					esac
 				esac
 				notify-send -i $PIX/dlcomplete.svg 'Download complete' "[$o] $name"
