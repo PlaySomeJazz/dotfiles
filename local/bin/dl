@@ -39,7 +39,7 @@ http://*|https://*)
 	for o in $flag
 	do
 		case $o in
-		c)	id=`tsp $carg "$url"`;;
+		c)	id=`eval "set - $carg"; tsp "$@" "$url"`;;
 		v)	id=`tsp yt-dlp \
 				${playlist:---no-playlist} \
 				--progress --print after_move:title \
