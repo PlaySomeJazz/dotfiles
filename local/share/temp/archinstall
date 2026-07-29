@@ -1,0 +1,99 @@
+#!/bin/sh
+
+set -e
+
+trap 'stty echo; exit' 0 1 2 3 15
+test -b "${disk:=/dev/sda}"
+
+: "${hostname:=machine}"
+: "${timezone:=Europe/Bucharest}"
+: "${locale:=en_US.UTF-8}"
+: "${swap_size_gib:=8}"
+
+case $disk in
+*nvme*)	espart=${disk}p1
+	rootpart=${disk}p2 ;;
+*)	espart=${disk}1
+	rootpart=${disk}2
+esac
+
+echo "This will WIPE ALL PARTITIONS on $disk. Current layout:"
+lsblk
+echo "Type the disk path again to confirm ($disk):"
+read -r confirm
+if [ "$confirm" != "$disk" ]; then
+	echo "Confirmation didn't match" 1>&2
+	exit 1
+fi
+
+stty -echo
+while :; do
+	echo "Password for root:"
+	read -r rootpass1; echo
+	echo "Retype password:"
+	read -r rootpass2; echo
+	if [ -z "$rootpass1" -o "$rootpass1" != "$rootpass2" ]; then
+		echo "Passwords must match and can't be empty, try again."
+	else
+		break
+	fi
+done
+stty echo
+
+echo "Partitioning $disk..."
+parted --script "$disk" \
+	mklabel gpt \
+	mkpart ESP fat32 1MiB 513MiB \
+	set 1 esp on \
+	mkpart primary ext4 513MiB 100%
+partprobe "$disk"
+udevadm settle
+
+echo "Formatting..."
+mkfs.fat -F32 "$espart"
+mkfs.ext4 -F "$rootpart"
+
+mount "$rootpart" /mnt
+mkdir -p /mnt/boot
+mount "$espart" /mnt/boot
+
+rootuuid=`blkid -s UUID -o value "$rootpart"`
+
+echo "Installing base system (this will take a while)..."
+pacstrap -K /mnt base linux linux-firmware efibootmgr networkmanager base-devel
+
+genfstab -U /mnt >>/mnt/etc/fstab
+
+printf '%s\n' "root:$rootpass1" | arch-chroot /mnt chpasswd
+unset rootpass1 rootpass2
+
+echo "Configuring the new system..."
+arch-chroot /mnt /bin/sh -e <<CHROOT_EOF
+ln -sf /usr/share/zoneinfo/$timezone /etc/localtime
+hwclock --systohc
+
+sed -i "s/^#$locale UTF-8/$locale UTF-8/" /etc/locale.gen
+locale-gen
+echo "LANG=$locale" >/etc/locale.conf
+
+echo "$hostname" >/etc/hostname
+
+systemctl enable NetworkManager
+
+dd if=/dev/zero of=/swapfile bs=1M count=$((swap_size_gib * 1024)) status=progress
+chmod 600 /swapfile
+mkswap /swapfile
+echo "/swapfile none swap defaults 0 0" >>/etc/fstab
+
+bootctl install
+echo "default arch.conf
+timeout 0" >/boot/loader/loader.conf
+echo "title    Arch Linux
+linux    /vmlinuz-linux
+initrd   /initramfs-linux.img
+options  root=UUID=$rootuuid rw quiet loglevel=3 udev.log_level=3 nowatchdog mitigations=off modprobe.blacklist=iTCO_wdt video=eDP-1:d transparent_hugepage=madvise" >/boot/loader/entries/arch.conf
+CHROOT_EOF
+
+umount -R /mnt
+
+echo "Done. Reboot, log in as root, and run post-install script"

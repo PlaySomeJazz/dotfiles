@@ -30,6 +30,6 @@ case `file -Lb --mime-type -- "$1"` in
 	audio/*|application/octet-stream) mediainfo "$1" && exit ;;
 	video/*) c;needs_update "$CACHE.jpg" && ffmpegthumbnailer -i "$1" -o "$CACHE.jpg" -s 0; draw "$CACHE.jpg" ;;
 	*/pdf) c;needs_update "$CACHE.jpg" && pdftoppm -f 1 -singlefile -jpeg "$1" "$CACHE"; draw "$CACHE.jpg" ;;
-	application/*zip*|application/*tar|application/x-xz|application/x-7z-compressed|application/x-rar) exec bsdtar -tf "$1"
+	application/*zip*|application/*tar|application/x-xz|application/x-7z-compressed|application/*rar*) exec bsdtar -tf "$1"
 esac
 file -Lb -- "$1" | fold -s -w "$w"
