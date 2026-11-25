@@ -51,7 +51,7 @@ for i do
 		done <$T
 	esac
 	if test "$i"; then
-		n=`transmission-remote -a "$i"`
+		n=`transmission-remote -a -j "$i"`
 		n=`expr "$n" : '.*"name":"\([^"]*\)'`
 		notify-send -i $I 'Torrent added' "$n"
 		pkill -12 status

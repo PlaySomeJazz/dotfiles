@@ -17,8 +17,8 @@ test -f "$XDG_CONFIG_HOME/user-dirs.dirs" && . "$XDG_CONFIG_HOME/user-dirs.dirs"
 : Clean-up:
 XINITRC=$XDG_CONFIG_HOME/x11/xinitrc
 XAUTHORITY=$XDG_RUNTIME_DIR/Xauthority # This line will break some DMs.
+PIPX_BIN_DIR=$DOTS/bin
 NOTMUCH_CONFIG=$XDG_CONFIG_HOME/notmuch-config
-GTK2_RC_FILES=$XDG_CONFIG_HOME/gtk-2.0/gtkrc-2.0
 WGETRC=$XDG_CONFIG_HOME/wget/wgetrc
 INPUTRC=$XDG_CONFIG_HOME/shell/inputrc
 ZDOTDIR=$XDG_CONFIG_HOME/zsh

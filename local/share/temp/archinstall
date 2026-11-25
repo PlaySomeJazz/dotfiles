@@ -45,9 +45,7 @@ parted --script "$disk" \
 	mklabel gpt \
 	mkpart ESP fat32 1MiB 513MiB \
 	set 1 esp on \
-	mkpart primary ext4 513MiB 100%
-partprobe "$disk"
-udevadm settle
+	mkpart root ext4 513MiB 100%
 
 echo "Formatting..."
 mkfs.fat -F32 "$espart"
@@ -57,7 +55,7 @@ mount "$rootpart" /mnt
 mkdir -p /mnt/boot
 mount "$espart" /mnt/boot
 
-rootuuid=`blkid -s UUID -o value "$rootpart"`
+rootuuid=`blkid -p -s UUID -o value "$rootpart"`
 
 echo "Installing base system (this will take a while)..."
 pacstrap -K /mnt base linux linux-firmware efibootmgr networkmanager base-devel
@@ -84,6 +82,13 @@ dd if=/dev/zero of=/swapfile bs=1M count=$((swap_size_gib * 1024)) status=progre
 chmod 600 /swapfile
 mkswap /swapfile
 echo "/swapfile none swap defaults 0 0" >>/etc/fstab
+
+echo 'DOTS            DEFAULT=@{HOME}/local
+XDG_CACHE_HOME  DEFAULT=${DOTS}/var/cache
+XDG_CONFIG_HOME DEFAULT=${DOTS}/etc
+XDG_DATA_HOME   DEFAULT=${DOTS}/share
+XDG_STATE_HOME  DEFAULT=${DOTS}/var/state
+ZDOTDIR         DEFAULT=${XDG_CONFIG_HOME}/zsh' >>/etc/security/pam_env.conf
 
 bootctl install
 echo "default arch.conf

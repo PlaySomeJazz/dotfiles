@@ -218,13 +218,6 @@ sed -i 's/^#Storage=auto$/Storage=none/' /etc/systemd/journald.conf
 
 sed -i '/export FREETYPE_PROPERTIES="truetype:interpreter-version=40"/s/^#//' /etc/profile.d/freetype2.sh
 
-echo 'DOTS            DEFAULT=@{HOME}/local
-XDG_CACHE_HOME  DEFAULT=${DOTS}/var/cache
-XDG_CONFIG_HOME DEFAULT=${DOTS}/etc
-XDG_DATA_HOME   DEFAULT=${DOTS}/share
-XDG_STATE_HOME  DEFAULT=${DOTS}/var/state
-ZDOTDIR         DEFAULT=${XDG_CONFIG_HOME}/zsh' >>/etc/security/pam_env.conf
-
 test ! -f /etc/X11/xorg.conf.d/40-libinput.conf && echo 'Section "InputClass"
         Identifier "libinput touchpad catchall"
         MatchIsTouchpad "on"
